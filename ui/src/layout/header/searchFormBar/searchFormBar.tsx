@@ -5,21 +5,43 @@ import { Search } from "@/svgs/Search";
 import { motion } from "framer-motion";
 import { ModalPanel } from "@/components/modalPanel";
 import { TypesOfSelections } from "@/utilities/enums";
+import { getCountriesByRequest } from "./getCountriesByRequest";
+import spinner from "@/content/spinner.gif";
+import { useDebounce } from "@/hooks/useDebounce";
+import { Location } from "@/svgs/Location";
+import Image, { StaticImageData } from "next/image";
+import { regions } from "@/information/data";
 
 interface SearchFormBarProps {
   staysButtonState: boolean;
   isCategoryChanged: boolean;
   setIsCategoryChanged: React.Dispatch<React.SetStateAction<boolean>>;
+  trackScrolled: boolean;
+}
+
+interface regionResponceType {
+  id: number;
+  city: string;
+  country: string;
+  countryCode: string;
+}
+interface regionsType {
+  id: number;
+  region: string;
+  map: StaticImageData;
 }
 export const SearchFormBar: React.FC<SearchFormBarProps> = ({
   staysButtonState,
   isCategoryChanged,
   setIsCategoryChanged,
+  trackScrolled,
 }) => {
   const searchBarRef = useRef<HTMLFormElement>(null);
   const [triggeredSelection, setTriggeredSelection] =
     useState<TypesOfSelections>(null || TypesOfSelections.UNSELECTED);
   const [regionSelection, setRegionSelection] = useState<string>("");
+  const [responseForRegion, setResponseForRegion] = useState<[]>(null || []);
+
   const isDateSelection = triggeredSelection === TypesOfSelections.DATE;
 
   const isDateExperiencesSelectionCheckIn =
@@ -27,23 +49,41 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
 
   const isDateExperiencesSelectionCheckOut =
     triggeredSelection === TypesOfSelections.DATE_EXPERIENCES_CHECKOUT;
+
+  const isRegions = regions.some((region) => region.region === regionSelection);
+
   const handleClearAllTriggeredSelections = () => {
     setTriggeredSelection(TypesOfSelections.UNSELECTED);
   };
+
   const handlePopUpMenuOpening = (
     e: React.MouseEvent,
     type: TypesOfSelections
   ) => {
     e.preventDefault();
+    setIsCategoryChanged(false);
     setTriggeredSelection(type);
   };
+
+  const getData = async () => {
+    try {
+      const res = await getCountriesByRequest(regionSelection);
+      setResponseForRegion(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const delaiedDataResponse = useDebounce(getData, 400);
+
   const getRegionSelectionValue = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value) {
+      delaiedDataResponse();
       setRegionSelection(e.target.value);
     } else {
       setRegionSelection("");
     }
   };
+
   useEffect(() => {
     if (
       isDateExperiencesSelectionCheckIn ||
@@ -58,6 +98,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
     isDateSelection,
     setIsCategoryChanged,
   ]);
+
   return (
     <>
       {triggeredSelection !== TypesOfSelections.UNSELECTED && (
@@ -66,10 +107,13 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
           onClick={handleClearAllTriggeredSelections}
         />
       )}
-      <form
+      <motion.form
         ref={searchBarRef}
         className={styles.search_bar_container}
         data-triggered={triggeredSelection !== ""}
+        initial={{ marginTop: "64px" }}
+        animate={trackScrolled ? { marginTop: "0" } : { marginTop: "64px" }}
+        transition={{ duration: 0.25, ease: "easeInOut" }}
       >
         <div
           role="button"
@@ -87,25 +131,100 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                 }
                 triggeredElementLeft={0}
                 gap={15}
+                width={145}
                 className={styles.modal_menu}
               >
-                <div className={styles.search_region_modal}>
-                  <h2 className={styles.search_region_modal_title}>
-                    Search by region
-                  </h2>
-
-                  {!regionSelection ? (
+                <div
+                  className={styles.search_region_modal}
+                  style={{ backgroundImage: `url(${spinner})`, margin: "auto" }}
+                >
+                  {!regionSelection || isRegions ? (
                     <div className={styles.regions_cards_container}>
-                      <div className={styles.region_card}>region 1</div>
-                      <div className={styles.region_card}>region 2</div>
-                      <div className={styles.region_card}>region 3</div>
-                      <div className={styles.region_card}>region 4</div>
-                      <div className={styles.region_card}>region 5</div>
+                      <h2 className={styles.search_region_modal_title}>
+                        Search by region
+                      </h2>
+                      <div className={styles.region_card_container}>
+                        {regions.map((region: regionsType) => (
+                          <div
+                            className={styles.region_card}
+                            key={region.id}
+                            onClick={() =>
+                              setRegionSelection((prev) => {
+                                setTriggeredSelection(
+                                  staysButtonState
+                                    ? TypesOfSelections.DATE_EXPERIENCES_CHECKIN
+                                    : TypesOfSelections.DATE
+                                );
+                                const value = region.region;
+                                if (prev !== value) {
+                                  return value;
+                                }
+                                return prev;
+                              })
+                            }
+                          >
+                            <Image
+                              src={region.map}
+                              alt={region.region}
+                              className={styles.region_card_img}
+                            />
+                            <p className={styles.region_card_title}>
+                              {region.region}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   ) : (
-                    <div className={styles.search_results_selections_container}>
-                      <span>...loading</span>
-                    </div>
+                    <>
+                      {!responseForRegion?.length ? (
+                        <div className={styles.spinner} />
+                      ) : (
+                        <div
+                          className={styles.search_results_selections_container}
+                        >
+                          {responseForRegion?.map(
+                            (countires: regionResponceType) => (
+                              <button
+                                className={styles.countrie_responce_block}
+                                key={countires.id}
+                                onClick={() =>
+                                  setRegionSelection((prev) => {
+                                    setTriggeredSelection(
+                                      staysButtonState
+                                        ? TypesOfSelections.DATE_EXPERIENCES_CHECKIN
+                                        : TypesOfSelections.DATE
+                                    );
+                                    const value = countires.city;
+                                    if (prev !== value) {
+                                      return value;
+                                    }
+                                    return prev;
+                                  })
+                                }
+                              >
+                                <div
+                                  className={
+                                    styles.countrie_responce_location_icon
+                                  }
+                                >
+                                  <Location />
+                                </div>
+                                <span
+                                  className={styles.countrie_responce_value}
+                                >
+                                  {countires.city.length +
+                                    countires.country.length >
+                                  20
+                                    ? `${countires.city}, ${countires.countryCode}`
+                                    : `${countires.city}, ${countires.country}`}
+                                </span>
+                              </button>
+                            )
+                          )}
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               </ModalPanel>
@@ -116,6 +235,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
             className={styles.search_bar_input}
             placeholder="Search destinations"
             onChange={getRegionSelectionValue}
+            value={regionSelection}
           />
           <label
             htmlFor="searchRegionInput"
@@ -139,6 +259,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                 }
                 triggeredElementLeft={0}
                 gap={15}
+                width={100}
                 className={styles.modal_menu}
               >
                 {staysButtonState ? <div>stays</div> : <div>expensises</div>}
@@ -225,8 +346,9 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                 triggeredElementHeight={
                   searchBarRef?.current?.getBoundingClientRect().height
                 }
-                triggeredElementLeft={0}
+                triggeredElementRight={0}
                 gap={15}
+                width={145}
                 className={styles.modal_menu}
               >
                 <div>qdwa</div>
@@ -257,7 +379,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
           <Search className={styles.search_icon} />
           <span className={styles.search_text}>search</span>
         </motion.button>
-      </form>
+      </motion.form>
     </>
   );
 };

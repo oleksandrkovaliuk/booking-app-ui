@@ -1,7 +1,7 @@
-import { Props } from "@/utilities/interfaces";
+import { SvgProps } from "@/utilities/interfaces";
 import React from "react";
 
-export const Search: React.FC<Props> = (props) => {
+export const Search: React.FC<SvgProps> = (props) => {
   return (
     <svg
       version="1.0"

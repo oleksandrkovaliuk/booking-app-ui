@@ -1,22 +1,102 @@
-.modal_menu {
-  padding: 15px 25px;
-  background-color: var(--booking-app-white-color);
-  position: absolute;
-  box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
-  z-index: 4;
-  width: 100%;
-  text-align: left;
-  border-radius: 20px;
-}
 .header_active_background {
   position: fixed;
   inset: 0;
   z-index: 2;
 }
 
+.modal_menu {
+  padding: 20px 25px;
+  background-color: var(--booking-app-white-color);
+  position: absolute;
+  box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+  z-index: 4;
+  text-align: left;
+  border-radius: 30px;
+  min-height: 250px;
+  .spinner {
+    position: absolute;
+    inset: 0;
+    background-repeat: no-repeat;
+    background-size: 8%;
+    background-position: center;
+    background-image: url("~@/content/spinner.gif");
+  }
+}
+.search_results_selections_container {
+  .countrie_responce_block {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px;
+    width: 100%;
+    border-radius: 10px;
+    &:not(:last-child) {
+      margin-bottom: 10px;
+    }
+    &:hover {
+      background-color: var(--booking-app-lightgrey-color);
+    }
+    .countrie_responce_location_icon {
+      padding: 4px;
+      background-color: var(--booking-app-focused-background-color);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 35px;
+      height: 35px;
+      svg {
+        max-width: 15px;
+        max-height: 15px;
+        path {
+          fill: var(--booking-app-white-color);
+        }
+      }
+    }
+    .countrie_responce_value {
+      font-size: 17px;
+      font-family: var(--booking-app-Nunito-Sans-font);
+      font-weight: 300;
+      color: var(--booking-app-black-color);
+      text-transform: capitalize;
+    }
+  }
+}
+.regions_cards_container {
+  .search_region_modal_title {
+    font-size: 14px;
+    font-weight: 700;
+    font-family: var(--booking-app-Nunito-Sans-font);
+    margin-bottom: 10px;
+  }
+  .region_card_container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    .region_card {
+      padding: 10px;
+      text-align: left;
+      border-radius: 15px;
+      &:hover {
+        background-color: var(--booking-app-lightgrey-color);
+      }
+      .region_card_img {
+        max-width: 100px;
+        max-height: 100px;
+        border: 1px solid var(--booking-app-focused-background-color);
+        border-radius: 10px;
+      }
+      .region_card_title {
+        font-size: 16px;
+        font-weight: 300;
+        font-family: var(--booking-app-Nunito-Sans-font);
+        text-transform: capitalize;
+      }
+    }
+  }
+}
+
 .search_bar_container {
-  max-width: 860px;
-  margin: auto;
   text-align: center;
   border-radius: 70px;
   border: 1px solid var(--booking-app-lightgrey-color);
@@ -27,8 +107,7 @@
   position: relative;
   &[data-triggered="true"] {
     background-color: var(--booking-app-lightgrey-color);
-    .search_bar_input_container,
-    .search_bar_input_last_container {
+    .search_bar_input_container {
       &:hover {
         background-color: var(--booking-app-focused-background-color);
       }
@@ -49,6 +128,7 @@
     }
     .search_bar_input_container {
       padding-inline: 25px !important;
+
       .search_bar_input {
         pointer-events: none;
       }
@@ -67,6 +147,7 @@
     padding-left: 30px;
     border-radius: 70px;
     z-index: 3;
+
     cursor: pointer;
     &:not(:first-child) {
       .search_bar_input {
@@ -77,11 +158,15 @@
       background-color: white;
       box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
       z-index: 4;
+
       &:hover {
         background-color: white;
       }
     }
     &:hover {
+      & + .search_bar_input_dates.search_bar_input_container::before {
+        opacity: 0;
+      }
       background-color: var(--booking-app-lightgrey-color);
     }
     .search_bar_input {
@@ -90,6 +175,8 @@
       color: var(--booking-app-black-color);
       font-family: var(--booking-app-Nunito-Sans-font);
       font-size: 14px;
+      font-weight: 300;
+      text-transform: capitalize;
       &:focus,
       &:active,
       &:not(placeholder-shown) {

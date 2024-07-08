@@ -1,14 +1,22 @@
 .header_container {
-  padding: 20px 50px;
+  padding: 30px 50px;
   max-width: 1760px;
   margin: auto;
   border-bottom: 1px solid var(--booking-app-lightgrey-color);
+  position: sticky;
+  top: 0;
+  &[data-track="true"] {
+    .center_nagivation_menu_buttons {
+      scale: 0;
+      left: 40%;
+      top: -100%;
+    }
+  }
 }
 .top_navigation {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+  align-items: flex-start;
   .logo {
     position: relative;
     z-index: 3;
@@ -19,9 +27,20 @@
   }
 }
 .center_nagivation_menu {
+  max-width: 854px;
+  width: 100%;
+  position: relative;
   .center_nagivation_menu_buttons {
     display: flex;
     align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease-in-out;
+    position: absolute;
+    top: 0px;
+    left: 50%;
+    transform: translateX(-50%);
+    scale: 1;
+    z-index: 3;
     .center_nagivation_menu_button {
       color: var(--booking-app-grey-color);
       font-family: var(--booking-app-Nunito-Sans-font);
@@ -64,5 +83,16 @@
         }
       }
     }
+  }
+}
+@keyframes scrollCenterMenuAnimation {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(0);
   }
 }

@@ -1,7 +1,7 @@
-import { Props } from "@/utilities/interfaces";
+import { SvgProps } from "@/utilities/interfaces";
 import React from "react";
 
-export const Logo: React.FC<Props> = (props) => {
+export const Logo: React.FC<SvgProps> = (props) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

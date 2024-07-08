@@ -3,11 +3,12 @@ import React, { useEffect, useState } from "react";
 import styles from "./header.module.scss";
 import { Logo } from "@/svgs/Logo";
 import Link from "next/link";
-import { SearchFormBar } from "./searchFormBar";
-
+import { SearchFormBar } from "./searchFormBar/searchFormBar";
+import { motion } from "framer-motion";
 export const Header = () => {
   const [staysButtonState, setStaysButtonState] = useState<boolean>(true);
   const [isCategoryChanged, setIsCategoryChanged] = useState<boolean>(false);
+  const [windowIsScrolled, setWindowIsScrolled] = useState<boolean>(false);
   const handleClickOnExperienceButton = () => {
     setStaysButtonState(false);
     setIsCategoryChanged(true);
@@ -16,9 +17,23 @@ export const Header = () => {
     setStaysButtonState(true);
     setIsCategoryChanged(true);
   };
+
+  useEffect(() => {
+    const trackWindowScroll = () => {
+      if (window.scrollY > 0) {
+        setWindowIsScrolled(true);
+      } else if (window.scrollY === 0) {
+        setWindowIsScrolled(false);
+      }
+    };
+    window.addEventListener("scroll", trackWindowScroll);
+    return () => {
+      window.removeEventListener("scroll", trackWindowScroll);
+    };
+  }, []);
   return (
-    <header className={styles.header_container}>
-      <nav className={styles.top_navigation}>
+    <header className={styles.header_container} data-track={windowIsScrolled}>
+      <motion.nav className={styles.top_navigation}>
         <Link href={"/"} className={styles.logo}>
           <Logo />
         </Link>
@@ -39,16 +54,17 @@ export const Header = () => {
               Experiences
             </button>
           </div>
+          <SearchFormBar
+            staysButtonState={staysButtonState}
+            isCategoryChanged={isCategoryChanged}
+            setIsCategoryChanged={setIsCategoryChanged}
+            trackScrolled={windowIsScrolled}
+          />
         </div>
         <div className={styles.right_navigation_menu}>
           <span>hello</span>
         </div>
-      </nav>
-      <SearchFormBar
-        staysButtonState={staysButtonState}
-        isCategoryChanged={isCategoryChanged}
-        setIsCategoryChanged={setIsCategoryChanged}
-      />
+      </motion.nav>
     </header>
   );
 };

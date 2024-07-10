@@ -9,6 +9,8 @@ interface ModalPanelProps {
   className?: string;
   gap: number;
   width?: number;
+  centered_items?: boolean;
+  centered_modal?: boolean;
 }
 export const ModalPanel: React.FC<ModalPanelProps> = ({
   triggeredElementHeight,
@@ -18,11 +20,15 @@ export const ModalPanel: React.FC<ModalPanelProps> = ({
   className,
   gap,
   width,
+  centered_items,
+  centered_modal,
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   let styles = {
     top: `calc(${triggeredElementHeight}px + ${gap}px)`,
-    left: `${triggeredElementLeft}px`,
+    left: centered_modal
+      ? `${triggeredElementLeft}%`
+      : `${triggeredElementLeft}px`,
     right: `${triggeredElementRight}px`,
     width: `${width}%`,
   };
@@ -41,6 +47,8 @@ export const ModalPanel: React.FC<ModalPanelProps> = ({
       animate={animateStyles}
       className={className}
       style={styles}
+      data-centered-items={centered_items}
+      data-centered-modal={centered_modal}
     >
       {children}
     </motion.div>

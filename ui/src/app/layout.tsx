@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { Header } from "@/layout/header";
 import { Footer } from "@/layout/footer";
+import { Providers } from "./providers";
+import { Button } from "@nextui-org/react";
 import "./globals.scss";
+
 export const metadata: Metadata = {
   title: "Booking-app",
   description: "Creative booking app",
@@ -14,10 +17,17 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
-        <Header />
-        <main>{children}</main>
-        <Footer />
+      <body className="red-primary-color text-foreground bg-background">
+        <Providers>
+          <Header />
+          <main>
+            {children}
+            <Button color="primary" variant="shadow">
+              Shadow
+            </Button>
+          </main>
+          <Footer />
+        </Providers>
       </body>
     </html>
   );

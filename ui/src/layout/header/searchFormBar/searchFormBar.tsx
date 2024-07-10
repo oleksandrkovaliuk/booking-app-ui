@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useEffect, useRef, useState } from "react";
 import styles from "./search_form_bar.module.scss";
 import { Search } from "@/svgs/Search";
@@ -11,7 +12,13 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { Location } from "@/svgs/Location";
 import Image, { StaticImageData } from "next/image";
 import { regions } from "@/information/data";
-
+import { RangeCalendar, RangeValue } from "@nextui-org/calendar";
+import { parseDate } from "@internationalized/date";
+import {
+  DateFormatingMonthDay,
+  DateFormatingProps,
+} from "@/sharing/dateFormating";
+import { Button, Checkbox } from "@nextui-org/react";
 interface SearchFormBarProps {
   staysButtonState: boolean;
   isCategoryChanged: boolean;
@@ -38,9 +45,16 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
 }) => {
   const searchBarRef = useRef<HTMLFormElement>(null);
   const [triggeredSelection, setTriggeredSelection] =
-    useState<TypesOfSelections>(null || TypesOfSelections.UNSELECTED);
+    useState<TypesOfSelections>(TypesOfSelections.UNSELECTED);
+
   const [regionSelection, setRegionSelection] = useState<string>("");
-  const [responseForRegion, setResponseForRegion] = useState<[]>(null || []);
+  const [responseForRegion, setResponseForRegion] = useState<[]>([]);
+
+  const [checkInInputValue, setCheckInInputValue] = useState<string>("");
+  const [checkOutInputValue, setCheckOutInputValue] = useState<string>("");
+
+  const [amoutOfGuests, setAmoutOfGuests] = useState<number>(0);
+  const [includePets, setIncludePets] = useState<boolean>(true);
 
   const isDateSelection = triggeredSelection === TypesOfSelections.DATE;
 
@@ -84,6 +98,67 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
     }
   };
 
+  const triggerCheckOutSelection = (date: CalendarDate, type: string) => {
+    const value = DateFormatingMonthDay({
+      year: date.year,
+      day: date.day,
+      month: date.month,
+    });
+    if (
+      type === TypesOfSelections.DATE_EXPERIENCES_CHECKIN ||
+      type === TypesOfSelections.DATE
+    ) {
+      setCheckInInputValue((prev: string) =>
+        !prev || prev !== value ? value : prev
+      );
+      setTriggeredSelection(TypesOfSelections.DATE_EXPERIENCES_CHECKOUT);
+    }
+  };
+
+  const handleBookingCalendarSelections = (
+    value: RangeValue<DateFormatingProps>
+  ) => {
+    if (isDateSelection) {
+      setCheckInInputValue(
+        DateFormatingMonthDay({
+          year: value.start.year,
+          day: value.start.day,
+          month: value.start.month,
+        })
+      );
+      setCheckOutInputValue(
+        DateFormatingMonthDay({
+          year: value.end.year,
+          day: value.end.day,
+          month: value.end.month,
+        })
+      );
+    } else if (value.start.toString() !== value.end.toString()) {
+      setCheckOutInputValue(
+        DateFormatingMonthDay({
+          year: value.end.year,
+          day: value.end.day,
+          month: value.end.month,
+        })
+      );
+
+      setTriggeredSelection(TypesOfSelections.GUEST);
+    } else {
+      setCheckOutInputValue("");
+    }
+    return null;
+  };
+
+  const requestSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log({
+      regionSelection: regionSelection,
+      checkInInputValue: checkInInputValue,
+      checkOutInputValue: checkOutInputValue,
+      amoutOfGuests: amoutOfGuests,
+      includePets: includePets,
+    });
+  };
   useEffect(() => {
     if (
       isDateExperiencesSelectionCheckIn ||
@@ -136,7 +211,10 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
               >
                 <div
                   className={styles.search_region_modal}
-                  style={{ backgroundImage: `url(${spinner})`, margin: "auto" }}
+                  style={{
+                    backgroundImage: `url(${spinner})`,
+                    margin: "auto",
+                  }}
                 >
                   {!regionSelection || isRegions ? (
                     <div className={styles.regions_cards_container}>
@@ -257,12 +335,24 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                 triggeredElementHeight={
                   searchBarRef?.current?.getBoundingClientRect().height
                 }
-                triggeredElementLeft={0}
+                triggeredElementLeft={50}
                 gap={15}
-                width={100}
                 className={styles.modal_menu}
+                centered_items={true}
+                centered_modal={true}
               >
-                {staysButtonState ? <div>stays</div> : <div>expensises</div>}
+                <RangeCalendar
+                  aria-label="Booking dates"
+                  visibleMonths={2}
+                  onChange={(value: RangeValue<DateFormatingProps>) =>
+                    handleBookingCalendarSelections(value)
+                  }
+                  onFocusChange={(date: CalendarDate) =>
+                    triggerCheckOutSelection(date, triggeredSelection)
+                  }
+                  color="primary"
+                  minValue={parseDate(new Date().toISOString().split("T")[0])}
+                />
               </ModalPanel>
             )}
           {staysButtonState ? (
@@ -284,6 +374,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                   id="dateInput"
                   className={styles.search_bar_input}
                   placeholder="Add dates"
+                  value={checkInInputValue}
                 />
                 <label htmlFor="dateInput" className={styles.search_bar_label}>
                   Check in
@@ -306,6 +397,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                   id="dateInput"
                   className={styles.search_bar_input}
                   placeholder="Add dates"
+                  value={checkOutInputValue}
                 />
                 <label htmlFor="dateInput" className={styles.search_bar_label}>
                   Check out
@@ -325,6 +417,13 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                 id="dateInput"
                 className={styles.search_bar_input}
                 placeholder="Add dates"
+                value={
+                  checkInInputValue || checkOutInputValue
+                    ? `${checkInInputValue} ${
+                        checkInInputValue && checkOutInputValue && " - "
+                      } ${checkOutInputValue}`
+                    : ""
+                }
               />
               <label htmlFor="dateInput" className={styles.search_bar_label}>
                 Date
@@ -351,8 +450,49 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                 width={145}
                 className={styles.modal_menu}
               >
-                <div>qdwa</div>
-                <div>dasdas</div>
+                <div className={styles.modal_menu_guest_settings}>
+                  <div className={styles.modal_menu_guest_settings_text}>
+                    <span className={styles.modal_menu_guest_settings_title}>
+                      Guest
+                    </span>
+                    <p className={styles.modal_menu_guest_settings_note}>
+                      Including children
+                    </p>
+                  </div>
+                  <div className={styles.modal_menu_guest_counter_buttons}>
+                    <Button
+                      onClick={() => setAmoutOfGuests((prev) => (prev -= 1))}
+                      disabled={amoutOfGuests <= 0}
+                      color="primary"
+                      isIconOnly
+                    />
+                    <span className={styles.modal_menu_guest_counter_value}>
+                      {amoutOfGuests}
+                    </span>
+                    <Button
+                      onClick={() => setAmoutOfGuests((prev) => (prev += 1))}
+                      disabled={amoutOfGuests >= 16}
+                      color="primary"
+                      isIconOnly
+                    />
+                  </div>
+                </div>
+                <div className={styles.modal_menu_guest_settings}>
+                  <div className={styles.modal_menu_guest_settings_text}>
+                    <span className={styles.modal_menu_guest_settings_title}>
+                      Pets
+                    </span>
+                    <p className={styles.modal_menu_guest_settings_note}>
+                      Include pets
+                    </p>
+                  </div>
+                  <div className={styles.modal_menu_pets_checkbox}>
+                    <Checkbox
+                      isSelected={includePets}
+                      onValueChange={setIncludePets}
+                    />
+                  </div>
+                </div>
               </ModalPanel>
             )}
           <input
@@ -360,6 +500,11 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
             id="Guests"
             className={styles.search_bar_input}
             placeholder="Add guests"
+            value={
+              amoutOfGuests
+                ? `${amoutOfGuests} guests ${includePets ? ", with pets" : ""}`
+                : ""
+            }
           />
           <label htmlFor="Guests" className={styles.search_bar_label}>
             Who
@@ -375,6 +520,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
               ? { maxWidth: "110px", gap: "7.5px" }
               : { maxWidth: "50px", gap: "15px" }
           }
+          onClick={requestSearch}
         >
           <Search className={styles.search_icon} />
           <span className={styles.search_text}>search</span>

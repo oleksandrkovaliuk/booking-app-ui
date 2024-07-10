@@ -26,6 +26,7 @@ export const Header = () => {
         setWindowIsScrolled(false);
       }
     };
+    trackWindowScroll();
     window.addEventListener("scroll", trackWindowScroll);
     return () => {
       window.removeEventListener("scroll", trackWindowScroll);

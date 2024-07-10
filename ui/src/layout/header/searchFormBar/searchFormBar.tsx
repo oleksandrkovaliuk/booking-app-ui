@@ -43,7 +43,9 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
   setIsCategoryChanged,
   trackScrolled,
 }) => {
+  const searchRegionInputRef = useRef<HTMLInputElement>(null);
   const searchBarRef = useRef<HTMLFormElement>(null);
+
   const [triggeredSelection, setTriggeredSelection] =
     useState<TypesOfSelections>(TypesOfSelections.UNSELECTED);
 
@@ -375,6 +377,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                   className={styles.search_bar_input}
                   placeholder="Add dates"
                   value={checkInInputValue}
+                  readOnly
                 />
                 <label htmlFor="dateInput" className={styles.search_bar_label}>
                   Check in
@@ -398,6 +401,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                   className={styles.search_bar_input}
                   placeholder="Add dates"
                   value={checkOutInputValue}
+                  readOnly
                 />
                 <label htmlFor="dateInput" className={styles.search_bar_label}>
                   Check out
@@ -424,6 +428,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                       } ${checkOutInputValue}`
                     : ""
                 }
+                readOnly
               />
               <label htmlFor="dateInput" className={styles.search_bar_label}>
                 Date
@@ -505,6 +510,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                 ? `${amoutOfGuests} guests ${includePets ? ", with pets" : ""}`
                 : ""
             }
+            readOnly
           />
           <label htmlFor="Guests" className={styles.search_bar_label}>
             Who

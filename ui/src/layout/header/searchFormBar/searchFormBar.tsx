@@ -24,6 +24,8 @@ interface SearchFormBarProps {
   isCategoryChanged: boolean;
   setIsCategoryChanged: React.Dispatch<React.SetStateAction<boolean>>;
   trackScrolled: boolean;
+  isMobile: boolean;
+  onCloseCallBack?: () => void;
 }
 
 interface regionResponceType {
@@ -42,8 +44,11 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
   isCategoryChanged,
   setIsCategoryChanged,
   trackScrolled,
+  isMobile,
+  onCloseCallBack,
 }) => {
   const searchBarRef = useRef<HTMLFormElement>(null);
+
   const [triggeredSelection, setTriggeredSelection] =
     useState<TypesOfSelections>(TypesOfSelections.UNSELECTED);
 
@@ -54,7 +59,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
   const [checkOutInputValue, setCheckOutInputValue] = useState<string>("");
 
   const [amoutOfGuests, setAmoutOfGuests] = useState<number>(0);
-  const [includePets, setIncludePets] = useState<boolean>(true);
+  const [includePets, setIncludePets] = useState<boolean>(false);
 
   const isDateSelection = triggeredSelection === TypesOfSelections.DATE;
 
@@ -98,7 +103,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
     }
   };
 
-  const triggerCheckOutSelection = (date: CalendarDate, type: string) => {
+  const triggerCheckOutSelection = (date: DateFormatingProps, type: string) => {
     const value = DateFormatingMonthDay({
       year: date.year,
       day: date.day,
@@ -151,6 +156,8 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
 
   const requestSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    setTriggeredSelection(TypesOfSelections.UNSELECTED);
+    onCloseCallBack && onCloseCallBack();
     console.log({
       regionSelection: regionSelection,
       checkInInputValue: checkInInputValue,
@@ -185,10 +192,11 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
       <motion.form
         ref={searchBarRef}
         className={styles.search_bar_container}
-        data-triggered={triggeredSelection !== ""}
         initial={{ marginTop: "64px" }}
         animate={trackScrolled ? { marginTop: "0" } : { marginTop: "64px" }}
         transition={{ duration: 0.25, ease: "easeInOut" }}
+        data-triggered={triggeredSelection !== ""}
+        data-is-mobile={isMobile}
       >
         <div
           role="button"
@@ -343,11 +351,11 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
               >
                 <RangeCalendar
                   aria-label="Booking dates"
-                  visibleMonths={2}
+                  visibleMonths={isMobile ? 1 : 2}
                   onChange={(value: RangeValue<DateFormatingProps>) =>
                     handleBookingCalendarSelections(value)
                   }
-                  onFocusChange={(date: CalendarDate) =>
+                  onFocusChange={(date: DateFormatingProps) =>
                     triggerCheckOutSelection(date, triggeredSelection)
                   }
                   color="primary"
@@ -355,7 +363,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                 />
               </ModalPanel>
             )}
-          {staysButtonState ? (
+          {staysButtonState && !isMobile ? (
             <>
               <div
                 className={styles.search_bar_input_container}
@@ -375,6 +383,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                   className={styles.search_bar_input}
                   placeholder="Add dates"
                   value={checkInInputValue}
+                  readOnly
                 />
                 <label htmlFor="dateInput" className={styles.search_bar_label}>
                   Check in
@@ -398,6 +407,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                   className={styles.search_bar_input}
                   placeholder="Add dates"
                   value={checkOutInputValue}
+                  readOnly
                 />
                 <label htmlFor="dateInput" className={styles.search_bar_label}>
                   Check out
@@ -424,6 +434,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                       } ${checkOutInputValue}`
                     : ""
                 }
+                readOnly
               />
               <label htmlFor="dateInput" className={styles.search_bar_label}>
                 Date
@@ -490,6 +501,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                     <Checkbox
                       isSelected={includePets}
                       onValueChange={setIncludePets}
+                      disabled={amoutOfGuests <= 0}
                     />
                   </div>
                 </div>
@@ -505,6 +517,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                 ? `${amoutOfGuests} guests ${includePets ? ", with pets" : ""}`
                 : ""
             }
+            readOnly
           />
           <label htmlFor="Guests" className={styles.search_bar_label}>
             Who

@@ -7,13 +7,15 @@ export const getCountriesByRequest = async (value: string) => {
       "x-rapidapi-host": "wft-geo-db.p.rapidapi.com",
     },
   };
-  console.log(process.env.REACT_APP_COUNTRIES_API_KEY, "check");
+
   try {
     const response = await fetch(url, options);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
     const result = await response.json();
     return result;
   } catch (error) {
-    console.error(error);
-    return null;
+    throw error;
   }
 };

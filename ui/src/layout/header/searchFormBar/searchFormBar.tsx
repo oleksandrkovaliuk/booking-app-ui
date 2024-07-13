@@ -1,24 +1,25 @@
-"use client";
-
 import React, { useEffect, useRef, useState } from "react";
-import styles from "./search_form_bar.module.scss";
-import { Search } from "@/svgs/Search";
 import { motion } from "framer-motion";
+import Image, { StaticImageData } from "next/image";
+import { Button, Checkbox } from "@nextui-org/react";
+import { RangeCalendar, RangeValue } from "@nextui-org/calendar";
+
+import { Search } from "@/svgs/Search";
+import spinner from "@/content/spinner.gif";
 import { ModalPanel } from "@/components/modalPanel";
 import { TypesOfSelections } from "@/utilities/enums";
 import { getCountriesByRequest } from "./getCountriesByRequest";
-import spinner from "@/content/spinner.gif";
-import { useDebounce } from "@/hooks/useDebounce";
 import { Location } from "@/svgs/Location";
-import Image, { StaticImageData } from "next/image";
+import { useDebounce } from "@/hooks/useDebounce";
 import { regions } from "@/information/data";
-import { RangeCalendar, RangeValue } from "@nextui-org/calendar";
 import { parseDate } from "@internationalized/date";
 import {
   DateFormatingMonthDay,
   DateFormatingProps,
 } from "@/sharing/dateFormating";
-import { Button, Checkbox } from "@nextui-org/react";
+
+import styles from "./search_form_bar.module.scss";
+
 interface SearchFormBarProps {
   staysButtonState: boolean;
   isCategoryChanged: boolean;
@@ -90,9 +91,10 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
       setResponseForRegion(res.data);
     } catch (error) {
       console.log(error);
+      setRegionSelection("");
     }
   };
-  const delaiedDataResponse = useDebounce(getData, 400);
+  const delaiedDataResponse = useDebounce(getData, 500);
 
   const getRegionSelectionValue = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value) {
@@ -214,7 +216,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                 }
                 triggeredElementLeft={0}
                 gap={15}
-                width={145}
+                width={50}
                 className={styles.modal_menu}
               >
                 <div
@@ -458,7 +460,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                 }
                 triggeredElementRight={0}
                 gap={15}
-                width={145}
+                width={50}
                 className={styles.modal_menu}
               >
                 <div className={styles.modal_menu_guest_settings}>

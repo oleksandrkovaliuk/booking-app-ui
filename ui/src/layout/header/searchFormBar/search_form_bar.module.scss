@@ -13,6 +13,7 @@
   text-align: left;
   border-radius: 30px;
   min-height: 158px;
+
   &[data-centered-items="true"] {
     display: flex;
     justify-content: center;
@@ -249,7 +250,6 @@
   .search_bar_input_container {
     max-width: 284px;
     width: 100%;
-    position: relative;
     text-align: left;
     display: flex;
     align-items: flex-start;

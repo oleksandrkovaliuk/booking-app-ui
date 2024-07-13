@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 type CallbackFunction = (...args: any[]) => void;
 
 function debounc(func: CallbackFunction, time: number = 300, context: any) {
@@ -28,5 +28,5 @@ export const useDebounce = (
     return debounc(func, time, null);
   }, [time]);
 
-  return useCallback(debounceCallBack, [debounceCallBack]);
+  return debounceCallBack;
 };

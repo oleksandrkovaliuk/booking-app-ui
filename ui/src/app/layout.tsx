@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { Button } from "@nextui-org/react";
+
 import { Header } from "@/layout/header";
 import { Footer } from "@/layout/footer";
 import { Providers } from "./providers";
-import { Button } from "@nextui-org/react";
+
 import "./globals.scss";
 
 export const metadata: Metadata = {

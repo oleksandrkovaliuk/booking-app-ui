@@ -5,7 +5,7 @@ import { Button, Checkbox } from "@nextui-org/react";
 import { RangeCalendar, RangeValue } from "@nextui-org/calendar";
 
 import { Search } from "@/svgs/Search";
-import spinner from "@/content/spinner.gif";
+import spinner from "@/assets/spinner.gif";
 import { ModalPanel } from "@/components/modalPanel";
 import { TypesOfSelections } from "@/utilities/enums";
 import { getCountriesByRequest } from "./getCountriesByRequest";
@@ -17,29 +17,10 @@ import {
   DateFormatingMonthDay,
   DateFormatingProps,
 } from "@/sharing/dateFormating";
+import { regionResponceType, regionsType, SearchFormBarProps } from "../types";
 
 import styles from "./search_form_bar.module.scss";
 
-interface SearchFormBarProps {
-  staysButtonState: boolean;
-  isCategoryChanged: boolean;
-  setIsCategoryChanged: React.Dispatch<React.SetStateAction<boolean>>;
-  trackScrolled: boolean;
-  isMobile: boolean;
-  onCloseCallBack?: () => void;
-}
-
-interface regionResponceType {
-  id: number;
-  city: string;
-  country: string;
-  countryCode: string;
-}
-interface regionsType {
-  id: number;
-  region: string;
-  map: StaticImageData;
-}
 export const SearchFormBar: React.FC<SearchFormBarProps> = ({
   staysButtonState,
   isCategoryChanged,
@@ -503,7 +484,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                     <Checkbox
                       isSelected={includePets}
                       onValueChange={setIncludePets}
-                      disabled={amoutOfGuests <= 0}
+                      isDisabled={amoutOfGuests === 0}
                     />
                   </div>
                 </div>

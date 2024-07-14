@@ -1,25 +1,17 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import styles from "./header.module.scss";
-import { Logo } from "@/svgs/Logo";
-import Link from "next/link";
-import { SearchFormBar } from "./searchFormBar/searchFormBar";
 import { motion } from "framer-motion";
-import { UserIcon } from "@/svgs/UserIcon";
-import { Modal, ModalContent, useDisclosure } from "@nextui-org/react";
-import { LanguagesIcon } from "@/svgs/Languages";
+import Link from "next/link";
+
+import { SearchFormBar } from "./searchFormBar/searchFormBar";
+import { Logo } from "@/svgs/Logo";
 import { AddHouseIcon } from "@/svgs/AddHouseIcon";
 import { Search } from "@/svgs/Search";
-interface CenterNavigationMenuProps {
-  windowIsScrolled: boolean;
-  mobile: boolean;
-  onCloseCallBack?: () => void;
-}
+import { CenterNavigationMenuProps, RightNavigationMenuProps } from "./types";
 
-interface RightNavigationMenuProps
-  extends Omit<CenterNavigationMenuProps, "onCloseCallBack"> {
-  windowIsScrolledToTop: boolean;
-}
+import styles from "./header.module.scss";
+import { Authorization } from "./authorization";
+import { Modal, ModalContent, useDisclosure } from "@nextui-org/react";
 
 const CenterNavigationMenu = ({
   windowIsScrolled,
@@ -72,40 +64,30 @@ const RightNavigationMenu = ({
   windowIsScrolledToTop,
   windowIsScrolled,
 }: RightNavigationMenuProps) => {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
   return (
-    <>
-      <Modal isOpen={isOpen} onClose={onOpenChange} backdrop="blur" size="md">
-        <ModalContent>hello</ModalContent>
-      </Modal>
-      <motion.div
-        className={styles.right_navigation_menu}
-        data-is-mobile={mobile}
-        initial={
-          !windowIsScrolledToTop && windowIsScrolled
-            ? { bottom: "-20dvh" }
-            : { bottom: "0dvh" }
-        }
-        animate={
-          !windowIsScrolledToTop && windowIsScrolled
-            ? { bottom: "-20dvh" }
-            : { bottom: "0dvh" }
-        }
-        transition={{ duration: 0.6, ease: "easeInOut" }}
-      >
-        <Link href={"/create/post"}>
-          <motion.button className={styles.right_navigation_button}>
-            <AddHouseIcon />
-          </motion.button>
-        </Link>
-        <motion.button
-          onClick={onOpen}
-          className={styles.right_navigation_button}
-        >
-          <LanguagesIcon />
+    <motion.div
+      className={styles.right_navigation_menu}
+      data-is-mobile={mobile}
+      initial={
+        !windowIsScrolledToTop && windowIsScrolled
+          ? { bottom: "-20dvh" }
+          : { bottom: "2dvh" }
+      }
+      animate={
+        !windowIsScrolledToTop && windowIsScrolled
+          ? { bottom: "-20dvh" }
+          : { bottom: "2dvh" }
+      }
+      transition={{ duration: 0.6, ease: "easeInOut" }}
+    >
+      <Link href={"/create/post"}>
+        <motion.button className={styles.right_navigation_button}>
+          <AddHouseIcon />
         </motion.button>
-      </motion.div>
-    </>
+      </Link>
+
+      <Authorization />
+    </motion.div>
   );
 };
 export const Header = () => {
@@ -132,7 +114,7 @@ export const Header = () => {
       prevScroll = window.scrollY;
     };
     trackWindowScroll();
-    if (window.innerWidth < 768) {
+    if (window.innerWidth <= 1080) {
       setMobile(true);
     } else {
       setMobile(false);

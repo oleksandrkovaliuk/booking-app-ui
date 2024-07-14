@@ -1,6 +1,6 @@
-import europe from "@/content/europe.png";
-import usa from "@/content/usamap.png";
-import worldmap from "@/content/worldmap.png";
+import europe from "@/assets/europe.png";
+import usa from "@/assets/usamap.png";
+import worldmap from "@/assets/worldmap.png";
 
 export const regions = [
   { id: 1, region: "flexible", map: worldmap },

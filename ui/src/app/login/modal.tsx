@@ -19,10 +19,10 @@ import peopleAuthPng from "@/assets/topPeekI.png";
 import { GoogleIcon } from "@/svgs/GoogleIcon";
 import { FaceBookIcon } from "@/svgs/FacebookIcon";
 import { EmailValidation } from "@/validation/emailValidation";
+import { ReactEvent } from "@/utilities/type";
 
 import styles from "./authorization.module.scss";
 import "./modalStyles.scss";
-import { ReactEvent } from "@/utilities/type";
 
 export const LoginModal = () => {
   const emailRef = useRef<HTMLInputElement>(null);
@@ -35,7 +35,6 @@ export const LoginModal = () => {
   const router = useRouter();
   const { data: session, status } = useSession();
   const searchParam = useSearchParams();
-
   const callBackUrl = searchParam.get("callbackUrl") || "/";
 
   const oAuthSignIn = async (e: ReactEvent, oauth_type: string) => {

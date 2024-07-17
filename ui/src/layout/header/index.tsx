@@ -10,8 +10,9 @@ import { Search } from "@/svgs/Search";
 import { CenterNavigationMenuProps, RightNavigationMenuProps } from "./types";
 
 import styles from "./header.module.scss";
-import { Authorization } from "./authorization";
 import { Modal, ModalContent, useDisclosure } from "@nextui-org/react";
+import { useSession } from "next-auth/react";
+import { UserIcon } from "@/svgs/UserIcon";
 
 const CenterNavigationMenu = ({
   windowIsScrolled,
@@ -64,6 +65,7 @@ const RightNavigationMenu = ({
   windowIsScrolledToTop,
   windowIsScrolled,
 }: RightNavigationMenuProps) => {
+  const session = useSession();
   return (
     <motion.div
       className={styles.right_navigation_menu}
@@ -85,8 +87,15 @@ const RightNavigationMenu = ({
           <AddHouseIcon />
         </motion.button>
       </Link>
-
-      <Authorization />
+      {!session.data ? (
+        <Link href={"/login"}>
+          <button className={styles.right_navigation_button}>
+            <UserIcon />
+          </button>
+        </Link>
+      ) : (
+        <div>{session.data.user?.email}</div>
+      )}
     </motion.div>
   );
 };

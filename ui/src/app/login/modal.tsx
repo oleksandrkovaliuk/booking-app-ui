@@ -14,7 +14,9 @@ import { getSession, signIn, useSession } from "next-auth/react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Session } from "next-auth";
 import { toast } from "sonner";
+import { useDispatch, useSelector } from "react-redux";
 
+import { RootState } from "@/store/index";
 import peopleAuthPng from "@/assets/topPeekI.png";
 import { GoogleIcon } from "@/svgs/GoogleIcon";
 import { FaceBookIcon } from "@/svgs/FacebookIcon";
@@ -23,6 +25,7 @@ import { ReactEvent } from "@/utilities/type";
 
 import styles from "./authorization.module.scss";
 import "./modalStyles.scss";
+import { authorizeUser, unauthorizeUser } from "@/store/slices/userSlice";
 
 export const LoginModal = () => {
   const emailRef = useRef<HTMLInputElement>(null);
@@ -36,6 +39,9 @@ export const LoginModal = () => {
   const { data: session, status } = useSession();
   const searchParam = useSearchParams();
   const callBackUrl = searchParam.get("callbackUrl") || "/";
+
+  const user = useSelector((state: RootState) => state.user);
+  const dispatch = useDispatch();
 
   const oAuthSignIn = async (e: ReactEvent, oauth_type: string) => {
     e.preventDefault();
@@ -76,6 +82,7 @@ export const LoginModal = () => {
           redirect: false,
         });
         if (res?.error) throw Error(res?.error);
+
         router.push("/");
       }
     } catch (error) {
@@ -91,15 +98,17 @@ export const LoginModal = () => {
   }, [onOpen]);
   useEffect(() => {
     if (status === "authenticated") {
-      console.log(session, "check session");
-      setLocalSession((prev) => {
-        if (prev !== session) return session;
-        return prev;
-      });
+      dispatch(
+        authorizeUser({
+          name: session?.user?.name || "",
+          email: session?.user?.email || "",
+          img: session?.user?.image || "",
+        })
+      );
     } else {
-      setLocalSession(null);
+      dispatch(unauthorizeUser());
     }
-  }, [session, status]);
+  }, [dispatch, session, status, user]);
   return (
     <Modal
       isOpen={isOpen}

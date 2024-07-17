@@ -1,18 +1,20 @@
 "use client";
+import { Modal, ModalContent, useDisclosure } from "@nextui-org/react";
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useSelector } from "react-redux";
 
+import { UserIcon } from "@/svgs/UserIcon";
+import { RootState } from "@/store";
 import { SearchFormBar } from "./searchFormBar/searchFormBar";
 import { Logo } from "@/svgs/Logo";
 import { AddHouseIcon } from "@/svgs/AddHouseIcon";
 import { Search } from "@/svgs/Search";
+
 import { CenterNavigationMenuProps, RightNavigationMenuProps } from "./types";
 
 import styles from "./header.module.scss";
-import { Modal, ModalContent, useDisclosure } from "@nextui-org/react";
-import { useSession } from "next-auth/react";
-import { UserIcon } from "@/svgs/UserIcon";
 
 const CenterNavigationMenu = ({
   windowIsScrolled,
@@ -65,7 +67,8 @@ const RightNavigationMenu = ({
   windowIsScrolledToTop,
   windowIsScrolled,
 }: RightNavigationMenuProps) => {
-  const session = useSession();
+  const user = useSelector((state: RootState) => state.user);
+  console.log(user, "check");
   return (
     <motion.div
       className={styles.right_navigation_menu}
@@ -87,14 +90,14 @@ const RightNavigationMenu = ({
           <AddHouseIcon />
         </motion.button>
       </Link>
-      {!session.data ? (
+      {!user.email ? (
         <Link href={"/login"}>
           <button className={styles.right_navigation_button}>
             <UserIcon />
           </button>
         </Link>
       ) : (
-        <div>{session.data.user?.email}</div>
+        <div>{user?.email}</div>
       )}
     </motion.div>
   );

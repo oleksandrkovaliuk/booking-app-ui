@@ -8,7 +8,7 @@ if (!URL) throw new Error("SERVER URL is not defined");
 
 const handleError = async (response: Response) => {
   const resjson = await response?.json();
-  if (!response.ok) throw Error((await resjson?.errorText()) || "Error");
+  if (!response.ok) throw Error(resjson?.message || resjson?.status);
   return resjson;
 };
 
@@ -18,7 +18,6 @@ export const GET = async (apiPath: string) =>
     headers: { ...HEADER },
   })
     .then(handleError)
-
     .catch((error) => {
       throw Error(error);
     });

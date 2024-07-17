@@ -1,17 +1,15 @@
 import type { Metadata } from "next";
-import { Button } from "@nextui-org/react";
-
 import { Header } from "@/layout/header";
 import { Footer } from "@/layout/footer";
 import { Providers } from "./providers";
 
 import "./globals.scss";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "Booking-app",
   description: "Creative booking app",
 };
-
 export default function RootLayout({
   children,
 }: {
@@ -21,13 +19,9 @@ export default function RootLayout({
     <html lang="en">
       <body className="red-primary-color text-foreground bg-background">
         <Providers>
+          <Toaster />
           <Header />
-          <main>
-            {children}
-            <Button color="primary" variant="shadow">
-              Shadow
-            </Button>
-          </main>
+          <main>{children}</main>
           <Footer />
         </Providers>
       </body>

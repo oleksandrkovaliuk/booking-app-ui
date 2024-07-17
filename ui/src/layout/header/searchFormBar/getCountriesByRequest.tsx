@@ -3,7 +3,7 @@ export const getCountriesByRequest = async (value: string) => {
   const options = {
     method: "GET",
     headers: {
-      "x-rapidapi-key": process.env.NEXT_PUBLIC_COUNTRIES_API_KEY || "",
+      "x-rapidapi-key": process.env.NEXT_PUBLIC_COUNTRIES_API_KEY!,
       "x-rapidapi-host": "wft-geo-db.p.rapidapi.com",
     },
   };

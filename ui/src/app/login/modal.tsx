@@ -33,22 +33,15 @@ export const LoginModal = () => {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [emailValid, setEmailValid] = useState(false);
-  const [localSession, setLocalSession] = useState<Session | null>(null);
 
   const router = useRouter();
-  const { data: session, status } = useSession();
   const searchParam = useSearchParams();
   const callBackUrl = searchParam.get("callbackUrl") || "/";
-
-  const user = useSelector((state: RootState) => state.user);
-  const dispatch = useDispatch();
 
   const oAuthSignIn = async (e: ReactEvent, oauth_type: string) => {
     e.preventDefault();
     try {
       await signIn(oauth_type, { callbackUrl: callBackUrl });
-      const updatedSession = await getSession();
-      setLocalSession(updatedSession);
     } catch (error) {
       toast.error((error as Error).message);
     }
@@ -96,19 +89,7 @@ export const LoginModal = () => {
   useEffect(() => {
     onOpen();
   }, [onOpen]);
-  useEffect(() => {
-    if (status === "authenticated") {
-      dispatch(
-        authorizeUser({
-          name: session?.user?.name || "",
-          email: session?.user?.email || "",
-          img: session?.user?.image || "",
-        })
-      );
-    } else {
-      dispatch(unauthorizeUser());
-    }
-  }, [dispatch, session, status, user]);
+
   return (
     <Modal
       isOpen={isOpen}

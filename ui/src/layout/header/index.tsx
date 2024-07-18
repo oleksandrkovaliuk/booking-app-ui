@@ -3,7 +3,7 @@ import { Modal, ModalContent, useDisclosure } from "@nextui-org/react";
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { UserIcon } from "@/svgs/UserIcon";
 import { RootState } from "@/store";
@@ -15,6 +15,8 @@ import { Search } from "@/svgs/Search";
 import { CenterNavigationMenuProps, RightNavigationMenuProps } from "./types";
 
 import styles from "./header.module.scss";
+import { useSession } from "next-auth/react";
+import { authorizeUser, unauthorizeUser } from "@/store/slices/userSlice";
 
 const CenterNavigationMenu = ({
   windowIsScrolled,
@@ -68,7 +70,21 @@ const RightNavigationMenu = ({
   windowIsScrolled,
 }: RightNavigationMenuProps) => {
   const user = useSelector((state: RootState) => state.user);
-  console.log(user, "check");
+  const dispatch = useDispatch();
+  const { data: session, status } = useSession();
+  useEffect(() => {
+    if (status === "authenticated") {
+      dispatch(
+        authorizeUser({
+          name: session?.user?.name || "",
+          email: session?.user?.email || "",
+          img: session?.user?.image || "",
+        })
+      );
+    } else {
+      dispatch(unauthorizeUser());
+    }
+  }, [dispatch, session, status, user]);
   return (
     <motion.div
       className={styles.right_navigation_menu}

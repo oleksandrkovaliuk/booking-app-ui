@@ -1,0 +1,33 @@
+.error_wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 75dvh;
+  max-width: 400px;
+  margin: auto;
+  svg {
+    width: 70px;
+    height: 70px;
+    flex-shrink: 0;
+  }
+  .error_message_title,
+  .error_message_text {
+    font-family: var(--booking-app-Nunito-Sans-font);
+    font-weight: 700;
+    color: var(--booking-app-black-colo);
+  }
+  .error_message_title {
+    font-size: 20px;
+  }
+  .error_message_text {
+    margin-bottom: 10px;
+  }
+  button {
+    font-family: var(--booking-app-Nunito-Sans-font);
+    font-weight: 600;
+    font-size: 16px;
+  }
+}

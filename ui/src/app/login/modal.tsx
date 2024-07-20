@@ -9,25 +9,21 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import Image from "next/image";
+import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { signIn } from "next-auth/react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Session } from "next-auth";
-import { toast } from "sonner";
-import { useDispatch, useSelector } from "react-redux";
 
-import { RootState } from "@/store/index";
 import peopleAuthPng from "@/assets/topPeekI.png";
 import { GoogleIcon } from "@/svgs/GoogleIcon";
 import { FaceBookIcon } from "@/svgs/FacebookIcon";
 import { EmailValidation } from "@/validation/emailValidation";
 import { ReactEvent } from "@/utilities/type";
+import { CheckAuthType } from "../api/apiCalls";
 
 import styles from "./authorization.module.scss";
+
 import "./modalStyles.scss";
-import { authorizeUser, unauthorizeUser } from "@/store/slices/userSlice";
-import { CheckAuthType } from "../api/apiCalls";
-import { EyesIcon } from "@/svgs/EyesIcon";
 
 export const LoginModal = () => {
   const emailRef = useRef<HTMLInputElement>(null);
@@ -43,7 +39,7 @@ export const LoginModal = () => {
   const oAuthSignIn = async (e: ReactEvent, oauth_type: string) => {
     e.preventDefault();
     try {
-      const res = await signIn(oauth_type, { callbackUrl: callBackUrl });
+      await signIn(oauth_type, { callbackUrl: callBackUrl });
     } catch (error) {
       toast.error((error as Error).message);
     }

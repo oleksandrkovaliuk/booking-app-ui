@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { Header } from "@/layout/header";
 import { Footer } from "@/layout/footer";
 import { Providers } from "./providers";
+import { Toaster } from "sonner";
 
 import "./globals.scss";
-import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "Booking-app",

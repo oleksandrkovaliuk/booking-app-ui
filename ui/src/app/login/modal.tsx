@@ -10,7 +10,7 @@ import {
 } from "@nextui-org/react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { getSession, signIn, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Session } from "next-auth";
 import { toast } from "sonner";
@@ -26,6 +26,8 @@ import { ReactEvent } from "@/utilities/type";
 import styles from "./authorization.module.scss";
 import "./modalStyles.scss";
 import { authorizeUser, unauthorizeUser } from "@/store/slices/userSlice";
+import { CheckAuthType } from "../api/apiCalls";
+import { EyesIcon } from "@/svgs/EyesIcon";
 
 export const LoginModal = () => {
   const emailRef = useRef<HTMLInputElement>(null);
@@ -41,7 +43,7 @@ export const LoginModal = () => {
   const oAuthSignIn = async (e: ReactEvent, oauth_type: string) => {
     e.preventDefault();
     try {
-      await signIn(oauth_type, { callbackUrl: callBackUrl });
+      const res = await signIn(oauth_type, { callbackUrl: callBackUrl });
     } catch (error) {
       toast.error((error as Error).message);
     }
@@ -52,14 +54,16 @@ export const LoginModal = () => {
     e.preventDefault();
     const emailValue = (emailRef.current as HTMLInputElement).value;
     try {
-      if (EmailValidation(emailValue)) setEmailValid(true);
-      else throw Error("Email is not valid. Please try again");
+      if (EmailValidation(emailValue)) {
+        await CheckAuthType({ email: btoa(emailValue) });
+        setEmailValid(true);
+      } else throw Error("Email is not valid. Please try again");
     } catch (error) {
       if (emailRef.current) {
         emailRef.current.value = " ";
         setEmailValid(false);
       }
-      toast.warning((error as Error).message);
+      toast.error((error as Error).message);
     }
   };
 
@@ -75,7 +79,6 @@ export const LoginModal = () => {
           redirect: false,
         });
         if (res?.error) throw Error(res?.error);
-
         router.push("/");
       }
     } catch (error) {
@@ -89,7 +92,6 @@ export const LoginModal = () => {
   useEffect(() => {
     onOpen();
   }, [onOpen]);
-
   return (
     <Modal
       isOpen={isOpen}
@@ -128,6 +130,7 @@ export const LoginModal = () => {
           className={styles.auth_top_img}
           data-modal-increased={emailValid}
         />
+
         <ModalHeader className={styles.modal_header}>
           <div className={styles.authorization_modal_text}>
             <motion.div className={styles.modal_title}>

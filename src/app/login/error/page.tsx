@@ -5,15 +5,9 @@ import { Button } from "@nextui-org/react";
 
 import { EyesIcon } from "@/svgs/EyesIcon";
 
-import styles from "../error.module.scss";
+import styles from "./error.module.scss";
 
-const ErrorOAuth = ({
-  error,
-  reset,
-}: {
-  error: Error & { digest?: string };
-  reset: () => void;
-}) => {
+const ErrorOAuth = ({}) => {
   return (
     <div className={styles.error_wrap}>
       <EyesIcon />

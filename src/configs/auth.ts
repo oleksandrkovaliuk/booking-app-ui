@@ -5,6 +5,7 @@ import Facebook from "next-auth/providers/facebook";
 import { AccessUser, InsertOAuthUser } from "@/app/api/apiCalls";
 import { toast } from "sonner";
 import { redirect } from "next/navigation";
+import { FacebookProfile, GoogleProfile } from "@/utilities/type";
 
 export const authConfig: AuthOptions = {
   providers: [
@@ -49,8 +50,8 @@ export const authConfig: AuthOptions = {
             user_name: profile?.name,
             img_url:
               account?.provider === "google"
-                ? profile?.picture!
-                : profile?.picture?.data?.url!,
+                ? (profile as GoogleProfile).picture!
+                : (profile as FacebookProfile).picture.data.url!,
             provider: account?.provider,
           });
           return true;

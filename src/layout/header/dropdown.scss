@@ -1,0 +1,24 @@
+.drop_down_item {
+  color: var(--booking-app-grey-color);
+  span {
+    font-family: var(--booking-app-Nunito-Sans-font);
+    font-size: 18;
+    font-weight: 600;
+  }
+  svg {
+    width: 15px;
+    height: 15px;
+    path {
+      fill: var(--booking-app-grey-color);
+    }
+  }
+  &:hover {
+    background-color: var(--booking-app-background-hover-color);
+    color: var(--booking-app-black-color);
+    svg {
+      path {
+        fill: var(--booking-app-black-color);
+      }
+    }
+  }
+}

@@ -1,12 +1,23 @@
 "use client";
-import { Modal, ModalContent, useDisclosure } from "@nextui-org/react";
+
+import {
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownSection,
+  DropdownTrigger,
+  Modal,
+  ModalContent,
+  useDisclosure,
+  User,
+} from "@nextui-org/react";
 import React, { useEffect, useState } from "react";
+import { signOut, useSession } from "next-auth/react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { useDispatch, useSelector } from "react-redux";
 
 import { UserIcon } from "@/svgs/UserIcon";
-import { RootState } from "@/store";
 import { SearchFormBar } from "./searchFormBar/searchFormBar";
 import { Logo } from "@/svgs/Logo";
 import { AddHouseIcon } from "@/svgs/AddHouseIcon";
@@ -15,8 +26,8 @@ import { Search } from "@/svgs/Search";
 import { CenterNavigationMenuProps, RightNavigationMenuProps } from "./types";
 
 import styles from "./header.module.scss";
-import { useSession } from "next-auth/react";
-import { authorizeUser, unauthorizeUser } from "@/store/slices/userSlice";
+import "./dropdown.scss";
+import { LogOutIcon } from "@/svgs/LogOutIcon";
 
 const CenterNavigationMenu = ({
   windowIsScrolled,
@@ -69,22 +80,8 @@ const RightNavigationMenu = ({
   windowIsScrolledToTop,
   windowIsScrolled,
 }: RightNavigationMenuProps) => {
-  const user = useSelector((state: RootState) => state.user);
-  const dispatch = useDispatch();
-  const { data: session, status } = useSession();
-  useEffect(() => {
-    if (status === "authenticated") {
-      dispatch(
-        authorizeUser({
-          name: session?.user?.name || "",
-          email: session?.user?.email || "",
-          img: session?.user?.image || "",
-        })
-      );
-    } else {
-      dispatch(unauthorizeUser());
-    }
-  }, [dispatch, session, status, user]);
+  const { data: session } = useSession();
+  console.log(session, "check");
   return (
     <motion.div
       className={styles.right_navigation_menu}
@@ -101,19 +98,103 @@ const RightNavigationMenu = ({
       }
       transition={{ duration: 0.6, ease: "easeInOut" }}
     >
-      <Link href={"/create/post"}>
+      <Link href={"/create/listing"}>
         <motion.button className={styles.right_navigation_button}>
           <AddHouseIcon />
         </motion.button>
       </Link>
-      {!user.email ? (
+      {!session?.user ? (
         <Link href={"/login"}>
           <button className={styles.right_navigation_button}>
             <UserIcon />
           </button>
         </Link>
       ) : (
-        <div>{user?.email}</div>
+        <>
+          {!session.user ? (
+            <button className={styles.right_navigation_button}>
+              <UserIcon />
+            </button>
+          ) : (
+            <Dropdown
+              shouldBlockScroll={true}
+              radius="sm"
+              placement={!mobile ? "bottom-end" : "top"}
+              showArrow
+            >
+              <DropdownTrigger>
+                <button className={styles.right_navigation_button}>
+                  {session?.user?.image ? (
+                    <Image
+                      src={session?.user?.image!}
+                      alt="user_img"
+                      width={20}
+                      height={20}
+                      className={styles.user_img}
+                    />
+                  ) : (
+                    <UserIcon />
+                  )}
+                </button>
+              </DropdownTrigger>
+              <DropdownMenu aria-label="Navigation">
+                <DropdownSection showDivider>
+                  <DropdownItem isReadOnly key="profile">
+                    <User
+                      name={session?.user?.name}
+                      description={session?.user?.email}
+                      avatarProps={{
+                        size: "sm",
+                        src: session?.user?.image!,
+                      }}
+                    />
+                  </DropdownItem>
+                </DropdownSection>
+                <DropdownSection showDivider>
+                  <DropdownItem
+                    key="home"
+                    href="/home"
+                    className={"drop_down_item"}
+                  >
+                    Home
+                  </DropdownItem>
+                  <DropdownItem
+                    key="manage"
+                    href="/manage/listings"
+                    className={"drop_down_item"}
+                  >
+                    Manage listings
+                  </DropdownItem>
+                  <DropdownItem
+                    key="accout"
+                    href="/account"
+                    className={"drop_down_item"}
+                    endContent={<UserIcon />}
+                  >
+                    Account
+                  </DropdownItem>
+                </DropdownSection>
+                <DropdownSection>
+                  <DropdownItem
+                    key="help"
+                    href="/help&feedback"
+                    className={"drop_down_item"}
+                  >
+                    Help & Feedback
+                  </DropdownItem>
+                  <DropdownItem
+                    key="log out"
+                    onClick={() => signOut({ callbackUrl: "/" })}
+                    className={"drop_down_item"}
+                    endContent={<LogOutIcon />}
+                  >
+                    Log out
+                  </DropdownItem>
+                </DropdownSection>
+              </DropdownMenu>
+            </Dropdown>
+          )}
+        </>
       )}
     </motion.div>
   );

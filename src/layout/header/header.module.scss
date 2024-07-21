@@ -36,6 +36,7 @@
       }
     }
   }
+
   .mobile_search_button {
     display: flex;
     gap: 15px;
@@ -82,45 +83,46 @@
     transform: translateX(-50%);
     scale: 1;
     z-index: 3;
-    .center_nagivation_menu_button {
-      color: var(--booking-app-grey-color);
-      font-family: var(--booking-app-Nunito-Sans-font);
-      font-size: 18px;
-      font-weight: 300;
-      border-radius: 20px;
-      padding: 10px 15px;
-      transition: all 0.1s ease-in-out;
-      position: relative;
-      z-index: 3;
-      &:hover {
-        color: var(--booking-app-black-color);
-        &:nth-child(1) {
-          &[data-state="false"] {
-            background-color: var(--booking-app-background-hover-color);
-          }
-        }
-        &:nth-child(2) {
-          &[data-state="true"] {
-            background-color: var(--booking-app-background-hover-color);
-          }
-        }
-      }
+  }
+
+  .center_nagivation_menu_button {
+    color: var(--booking-app-grey-color);
+    font-family: var(--booking-app-Nunito-Sans-font);
+    font-size: 18px;
+    font-weight: 300;
+    border-radius: 20px;
+    padding: 10px 15px;
+    transition: all 0.1s ease-in-out;
+    position: relative;
+    z-index: 3;
+    &:hover {
+      color: var(--booking-app-black-color);
       &:nth-child(1) {
-        &[data-state="true"] {
-          color: var(--booking-app-black-color);
-          font-weight: 500;
-          &:hover {
-            color: var(--booking-app-black-color);
-          }
+        &[data-state="false"] {
+          background-color: var(--booking-app-background-hover-color);
         }
       }
       &:nth-child(2) {
-        &[data-state="false"] {
+        &[data-state="true"] {
+          background-color: var(--booking-app-background-hover-color);
+        }
+      }
+    }
+    &:nth-child(1) {
+      &[data-state="true"] {
+        color: var(--booking-app-black-color);
+        font-weight: 500;
+        &:hover {
           color: var(--booking-app-black-color);
-          font-weight: 500;
-          &:hover {
-            color: var(--booking-app-black-color);
-          }
+        }
+      }
+    }
+    &:nth-child(2) {
+      &[data-state="false"] {
+        color: var(--booking-app-black-color);
+        font-weight: 500;
+        &:hover {
+          color: var(--booking-app-black-color);
         }
       }
     }
@@ -162,6 +164,13 @@
     transition: all 0.2s ease-in-out;
     position: relative;
     z-index: 3;
+    outline: none;
+
+    img {
+      width: 30px;
+      height: 30px;
+      border-radius: 10px;
+    }
     svg {
       path {
         fill: var(--booking-app-coral-color);
@@ -177,6 +186,7 @@
       }
     }
   }
+ 
 }
 @keyframes scrollCenterMenuAnimation {
   0% {

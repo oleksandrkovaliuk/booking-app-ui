@@ -20,3 +20,7 @@ export const InsertOAuthUser = ({
   });
 export const CheckAuthType = ({ email }: { email: string }) =>
   POST("auth/checkAuthType", { email });
+
+// Listings
+
+export const GetListingsCategories = () => GET("listings/categories");

@@ -52,6 +52,12 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
     triggeredSelection === TypesOfSelections.DATE_EXPERIENCES_CHECKOUT;
 
   const isRegions = regions.some((region) => region.region === regionSelection);
+  const isSearchSettedUp =
+    regionSelection.length ||
+    checkInInputValue ||
+    checkOutInputValue ||
+    amoutOfGuests ||
+    includePets;
 
   const handleClearAllTriggeredSelections = () => {
     setTriggeredSelection(TypesOfSelections.UNSELECTED);
@@ -139,15 +145,19 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
 
   const requestSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    setTriggeredSelection(TypesOfSelections.UNSELECTED);
-    onCloseCallBack && onCloseCallBack();
-    console.log({
-      regionSelection: regionSelection,
-      checkInInputValue: checkInInputValue,
-      checkOutInputValue: checkOutInputValue,
-      amoutOfGuests: amoutOfGuests,
-      includePets: includePets,
-    });
+    if (isSearchSettedUp) {
+      setTriggeredSelection(TypesOfSelections.UNSELECTED);
+      onCloseCallBack && onCloseCallBack();
+      console.log({
+        regionSelection: regionSelection,
+        checkInInputValue: checkInInputValue,
+        checkOutInputValue: checkOutInputValue,
+        amoutOfGuests: amoutOfGuests,
+        includePets: includePets,
+      });
+    } else {
+      console.log("Search not setted up");
+    }
   };
   useEffect(() => {
     if (

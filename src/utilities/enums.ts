@@ -6,3 +6,7 @@ export enum TypesOfSelections {
   DATE_EXPERIENCES_CHECKOUT = "date_experiences_checkout",
   GUEST = "guest",
 }
+export enum Roles {
+  USER = "user",
+  ADMIN = "admin",
+}

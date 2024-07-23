@@ -20,8 +20,7 @@ export default function RootLayout({
       <body className="red-primary-color text-foreground bg-background">
         <Providers>
           <Toaster />
-          <Header />
-          <main>{children}</main>
+          {children}
           <Footer />
         </Providers>
       </body>

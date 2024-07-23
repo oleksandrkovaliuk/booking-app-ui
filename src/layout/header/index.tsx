@@ -1,19 +1,9 @@
 "use client";
 
-import {
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownSection,
-  DropdownTrigger,
-  Modal,
-  ModalContent,
-  useDisclosure,
-  User,
-} from "@nextui-org/react";
-import React, { useEffect, useState } from "react";
-import { signOut, useSession } from "next-auth/react";
-import Image from "next/image";
+import { Modal, ModalContent, useDisclosure } from "@nextui-org/react";
+import React, { useEffect, useRef, useState } from "react";
+import { useSession } from "next-auth/react";
+
 import { motion } from "framer-motion";
 import Link from "next/link";
 
@@ -26,8 +16,10 @@ import { Search } from "@/svgs/Search";
 import { CenterNavigationMenuProps, RightNavigationMenuProps } from "./types";
 
 import styles from "./header.module.scss";
-import "./dropdown.scss";
-import { LogOutIcon } from "@/svgs/LogOutIcon";
+
+import { CategoryBar } from "@/layout/header/categoryBar/categoryBar";
+import { usePathname } from "next/navigation";
+import { UserMenu } from "@/components/userMenu";
 
 const CenterNavigationMenu = ({
   windowIsScrolled,
@@ -81,7 +73,7 @@ const RightNavigationMenu = ({
   windowIsScrolled,
 }: RightNavigationMenuProps) => {
   const { data: session } = useSession();
-  console.log(session, "check");
+
   return (
     <motion.div
       className={styles.right_navigation_menu}
@@ -106,106 +98,25 @@ const RightNavigationMenu = ({
       {!session?.user ? (
         <Link href={"/login"}>
           <button className={styles.right_navigation_button}>
-            <UserIcon />
+            <UserIcon className={styles.user_icon} />
           </button>
         </Link>
       ) : (
-        <>
-          {!session.user ? (
-            <button className={styles.right_navigation_button}>
-              <UserIcon />
-            </button>
-          ) : (
-            <Dropdown
-              shouldBlockScroll={true}
-              radius="sm"
-              placement={!mobile ? "bottom-end" : "top"}
-              showArrow
-            >
-              <DropdownTrigger>
-                <button className={styles.right_navigation_button}>
-                  {session?.user?.image ? (
-                    <Image
-                      src={session?.user?.image!}
-                      alt="user_img"
-                      width={20}
-                      height={20}
-                      className={styles.user_img}
-                    />
-                  ) : (
-                    <UserIcon />
-                  )}
-                </button>
-              </DropdownTrigger>
-              <DropdownMenu aria-label="Navigation">
-                <DropdownSection showDivider>
-                  <DropdownItem isReadOnly key="profile">
-                    <User
-                      name={session?.user?.name}
-                      description={session?.user?.email}
-                      avatarProps={{
-                        size: "sm",
-                        src: session?.user?.image!,
-                      }}
-                    />
-                  </DropdownItem>
-                </DropdownSection>
-                <DropdownSection showDivider>
-                  <DropdownItem
-                    key="home"
-                    href="/home"
-                    className={"drop_down_item"}
-                  >
-                    Home
-                  </DropdownItem>
-                  <DropdownItem
-                    key="manage"
-                    href="/manage/listings"
-                    className={"drop_down_item"}
-                  >
-                    Manage listings
-                  </DropdownItem>
-                  <DropdownItem
-                    key="accout"
-                    href="/account"
-                    className={"drop_down_item"}
-                    endContent={<UserIcon />}
-                  >
-                    Account
-                  </DropdownItem>
-                </DropdownSection>
-                <DropdownSection>
-                  <DropdownItem
-                    key="help"
-                    href="/help&feedback"
-                    className={"drop_down_item"}
-                  >
-                    Help & Feedback
-                  </DropdownItem>
-                  <DropdownItem
-                    key="log out"
-                    onClick={() => signOut({ callbackUrl: "/" })}
-                    className={"drop_down_item"}
-                    endContent={<LogOutIcon />}
-                  >
-                    Log out
-                  </DropdownItem>
-                </DropdownSection>
-              </DropdownMenu>
-            </Dropdown>
-          )}
-        </>
+        <UserMenu />
       )}
     </motion.div>
   );
 };
 export const Header = () => {
+  const headerRef = useRef<HTMLDivElement>(null);
   const [windowIsScrolled, setWindowIsScrolled] = useState<boolean>(false);
   const [windowIsScrolledToTop, setWindowIsScrolledToTop] =
     useState<boolean>(false);
   const [mobile, setMobile] = useState<boolean>(false);
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+  const isHomePage = usePathname() === "/";
 
   useEffect(() => {
     let prevScroll = window.scrollY;
@@ -235,44 +146,59 @@ export const Header = () => {
   }, []);
 
   return (
-    <header className={styles.header_container} data-track={windowIsScrolled}>
-      <motion.nav className={styles.navigation}>
-        <Link href={"/"} className={styles.logo}>
-          <Logo />
-        </Link>
-        {mobile ? (
-          <>
-            <button onClick={onOpen} className={styles.mobile_search_button}>
-              <Search className={styles.mobile_search_icon} />{" "}
-              <span className={styles.mobile_search_text}>Where do we go?</span>
-            </button>
-            <Modal
-              isOpen={isOpen}
-              onClose={onOpenChange}
-              backdrop="blur"
-              size="full"
-            >
-              <ModalContent>
-                <CenterNavigationMenu
-                  windowIsScrolled={windowIsScrolled}
-                  mobile={mobile}
-                  onCloseCallBack={onOpenChange}
-                />
-              </ModalContent>
-            </Modal>
-          </>
-        ) : (
-          <CenterNavigationMenu
-            windowIsScrolled={windowIsScrolled}
+    <>
+      <header
+        ref={headerRef}
+        className={styles.header_container}
+        data-track={windowIsScrolled}
+      >
+        <motion.nav className={styles.navigation}>
+          <Link href={"/"} className={styles.logo}>
+            <Logo />
+          </Link>
+          {mobile ? (
+            <>
+              <button onClick={onOpen} className={styles.mobile_search_button}>
+                <Search className={styles.mobile_search_icon} />{" "}
+                <span className={styles.mobile_search_text}>
+                  Where do we go?
+                </span>
+              </button>
+              <Modal
+                isOpen={isOpen}
+                onClose={onOpenChange}
+                backdrop="blur"
+                size="full"
+              >
+                <ModalContent>
+                  <CenterNavigationMenu
+                    windowIsScrolled={windowIsScrolled}
+                    mobile={mobile}
+                    onCloseCallBack={onOpenChange}
+                  />
+                </ModalContent>
+              </Modal>
+            </>
+          ) : (
+            <CenterNavigationMenu
+              windowIsScrolled={windowIsScrolled}
+              mobile={mobile}
+            />
+          )}
+          <RightNavigationMenu
             mobile={mobile}
+            windowIsScrolledToTop={windowIsScrolledToTop}
+            windowIsScrolled={windowIsScrolled}
           />
-        )}
-        <RightNavigationMenu
+        </motion.nav>
+      </header>
+      {isHomePage && (
+        <CategoryBar
           mobile={mobile}
-          windowIsScrolledToTop={windowIsScrolledToTop}
-          windowIsScrolled={windowIsScrolled}
+          scrolled={windowIsScrolled}
+          header_height={headerRef.current?.clientHeight as number}
         />
-      </motion.nav>
-    </header>
+      )}
+    </>
   );
 };

@@ -1,0 +1,55 @@
+.right_navigation_button {
+  color: var(--booking-app-grey-color);
+  font-family: var(--booking-app-Nunito-Sans-font);
+  font-size: 18px;
+  font-weight: 300;
+  border-radius: 20px;
+  padding: 10px;
+  transition: all 0.2s ease-in-out;
+  position: relative;
+  z-index: 3;
+  outline: none;
+
+  img {
+    width: 30px;
+    height: 30px;
+    border-radius: 10px;
+  }
+
+  .user_icon {
+    width: 25px;
+    height: 25px;
+    path {
+      transition: fill 0.2s ease-in-out;
+    }
+  }
+  svg {
+    path {
+      fill: var(--booking-app-coral-color);
+    }
+  }
+
+  &:hover {
+    color: var(--booking-app-black-color);
+    background-color: var(--booking-app-background-hover-color);
+    svg {
+      path {
+        fill: var(--booking-app-black-color);
+      }
+    }
+  }
+}
+.role_icon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: 20px;
+  height: 20px;
+  padding: 1px;
+
+  border-radius: 50%;
+  path {
+    fill: var(--booking-app-coral-color);
+  }
+}

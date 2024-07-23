@@ -6,6 +6,7 @@ export interface FullUserTypes {
   user_lastname?: string;
   img_url?: string;
   provider?: string;
+  role?: string;
 }
 export interface UserTypes
   extends Omit<

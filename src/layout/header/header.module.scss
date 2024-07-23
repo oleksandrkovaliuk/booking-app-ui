@@ -4,6 +4,8 @@
   position: sticky;
   background-color: var(--booking-app-white-color);
   top: 0;
+  z-index: 6;
+  will-change: height;
   &[data-track="true"] {
     .center_nagivation_menu_buttons {
       scale: 0;
@@ -128,10 +130,13 @@
     }
   }
 }
+
 .right_navigation_menu {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   min-width: clamp(110px, 5vw, 180px);
+
   &[data-is-mobile="true"] {
     justify-content: space-between;
     position: fixed;
@@ -166,16 +171,12 @@
     z-index: 3;
     outline: none;
 
-    img {
-      width: 30px;
-      height: 30px;
-      border-radius: 10px;
-    }
     svg {
       path {
         fill: var(--booking-app-coral-color);
       }
     }
+
     &:hover {
       color: var(--booking-app-black-color);
       background-color: var(--booking-app-background-hover-color);
@@ -186,7 +187,6 @@
       }
     }
   }
- 
 }
 @keyframes scrollCenterMenuAnimation {
   0% {

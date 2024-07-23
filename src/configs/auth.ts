@@ -1,11 +1,11 @@
-import type { AuthOptions } from "next-auth";
+import type { AuthOptions, User } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import Facebook from "next-auth/providers/facebook";
 import { AccessUser, InsertOAuthUser } from "@/app/api/apiCalls";
 import { toast } from "sonner";
-import { redirect } from "next/navigation";
 import { FacebookProfile, GoogleProfile } from "@/utilities/type";
+import { Roles } from "@/utilities/enums";
 
 export const authConfig: AuthOptions = {
   providers: [
@@ -29,12 +29,16 @@ export const authConfig: AuthOptions = {
         password: { label: "Password", type: "password", required: true },
       },
       async authorize(credentials) {
-        console.log(credentials, "check");
         if (!credentials?.email || !credentials?.password) return null;
         const res = await AccessUser(credentials);
 
-        if (res.status === "authorized") {
-          return { ...res, email: atob(credentials?.email) };
+        if (res.status === "authorized" && res.user) {
+          console.log(res.user);
+          return {
+            ...res.user,
+            email: res.user?.email,
+            role: res.user.role || Roles.USER,
+          } as User;
         } else {
           throw new Error(res.message);
         }
@@ -42,10 +46,11 @@ export const authConfig: AuthOptions = {
     }),
   ],
   callbacks: {
-    async signIn({ account, profile }) {
+    async signIn({ account, profile }: any) {
       if (account?.provider === "google" || account?.provider === "facebook") {
         try {
-          await InsertOAuthUser({
+          console.log(profile, "check");
+          const res = await InsertOAuthUser({
             email: profile?.email!,
             user_name: profile?.name,
             img_url:
@@ -54,13 +59,32 @@ export const authConfig: AuthOptions = {
                 : (profile as FacebookProfile).picture.data.url!,
             provider: account?.provider,
           });
-          return true;
+          if (res.role) {
+            account.role = res.role;
+            return true;
+          } else {
+            return false;
+          }
         } catch (error) {
           toast.error((error as Error).message);
           return false;
         }
       }
       return true;
+    },
+
+    async jwt({ token, account, user }) {
+      if (account) {
+        token.role = account.role || user?.role || Roles.USER;
+      }
+      return token;
+    },
+
+    async session({ session, token }) {
+      if (session?.user) {
+        session.user.role = token.role;
+      }
+      return session;
     },
   },
   session: {

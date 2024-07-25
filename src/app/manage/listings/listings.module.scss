@@ -1,0 +1,28 @@
+.listing_page_container {
+  padding-block: 50px;
+  max-width: 1280px;
+  margin: auto;
+}
+
+.title_section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  .welcoming_text {
+    text-transform: capitalize;
+    font-size: 30px;
+  }
+  .create_listing_button {
+    background-color: transparent;
+    border: 1px solid var(--booking-app-black-color);
+    color: var(--booking-app-black-color);
+    font-family: var(--booking-app-Nunito-Sans-font) !important;
+    font-weight: 600;
+  }
+}
+
+@media (width <= 1280px) {
+  .listing_page_container {
+    padding-inline: 20px;
+  }
+}

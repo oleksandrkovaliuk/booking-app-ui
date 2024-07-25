@@ -16,7 +16,11 @@
     background-color: transparent;
     border: 1px solid var(--booking-app-focused-background-color);
     color: var(--booking-app-black-color);
-
+    svg {
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+    }
     &:hover,
     &[data-opened="true"] {
       border-color: var(--booking-app-black-color);
@@ -78,5 +82,11 @@
     line-height: 100%;
     color: var(--booking-app-black-color);
     text-transform: capitalize;
+  }
+}
+@media (width <= 768px) {
+  .category_container {
+    gap: 20px;
+    padding-inline: 20px;
   }
 }

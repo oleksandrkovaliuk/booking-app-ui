@@ -152,9 +152,9 @@
       padding: 8px;
     }
   }
-  svg {
-    width: 25px;
-    height: 25px;
+  .add_house_icon {
+    width: 30px;
+    height: 30px;
     path {
       transition: fill 0.2s ease-in-out;
     }
@@ -213,6 +213,9 @@
 }
 @media (width <= 768px) {
   .header_container {
-    padding: 10px 15px;
+    padding: 20px 15px;
+  }
+  .center_nagivation_menu {
+    padding: 20px;
   }
 }

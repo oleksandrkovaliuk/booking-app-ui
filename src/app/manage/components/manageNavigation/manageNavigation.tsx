@@ -7,7 +7,13 @@ import { Logo } from "@/svgs/Logo";
 import { UserMenu } from "@/components/userMenu";
 
 import styles from "./manageNavigation.module.scss";
-export const ManageNavigation = () => {
+
+interface ManageNavigationProps {
+  isCutted?: boolean;
+}
+export const ManageNavigation: React.FC<ManageNavigationProps> = ({
+  isCutted,
+}) => {
   const path = usePathname();
 
   return (
@@ -16,30 +22,31 @@ export const ManageNavigation = () => {
         <Link href={"/"} className={styles.logo}>
           <Logo />
         </Link>
-
-        <motion.div className={styles.navigation_menu}>
-          <Link
-            href={"/manage/listings"}
-            className={styles.navigation_links}
-            data-selected={path === "/manage/listings"}
-          >
-            Listings
-          </Link>
-          <Link
-            href={"/manage/reviews"}
-            className={styles.navigation_links}
-            data-selected={path === "/manage/reviews"}
-          >
-            Review
-          </Link>
-          <Link
-            href={"/manage/inbox"}
-            className={styles.navigation_links}
-            data-selected={path === "/manage/inbox"}
-          >
-            Inbox
-          </Link>
-        </motion.div>
+        {!isCutted && (
+          <motion.div className={styles.navigation_menu}>
+            <Link
+              href={"/manage/listings"}
+              className={styles.navigation_links}
+              data-selected={path === "/manage/listings"}
+            >
+              Listings
+            </Link>
+            <Link
+              href={"/manage/reviews"}
+              className={styles.navigation_links}
+              data-selected={path === "/manage/reviews"}
+            >
+              Review
+            </Link>
+            <Link
+              href={"/manage/inbox"}
+              className={styles.navigation_links}
+              data-selected={path === "/manage/inbox"}
+            >
+              Inbox
+            </Link>
+          </motion.div>
+        )}
         <UserMenu />
       </motion.nav>
     </header>

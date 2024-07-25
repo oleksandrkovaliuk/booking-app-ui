@@ -1,7 +1,7 @@
 "use client";
 
 import { Modal, ModalContent, useDisclosure } from "@nextui-org/react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 
 import { motion } from "framer-motion";
@@ -20,6 +20,8 @@ import styles from "./header.module.scss";
 import { CategoryBar } from "@/layout/header/categoryBar/categoryBar";
 import { usePathname } from "next/navigation";
 import { UserMenu } from "@/components/userMenu";
+import { useDispatch } from "react-redux";
+import { getAllCategories } from "@/store/thunks/categories";
 
 const CenterNavigationMenu = ({
   windowIsScrolled,
@@ -72,8 +74,6 @@ const RightNavigationMenu = ({
   windowIsScrolledToTop,
   windowIsScrolled,
 }: RightNavigationMenuProps) => {
-  const { data: session } = useSession();
-
   return (
     <motion.div
       className={styles.right_navigation_menu}
@@ -90,20 +90,12 @@ const RightNavigationMenu = ({
       }
       transition={{ duration: 0.6, ease: "easeInOut" }}
     >
-      <Link href={"/create/listing"}>
+      <Link href={"manage/listings/create"}>
         <motion.button className={styles.right_navigation_button}>
-          <AddHouseIcon />
+          <AddHouseIcon className={styles.add_house_icon} />
         </motion.button>
       </Link>
-      {!session?.user ? (
-        <Link href={"/login"}>
-          <button className={styles.right_navigation_button}>
-            <UserIcon className={styles.user_icon} />
-          </button>
-        </Link>
-      ) : (
-        <UserMenu />
-      )}
+      <UserMenu />
     </motion.div>
   );
 };
@@ -144,7 +136,6 @@ export const Header = () => {
       window.removeEventListener("scroll", trackWindowScroll);
     };
   }, []);
-
   return (
     <>
       <header

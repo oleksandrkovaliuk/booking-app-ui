@@ -16,16 +16,12 @@
     border-radius: 10px;
   }
 
-  .user_icon {
-    width: 25px;
-    height: 25px;
-    path {
-      transition: fill 0.2s ease-in-out;
-    }
-  }
   svg {
+    width: 30px;
+    height: 30px;
     path {
       fill: var(--booking-app-coral-color);
+      transition: fill 0.2s ease-in-out;
     }
   }
 

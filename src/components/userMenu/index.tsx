@@ -86,7 +86,7 @@ export const UserMenu: React.FC = () => {
               </DropdownItem>
               <DropdownItem
                 key="manage"
-                href="/manage"
+                href="/manage/listings"
                 className={"drop_down_item"}
               >
                 Manage listings

@@ -5,7 +5,7 @@ import styles from "./categoryBar.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { GetListingsCategories } from "@/app/api/apiCalls";
-import { setCategories } from "@/store/slices/categories";
+
 import { RootState } from "@/store";
 import {
   Button,
@@ -16,6 +16,7 @@ import {
 } from "@nextui-org/react";
 import Image from "next/image";
 import { FilterIcon } from "@/svgs/FilterIcon";
+import { getAllCategories } from "@/store/thunks/categories";
 
 const Categories: React.FC = () => {
   const { categories } = useSelector((state: RootState) => state.categories);
@@ -61,18 +62,9 @@ export const CategoryBar = ({
   const dispatch = useDispatch();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-  const getCategories = useCallback(async () => {
-    try {
-      const res = await GetListingsCategories();
-      dispatch(setCategories(res.data));
-    } catch (error) {
-      toast.error((error as Error).message);
-    }
-  }, [dispatch]);
-
   useEffect(() => {
-    getCategories();
-  }, [getCategories]);
+    dispatch(getAllCategories() as any);
+  }, [dispatch]);
 
   return (
     <>

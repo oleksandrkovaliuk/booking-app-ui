@@ -15,6 +15,9 @@
 }
 body {
   background-color: var(--booking-app-white-color);
+  &.disable-scroll {
+    overflow: hidden;
+  }
 }
 * {
   margin: 0;

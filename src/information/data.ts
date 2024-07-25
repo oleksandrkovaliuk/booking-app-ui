@@ -13,3 +13,8 @@ export const regions = [
   { id: 5, region: "Italy", map: italy },
   { id: 6, region: "South Africe", map: southAfrica },
 ];
+
+export const videos = {
+  apartament_building:
+    "https://firebasestorage.googleapis.com/v0/b/booking-app-31ebf.appspot.com/o/videos%2FzFaydEaihX6LP01x8TSCl76WHblb01Z01RrFELxyCXoNek.mp4?alt=media&token=77f741a8-1e00-4a37-9ec0-0f5c10470f93",
+};

@@ -33,11 +33,10 @@ export const authConfig: AuthOptions = {
         const res = await AccessUser(credentials);
 
         if (res.status === "authorized" && res.user) {
-          console.log(res.user);
           return {
             ...res.user,
             email: res.user?.email,
-            role: res.user.role || Roles.USER,
+            role: (res.user.role as Roles) || (Roles.USER as Roles),
           } as User;
         } else {
           throw new Error(res.message);
@@ -49,7 +48,6 @@ export const authConfig: AuthOptions = {
     async signIn({ account, profile }: any) {
       if (account?.provider === "google" || account?.provider === "facebook") {
         try {
-          console.log(profile, "check");
           const res = await InsertOAuthUser({
             email: profile?.email!,
             user_name: profile?.name,
@@ -60,7 +58,7 @@ export const authConfig: AuthOptions = {
             provider: account?.provider,
           });
           if (res.role) {
-            account.role = res.role;
+            account.role = res.role as Roles;
             return true;
           } else {
             return false;
@@ -75,14 +73,14 @@ export const authConfig: AuthOptions = {
 
     async jwt({ token, account, user }) {
       if (account) {
-        token.role = account.role || user?.role || Roles.USER;
+        token.role = (account.role as Roles) || user.role || Roles.USER;
       }
       return token;
     },
 
     async session({ session, token }) {
       if (session?.user) {
-        session.user.role = token.role;
+        session.user.role = token.role as Roles;
       }
       return session;
     },

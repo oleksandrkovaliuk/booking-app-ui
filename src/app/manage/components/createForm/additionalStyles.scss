@@ -1,0 +1,62 @@
+.input {
+  padding: 10px 15px;
+  border: 1px solid var(--booking-app-focused-background-color);
+  border-radius: 10px;
+  width: 100%;
+  color: var(--booking-app-black-color);
+  font-size: 15px;
+  font-weight: 400;
+  font-family: var(--booking-app-Nunito-Sans-font);
+  position: relative;
+  box-shadow: 0 0 0 2px rgba(255, 57, 92, 0);
+  transition: border 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  margin-bottom: 50px;
+  &:active,
+  &:focus,
+  &:not(:placeholder-shown) {
+    outline: none;
+    border: 1px solid var(--booking-app-coral-color);
+    box-shadow: 0 0 0 2px rgba(255, 57, 92, 0.7);
+  }
+}
+.leave_modal {
+  padding: 20px;
+  border-radius: 20px;
+  border: 1px solid var(--booking-app-black-color);
+  .text_content {
+    overflow: hidden;
+  }
+  .modal_description {
+    font-size: 17px;
+    font-weight: 600;
+    font-family: var(--booking-app-Nunito-Sans-font);
+    color: var(--booking-app-black-color);
+  }
+  .modal_question {
+    font-size: 16px;
+    font-weight: 400;
+    font-family: var(--booking-app-Nunito-Sans-font);
+    color: var(--booking-app-grey-color);
+    margin-bottom: 15px;
+  }
+  .buttons_container {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    button {
+      color: var(--booking-app-white-color);
+      background-color: var(--booking-app-black-color);
+      max-width: 60%;
+      width: 100%;
+      &:nth-child(1) {
+        max-width: 40%;
+      }
+    }
+  }
+}
+
+@media (width <= 1080px) {
+  .input {
+    margin-bottom: 15px;
+  }
+}

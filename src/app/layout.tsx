@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import { Footer } from "@/layout/footer";
-
 import { Providers } from "./providers";
 import { Toaster } from "sonner";
 

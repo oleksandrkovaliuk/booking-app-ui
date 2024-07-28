@@ -25,22 +25,23 @@ export const UserMenu: React.FC = () => {
   const { data: session } = useSession();
   const [mobile, setMobile] = useState(false);
   const [listingInProgress] = useState<FormState | null>(() => {
-    const formState = localStorage.getItem("state")!;
-    if (formState) {
-      const state = JSON.parse(formState);
-      if (
-        state.category ||
-        state.type ||
-        state.cordinates ||
-        state.startingDate
-      ) {
-        return state;
-      } else {
-        return null;
-      }
-    } else {
-      return null;
-    }
+    // const formState = localStorage.getItem("state")!;
+    // if (formState) {
+    //   const state = JSON.parse(formState);
+    //   if (
+    //     state.category ||
+    //     state.type ||
+    //     state.cordinates ||
+    //     state.startingDate
+    //   ) {
+    //     return state;
+    //   } else {
+    //     return null;
+    //   }
+    // } else {
+    //   return null;
+    // }
+    return null;
   });
   useEffect(() => {
     if (window.innerWidth <= 1080) {
@@ -52,7 +53,7 @@ export const UserMenu: React.FC = () => {
   return (
     <>
       {!session?.user ? (
-        <Link href={"/login"}>
+        <Link href="/login">
           <button className={styles.right_navigation_button}>
             <UserIcon className={styles.user_icon} />
           </button>
@@ -99,33 +100,24 @@ export const UserMenu: React.FC = () => {
               </DropdownItem>
             </DropdownSection>
             <DropdownSection showDivider>
-              <DropdownItem key="home" href="/" className={"drop_down_item"}>
-                Home
+              <DropdownItem key="home" className={"drop_down_item"}>
+                <Link href="/">Home</Link>
               </DropdownItem>
               <DropdownItem
                 key="accout"
-                href="/account"
                 className={"drop_down_item"}
                 endContent={<UserIcon />}
               >
-                Account
+                <Link href="/account">Account</Link>
               </DropdownItem>
-              <DropdownItem
-                key="manage"
-                href="/manage/listings"
-                className={"drop_down_item"}
-              >
-                Manage listings
+              <DropdownItem key="manage" className={"drop_down_item"}>
+                <Link href="/manage/listings">Manage listings</Link>
                 {listingInProgress && <span className="notification" />}
               </DropdownItem>
             </DropdownSection>
             <DropdownSection>
-              <DropdownItem
-                key="help"
-                href="/help&feedback"
-                className={"drop_down_item"}
-              >
-                Help & Feedback
+              <DropdownItem key="help" className={"drop_down_item"}>
+                <Link href="/help&feedback">Help & Feedback</Link>
               </DropdownItem>
               <DropdownItem
                 key="log out"

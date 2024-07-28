@@ -2,12 +2,8 @@
 import React from "react";
 
 import styles from "./inbox.module.scss";
-import ManageLayout from "../manageLayout";
+import ManageLayout from "../layout";
 
 export default function InboxPage() {
-  return (
-    <ManageLayout>
-      <div>inbox</div>
-    </ManageLayout>
-  );
+  return <div>inbox</div>;
 }

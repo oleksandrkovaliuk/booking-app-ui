@@ -21,10 +21,10 @@ const rootReducers = combineReducers({
   listingsAdditionals: listingsAdditionalsReducer,
 });
 
-const persistedReducer = persistReducer(persistConfig, rootReducers);
+// const persistedReducer = persistReducer(persistConfig, rootReducers);
 
 export const store = configureStore({
-  reducer: persistedReducer,
+  reducer: rootReducers,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
@@ -32,7 +32,7 @@ export const store = configureStore({
       },
     }),
 });
-export const persistor = persistStore(store);
+// export const persistor = persistStore(store);
 
 export type RootState = ReturnType<typeof rootReducers>;
 export type AppStore = typeof store;

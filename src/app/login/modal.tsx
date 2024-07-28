@@ -8,10 +8,12 @@ import {
   ModalHeader,
   useDisclosure,
 } from "@nextui-org/react";
+import { RootState } from "@/store";
 import Image from "next/image";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { signIn } from "next-auth/react";
+import { useSelector } from "react-redux";
 import { useSearchParams, useRouter } from "next/navigation";
 
 import peopleAuthPng from "@/assets/topPeekI.png";
@@ -88,6 +90,7 @@ export const LoginModal = () => {
   useEffect(() => {
     onOpen();
   }, [onOpen]);
+
   return (
     <Modal
       isOpen={isOpen}

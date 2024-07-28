@@ -1,13 +1,11 @@
 "use client";
 
 import { Modal, ModalContent, useDisclosure } from "@nextui-org/react";
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useSession } from "next-auth/react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { motion } from "framer-motion";
 import Link from "next/link";
 
-import { UserIcon } from "@/svgs/UserIcon";
 import { SearchFormBar } from "./searchFormBar/searchFormBar";
 import { Logo } from "@/svgs/Logo";
 import { AddHouseIcon } from "@/svgs/AddHouseIcon";
@@ -20,8 +18,6 @@ import styles from "./header.module.scss";
 import { CategoryBar } from "@/layout/header/categoryBar/categoryBar";
 import { usePathname } from "next/navigation";
 import { UserMenu } from "@/components/userMenu";
-import { useDispatch } from "react-redux";
-import { getAllCategories } from "@/store/thunks/categories";
 
 const CenterNavigationMenu = ({
   windowIsScrolled,
@@ -112,6 +108,11 @@ export const Header = () => {
 
   useEffect(() => {
     let prevScroll = window.scrollY;
+    if (window && window.innerWidth < 1080) {
+      setMobile(true);
+    } else {
+      setMobile(false);
+    }
     const trackWindowScroll = () => {
       if (window.scrollY > 0) {
         setWindowIsScrolled(true);
@@ -126,16 +127,13 @@ export const Header = () => {
       prevScroll = window.scrollY;
     };
     trackWindowScroll();
-    if (window.innerWidth <= 1080) {
-      setMobile(true);
-    } else {
-      setMobile(false);
-    }
+
     window.addEventListener("scroll", trackWindowScroll);
     return () => {
       window.removeEventListener("scroll", trackWindowScroll);
     };
   }, []);
+
   return (
     <>
       <header
@@ -183,13 +181,7 @@ export const Header = () => {
           />
         </motion.nav>
       </header>
-      {isHomePage && (
-        <CategoryBar
-          mobile={mobile}
-          scrolled={windowIsScrolled}
-          header_height={headerRef.current?.clientHeight as number}
-        />
-      )}
+      {isHomePage && <CategoryBar scrolled={windowIsScrolled} />}
     </>
   );
 };

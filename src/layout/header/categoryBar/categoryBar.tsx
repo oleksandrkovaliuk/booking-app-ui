@@ -1,10 +1,8 @@
-import React, { Suspense, useCallback, useEffect } from "react";
+import React, { Suspense, useEffect } from "react";
 import { motion } from "framer-motion";
 
 import styles from "./categoryBar.module.scss";
 import { useDispatch, useSelector } from "react-redux";
-import { toast } from "sonner";
-import { GetListingsCategories } from "@/app/api/apiCalls";
 
 import { RootState } from "@/store";
 import {
@@ -16,20 +14,30 @@ import {
 } from "@nextui-org/react";
 import Image from "next/image";
 import { FilterIcon } from "@/svgs/FilterIcon";
-import { getAllCategories } from "@/store/thunks/categories";
+import { getAllCategories } from "@/store/thunks/listings/categories";
+import { getTypeOfPlace } from "@/store/thunks/listings/typeOfPlace";
 
 const Categories: React.FC = () => {
-  const { categories } = useSelector((state: RootState) => state.categories);
+  const dispatch = useDispatch();
+  const { categories } = useSelector(
+    (state: RootState) => state.listingsAdditionals
+  );
+
   const [selectedCategory, setSelectedCategory] = React.useState<number | null>(
     null
   );
-
   const selectCategory = (id: number) => {
     setSelectedCategory((prev) => (prev === id ? prev : id));
   };
+  useEffect(() => {
+    Promise.allSettled([
+      dispatch(getAllCategories() as any),
+      dispatch(getTypeOfPlace() as any),
+    ]);
+  }, [dispatch]);
   return (
     <>
-      {categories.map((category) => (
+      {categories?.map((category) => (
         <button
           key={category.id}
           className={styles.category}
@@ -50,21 +58,8 @@ const Categories: React.FC = () => {
   );
 };
 
-export const CategoryBar = ({
-  mobile,
-  scrolled,
-  header_height,
-}: {
-  mobile: boolean;
-  scrolled: boolean;
-  header_height: number;
-}) => {
-  const dispatch = useDispatch();
+export const CategoryBar = ({ scrolled }: { scrolled: boolean }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-
-  useEffect(() => {
-    dispatch(getAllCategories() as any);
-  }, [dispatch]);
 
   return (
     <>
@@ -101,21 +96,13 @@ export const CategoryBar = ({
       <motion.div
         data-scrolled={scrolled}
         className={styles.category_container}
-        initial={{ top: mobile ? `${header_height}px` : `${195}px` }}
-        animate={
-          scrolled && {
-            top: mobile ? `${header_height}px` : `${132}px`,
-          }
-        }
       >
         <ScrollShadow
           hideScrollBar
           orientation="horizontal"
           className={styles.category_wrap}
         >
-          <Suspense fallback={<div>Loading...</div>}>
-            <Categories />
-          </Suspense>
+          <Categories />
         </ScrollShadow>
         <Button
           className={styles.filter_btn}

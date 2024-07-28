@@ -9,7 +9,7 @@ export async function middleware(req: any) {
   if (!token) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
-  console.log(token.role !== Roles.ADMIN);
+
   const adminRoutes = ["control/", "control/:path*"];
   if (adminRoutes.some((routes) => pathname.startsWith(routes))) {
     if (token.role !== Roles.ADMIN) {

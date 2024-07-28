@@ -1,6 +1,7 @@
 .category_container {
   overflow: visible;
   position: sticky;
+  top: 195px;
   will-change: top;
   z-index: 5;
   display: flex;
@@ -9,8 +10,10 @@
   justify-content: space-between;
   padding-inline: 50px;
   background-color: var(--booking-app-white-color);
+  transition: top 0.3s ease-in-out, border 0.2s ease-in-out;
   &[data-scrolled="true"] {
-    box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid var(--booking-app-lightgrey-color);
+    top: 132px;
   }
   .filter_btn {
     background-color: transparent;
@@ -82,6 +85,14 @@
     line-height: 100%;
     color: var(--booking-app-black-color);
     text-transform: capitalize;
+  }
+}
+@media (width <= 1080px) {
+  .category_container {
+    top: 93px;
+    &[data-scrolled="true"] {
+      top: 93px;
+    }
   }
 }
 @media (width <= 768px) {

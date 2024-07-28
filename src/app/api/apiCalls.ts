@@ -21,6 +21,7 @@ export const InsertOAuthUser = ({
 export const CheckAuthType = ({ email }: { email: string }) =>
   POST("auth/checkAuthType", { email });
 
-// Listings
+// LISTINGS
 
 export const GetListingsCategories = () => GET("listings/categories");
+export const GetTypeOfPlace = () => GET("listings/typeofplace");

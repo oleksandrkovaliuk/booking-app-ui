@@ -77,7 +77,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
       const res = await getCountriesByRequest(regionSelection);
       setResponseForRegion(res.data);
     } catch (error) {
-      console.log(error);
+      
       setRegionSelection("");
     }
   };

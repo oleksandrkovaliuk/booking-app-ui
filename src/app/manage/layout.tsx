@@ -1,16 +1,14 @@
 import React from "react";
-import { ManageNavigation } from "./components/manageNavigation/manageNavigation";
+import { ManageNavigation } from "./_components/manageNavigation/manageNavigation";
 
 export default function ManageLayout({
   children,
-  isCutted,
 }: {
   children: React.ReactNode;
-  isCutted?: boolean;
 }) {
   return (
     <>
-      <ManageNavigation isCutted={isCutted} />
+      <ManageNavigation isCutted={false} />
       <main>{children}</main>
     </>
   );

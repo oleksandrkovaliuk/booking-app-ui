@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import Image, { StaticImageData } from "next/image";
+import Image from "next/image";
 import { Button, Checkbox } from "@nextui-org/react";
 import { RangeCalendar, RangeValue } from "@nextui-org/calendar";
 
@@ -77,7 +77,6 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
       const res = await getCountriesByRequest(regionSelection);
       setResponseForRegion(res.data);
     } catch (error) {
-      
       setRegionSelection("");
     }
   };

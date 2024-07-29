@@ -6,8 +6,8 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-
     background-color: var(--booking-app-coral-color);
+    pointer-events: unset;
   }
   span {
     font-family: var(--booking-app-Nunito-Sans-font);

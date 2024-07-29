@@ -1,5 +1,5 @@
-'use client';
-import React, { useEffect, useRef, useState } from "react";
+"use client";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -188,17 +188,7 @@ export const CreateForm: React.FC = () => {
     (state: RootState) => state.listingsAdditionals
   );
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [savedStep] = useState<number>(() => {
-    const savedStepFromtLocalStorage = localStorage.getItem("step");
-    if (
-      savedStepFromtLocalStorage &&
-      !isNaN(Number(atob(savedStepFromtLocalStorage)))
-    ) {
-      return Number(atob(savedStepFromtLocalStorage));
-    } else {
-      return 0;
-    }
-  });
+  const [savedStep] = useState<number>(0);
 
   const [formStep, setFormStep] = useState<CreateListingSteps | number>(
     savedStep
@@ -212,53 +202,16 @@ export const CreateForm: React.FC = () => {
   const isLastStep = formStep === Number(enumsKeys[enumsKeys.length - 1]);
 
   // SELECTIONS
+
   const [selectedCategories, setSelectedCategories] = useState<Category | null>(
-    () => {
-      const formState = localStorage.getItem("state")!;
-      if (formState) {
-        const state = JSON.parse(formState);
-        if (state.category && formStep !== CreateListingSteps.INTRODUCING)
-          return state.category;
-      } else {
-        return null;
-      }
-    }
+    null
   );
 
   const [selectedTypeOfPlace, setSelectedTypeOfPlace] =
-    useState<TypeOfPlace | null>(() => {
-      const formState = localStorage.getItem("state");
-      if (formState) {
-        const state = JSON.parse(formState);
-        if (state.type && formStep !== CreateListingSteps.INTRODUCING)
-          return state.type;
-      } else {
-        return null;
-      }
-    });
+    useState<TypeOfPlace | null>(null);
   const [selectedCordinates, setSelectedCordinates] = useState<
-    GoogleMapProps["cordinates"]
-  >(() => {
-    const formState = localStorage.getItem("state");
-    if (formState) {
-      const state = JSON.parse(formState);
-      if (!!state.cordinates && formStep !== CreateListingSteps.INTRODUCING) {
-        return state.cordinates;
-      } else {
-        return {
-          lat: 48.379433,
-          lng: 31.16558,
-          name: "",
-        };
-      }
-    } else {
-      return {
-        lat: 48.379433,
-        lng: 31.16558,
-        name: "",
-      };
-    }
-  });
+    GoogleMapProps["cordinates"] | null
+  >(null);
 
   const [startingDate] = useState<string>(() => {
     return formatDate(new Date());
@@ -325,14 +278,10 @@ export const CreateForm: React.FC = () => {
     const body = document.body;
     if (formStep !== CreateListingSteps.CATEGORY && window.innerWidth >= 375)
       body.classList.add("disable-scroll");
-    if (formStep === CreateListingSteps.INTRODUCING) {
-      localStorage.removeItem("state");
-    }
-
-    localStorage.setItem("step", btoa(formStep.toString()));
     localStorage.setItem(
       "state",
       JSON.stringify({
+        step: formStep,
         category: selectedCategories,
         type: selectedTypeOfPlace,
         cordinates: selectedCordinates,
@@ -350,6 +299,22 @@ export const CreateForm: React.FC = () => {
     selectedTypeOfPlace,
     startingDate,
   ]);
+
+  useLayoutEffect(() => {
+    if (typeof localStorage !== "undefined") {
+      const formState = localStorage.getItem("state");
+      if (formState) {
+        const state = JSON.parse(formState);
+
+        if (state.cordinates || state.type || state.category || state.step) {
+          setSelectedTypeOfPlace(state.type || null);
+          setSelectedCategories(state.category || null);
+          setSelectedCordinates(state.cordinates || null);
+          setFormStep(state.step || CreateListingSteps.INTRODUCING);
+        }
+      }
+    }
+  }, []);
 
   return (
     <>
@@ -509,7 +474,7 @@ export const CreateForm: React.FC = () => {
             </motion.h1>
 
             <GoogleMapComponent
-              cordinates={selectedCordinates}
+              cordinates={selectedCordinates!}
               setCordinates={setSelectedCordinates}
             />
             <motion.p className={styles.description}>

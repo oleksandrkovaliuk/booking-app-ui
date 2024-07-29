@@ -6,7 +6,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 
-import { SearchFormBar } from "./searchFormBar/searchFormBar";
+import { SearchFormBar } from "./_searchFormBar/searchFormBar";
 import { Logo } from "@/svgs/Logo";
 import { AddHouseIcon } from "@/svgs/AddHouseIcon";
 import { Search } from "@/svgs/Search";
@@ -15,7 +15,7 @@ import { CenterNavigationMenuProps, RightNavigationMenuProps } from "./types";
 
 import styles from "./header.module.scss";
 
-import { CategoryBar } from "@/layout/header/categoryBar/categoryBar";
+import { CategoryBar } from "@/layout/header/_categoryBar/categoryBar";
 import { usePathname } from "next/navigation";
 import { UserMenu } from "@/components/userMenu";
 

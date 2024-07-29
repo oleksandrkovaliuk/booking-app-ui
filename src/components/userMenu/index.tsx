@@ -1,4 +1,4 @@
-"user client";
+"use client";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -16,7 +16,7 @@ import { AdminFlag } from "@/svgs/AdminFlag";
 import { UserIcon } from "@/svgs/UserIcon";
 import { LogOutIcon } from "@/svgs/LogOutIcon";
 import { Roles } from "@/utilities/enums";
-import { FormState } from "@/app/manage/components/createForm/createForm";
+import { FormState } from "@/app/manage/_components/createForm/createForm";
 
 import styles from "./userMenu.module.scss";
 import "./dropdown.scss";
@@ -25,23 +25,24 @@ export const UserMenu: React.FC = () => {
   const { data: session } = useSession();
   const [mobile, setMobile] = useState(false);
   const [listingInProgress] = useState<FormState | null>(() => {
-    // const formState = localStorage.getItem("state")!;
-    // if (formState) {
-    //   const state = JSON.parse(formState);
-    //   if (
-    //     state.category ||
-    //     state.type ||
-    //     state.cordinates ||
-    //     state.startingDate
-    //   ) {
-    //     return state;
-    //   } else {
-    //     return null;
-    //   }
-    // } else {
-    //   return null;
-    // }
-    return null;
+    if (typeof localStorage !== "undefined") {
+      const formState = localStorage.getItem("state")!;
+      if (formState) {
+        const state = JSON.parse(formState);
+        if (
+          state.category ||
+          state.type ||
+          state.cordinates ||
+          state.startingDate
+        ) {
+          return state;
+        } else {
+          return null;
+        }
+      }
+    } else {
+      return null;
+    }
   });
   useEffect(() => {
     if (window.innerWidth <= 1080) {
@@ -111,8 +112,10 @@ export const UserMenu: React.FC = () => {
                 <Link href="/account">Account</Link>
               </DropdownItem>
               <DropdownItem key="manage" className={"drop_down_item"}>
-                <Link href="/manage/listings">Manage listings</Link>
-                {listingInProgress && <span className="notification" />}
+                <Link href="/manage/listings">
+                  Manage listings{" "}
+                  {listingInProgress && <span className="notification" />}
+                </Link>
               </DropdownItem>
             </DropdownSection>
             <DropdownSection>

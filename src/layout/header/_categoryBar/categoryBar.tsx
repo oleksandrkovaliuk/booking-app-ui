@@ -18,7 +18,6 @@ import { getAllCategories } from "@/store/thunks/listings/categories";
 import { getTypeOfPlace } from "@/store/thunks/listings/typeOfPlace";
 
 const Categories: React.FC = () => {
-  const dispatch = useDispatch();
   const { categories } = useSelector(
     (state: RootState) => state.listingsAdditionals
   );
@@ -29,12 +28,7 @@ const Categories: React.FC = () => {
   const selectCategory = (id: number) => {
     setSelectedCategory((prev) => (prev === id ? prev : id));
   };
-  useEffect(() => {
-    Promise.allSettled([
-      dispatch(getAllCategories() as any),
-      dispatch(getTypeOfPlace() as any),
-    ]);
-  }, [dispatch]);
+
   return (
     <>
       {categories?.map((category) => (

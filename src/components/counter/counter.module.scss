@@ -1,0 +1,36 @@
+.counter_buttons {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  button {
+    border-radius: 50%;
+    min-width: 20px;
+    width: 20px;
+    height: 20px;
+    position: relative;
+    &:disabled {
+      cursor: not-allowed;
+    }
+    &::before {
+      content: "-";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: var(--booking-app-white-color);
+    }
+    &:last-child {
+      &::before {
+        content: "+";
+      }
+    }
+  }
+  .counter_value {
+    font-size: 17px;
+    font-family: var(--booking-app-Nunito-Sans-font);
+    display: flex;
+    min-width: 25px;
+    justify-content: center;
+    align-items: center;
+  }
+}

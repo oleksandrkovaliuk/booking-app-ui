@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { Button, Checkbox } from "@nextui-org/react";
+import { Checkbox } from "@nextui-org/react";
 import { RangeCalendar, RangeValue } from "@nextui-org/calendar";
 
 import { Search } from "@/svgs/Search";
 import spinner from "@/assets/spinner.gif";
 import { ModalPanel } from "@/components/modalPanel";
+import { Counter } from "@/components/counter";
 import { TypesOfSelections } from "@/utilities/enums";
 import { getCountriesByRequest } from "./getCountriesByRequest";
 import { Location } from "@/svgs/Location";
@@ -462,23 +463,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                       Including children
                     </p>
                   </div>
-                  <div className={styles.modal_menu_guest_counter_buttons}>
-                    <Button
-                      onClick={() => setAmoutOfGuests((prev) => (prev -= 1))}
-                      disabled={amoutOfGuests <= 0}
-                      color="primary"
-                      isIconOnly
-                    />
-                    <span className={styles.modal_menu_guest_counter_value}>
-                      {amoutOfGuests}
-                    </span>
-                    <Button
-                      onClick={() => setAmoutOfGuests((prev) => (prev += 1))}
-                      disabled={amoutOfGuests >= 16}
-                      color="primary"
-                      isIconOnly
-                    />
-                  </div>
+                  <Counter state={amoutOfGuests} callback={setAmoutOfGuests} />
                 </div>
                 <div className={styles.modal_menu_guest_settings}>
                   <div className={styles.modal_menu_guest_settings_text}>

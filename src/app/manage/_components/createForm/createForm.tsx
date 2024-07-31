@@ -1,5 +1,11 @@
 "use client";
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, {
+  useEffect,
+  useLayoutEffect,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -9,6 +15,7 @@ import {
   Modal,
   ModalContent,
   Progress,
+  Switch,
   useDisclosure,
 } from "@nextui-org/react";
 import {
@@ -17,8 +24,18 @@ import {
   StandaloneSearchBox,
   MarkerF,
 } from "@react-google-maps/api";
+import { Controller, useForm } from "react-hook-form";
 
+import { InitialState, reducer } from "./reducer/reducer";
+import {
+  setAmoutOfGuests,
+  setFormStep,
+  setSelectedCategories,
+  setSelectedCordinates,
+  setSelectedTypeOfPlace,
+} from "./reducer/actions";
 import { RootState } from "@/store";
+import { Counter } from "@/components/counter";
 import { videos } from "@/information/data";
 import { CreateListingSteps } from "./type";
 import { Category, TypeOfPlace } from "@/store/reducers/listingsReducer";
@@ -33,7 +50,7 @@ export interface FormState {
   startingDate: string;
 }
 
-interface GoogleMapProps {
+export interface GoogleMapProps {
   cordinates: { lat: number; lng: number; name: string };
   setCordinates: ({
     lat,
@@ -135,6 +152,7 @@ const GoogleMapComponent: React.FC<GoogleMapProps> = ({
       });
     }
   };
+
   return (
     <motion.div className={styles.location_map}>
       <StandaloneSearchBox
@@ -188,45 +206,48 @@ export const CreateForm: React.FC = () => {
     (state: RootState) => state.listingsAdditionals
   );
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [savedStep] = useState<number>(0);
+  const { control, register, watch, handleSubmit, setValue } = useForm({
+    defaultValues: {
+      step: 0 as CreateListingSteps | number,
+      selectedCategory: null as Category | null | [],
+      typeOfPlace: null as TypeOfPlace | null | [],
+    },
+  });
+  const formStep = watch("step");
+  const selectedCategory = watch("selectedCategory");
+  const selectedTypeOfPlace = watch("typeOfPlace");
 
-  const [formStep, setFormStep] = useState<CreateListingSteps | number>(
-    savedStep
+  const [{ selectedCordinates, amoutOfGuests }, dispathAction] = useReducer(
+    reducer,
+    InitialState
   );
+  const [startingDate] = useState<string>(() => {
+    return formatDate(new Date());
+  });
 
+  // CONDITIONS
   const enumsKeys = Object.keys(CreateListingSteps)
     .map((item) => Number(item) + 1)
     .filter((item) => !isNaN(Number(item)));
 
-  // CONDITIONS
   const isLastStep = formStep === Number(enumsKeys[enumsKeys.length - 1]);
 
-  // SELECTIONS
-
-  const [selectedCategories, setSelectedCategories] = useState<Category | null>(
-    null
-  );
-
-  const [selectedTypeOfPlace, setSelectedTypeOfPlace] =
-    useState<TypeOfPlace | null>(null);
-  const [selectedCordinates, setSelectedCordinates] = useState<
-    GoogleMapProps["cordinates"] | null
-  >(null);
-
-  const [startingDate] = useState<string>(() => {
-    return formatDate(new Date());
-  });
+  const isDoesntSelected =
+    (formStep === CreateListingSteps.LOCATION && selectedCordinates === null) ||
+    (formStep === CreateListingSteps.CATEGORY && selectedCategory === null) ||
+    (formStep === CreateListingSteps.TYPE_OF_PLACE &&
+      selectedTypeOfPlace === null);
   // NAVIGATION
   const handleNextStep = () => {
     if (!isLastStep) {
-      setFormStep((prev) => prev + 1);
+      setValue("step", formStep + 1);
     }
   };
   const handlePreviousStep = () => {
     if (formStep === CreateListingSteps.INTRODUCING) {
       onOpen();
     } else {
-      setFormStep((prev) => prev - 1);
+      setValue("step", formStep - 1);
     }
   };
   const handleLeaveTheForm = () => {
@@ -237,32 +258,38 @@ export const CreateForm: React.FC = () => {
   };
   // CATEGORIES
   const handleSelectCategory = (
-    e: React.MouseEvent<HTMLButtonElement>,
+    e: React.ChangeEvent<HTMLInputElement>,
     category: Category
   ) => {
     e.preventDefault();
-    setSelectedCategories((prev) => {
-      if (prev !== category) {
-        return category;
-      } else {
-        return prev;
-      }
-    });
+    setValue("selectedCategory", category);
+    // dispathAction(
+    //   setSelectedCategories((prev) => {
+    //     if (prev !== category) {
+    //       return category;
+    //     } else {
+    //       return prev;
+    //     }
+    //   })
+    // );
   };
 
   // TYPE_OF_PLACE
   const handleSelectTypeOfPlace = (
-    e: React.MouseEvent<HTMLButtonElement>,
+    e: React.ChangeEvent<HTMLInputElement>,
     type: TypeOfPlace
   ) => {
     e.preventDefault();
-    setSelectedTypeOfPlace((prev) => {
-      if (prev !== type) {
-        return type;
-      } else {
-        return prev;
-      }
-    });
+    setValue("typeOfPlace", type);
+  };
+
+  // CORDINATES
+  const handleCordinatesChange = (cordinates: GoogleMapProps["cordinates"]) => {
+    dispathAction(setSelectedCordinates(cordinates));
+  };
+
+  const handleCounter = (value: (prev: number) => number) => {
+    dispathAction(setAmoutOfGuests(value));
   };
 
   // SUBMIT
@@ -270,7 +297,7 @@ export const CreateForm: React.FC = () => {
     e.preventDefault();
     localStorage.removeItem("step");
     localStorage.removeItem("state");
-    setFormStep(CreateListingSteps.INTRODUCING);
+    dispathAction(setFormStep(CreateListingSteps.INTRODUCING));
     router.back();
   };
 
@@ -281,10 +308,10 @@ export const CreateForm: React.FC = () => {
     localStorage.setItem(
       "state",
       JSON.stringify({
-        step: formStep,
-        category: selectedCategories,
-        type: selectedTypeOfPlace,
-        cordinates: selectedCordinates,
+        step: formStep !== 0 ? formStep : CreateListingSteps.INTRODUCING,
+        category: selectedCategory !== null && selectedCategory,
+        type: selectedTypeOfPlace !== null && selectedTypeOfPlace,
+        cordinates: selectedCordinates !== null && selectedCordinates,
         startingDate: startingDate,
       } as FormState)
     );
@@ -294,7 +321,7 @@ export const CreateForm: React.FC = () => {
     };
   }, [
     formStep,
-    selectedCategories,
+    selectedCategory,
     selectedCordinates,
     selectedTypeOfPlace,
     startingDate,
@@ -305,16 +332,16 @@ export const CreateForm: React.FC = () => {
       const formState = localStorage.getItem("state");
       if (formState) {
         const state = JSON.parse(formState);
-
+        console.log(state, "check");
         if (state.cordinates || state.type || state.category || state.step) {
-          setSelectedTypeOfPlace(state.type || null);
-          setSelectedCategories(state.category || null);
-          setSelectedCordinates(state.cordinates || null);
-          setFormStep(state.step || CreateListingSteps.INTRODUCING);
+          setValue("step", state.step || CreateListingSteps.INTRODUCING);
+          setValue("selectedCategory", state.category && state.category);
+          setValue("typeOfPlace", state.type && state.type);
+          dispathAction(setSelectedCordinates(state.cordinates || null));
         }
       }
     }
-  }, []);
+  }, [setValue]);
 
   return (
     <>
@@ -354,7 +381,6 @@ export const CreateForm: React.FC = () => {
               initial={deepAppearAnimation.initial}
               animate={deepAppearAnimation.animate}
               transition={sloverTransition}
-              preload="auto"
             >
               <source src={videos.apartament_building} type="video/mp4" />
             </motion.video>
@@ -374,36 +400,46 @@ export const CreateForm: React.FC = () => {
               animate={appearAnimation.animate}
               transition={sloverTransition}
             >
-              Chose type of your place
+              Which of these best describes your place?
             </motion.h1>
+
             <div className={styles.selections_container}>
               {categories?.map((category) => {
                 return (
-                  <motion.button
+                  <motion.div
                     key={category.id}
-                    className={`${styles.selection_block} ${styles.button_selection}`}
+                    className={`${styles.category}  ${styles.selection}`}
                     initial={deepAppearAnimation.initial}
                     animate={deepAppearAnimation.animate}
                     transition={sloverTransition}
-                    onClick={(e) => handleSelectCategory(e, category)}
-                    data-selected={
-                      selectedCategories &&
-                      category.id === selectedCategories.id
-                    }
+                    data-selected={selectedCategory?.id === category?.id}
                   >
-                    <Image
-                      src={category.category_icon!}
-                      alt={category.category_icon!}
-                      width={30}
-                      height={30}
-                      className={styles.category_img}
+                    <input
+                      type="checkbox"
+                      id={`category${category.id}`}
+                      className={styles.hidden_checkbox}
+                      {...register("selectedCategory")}
+                      onChange={(e) => handleSelectCategory(e, category)}
                     />
-                    <motion.span className={styles.category_name}>
-                      {category.category_name}
-                    </motion.span>
-                  </motion.button>
+                    <label
+                      htmlFor={`category${category.id}`}
+                      className={`${styles.selection_block}`}
+                    >
+                      <Image
+                        src={category.category_icon!}
+                        alt={category.category_icon!}
+                        width={30}
+                        height={30}
+                        className={styles.category_img}
+                      />
+                      <motion.span className={styles.category_name}>
+                        {category.category_name}
+                      </motion.span>
+                    </label>
+                  </motion.div>
                 );
               })}
+              ;
             </div>
           </motion.div>
         )}
@@ -425,17 +461,24 @@ export const CreateForm: React.FC = () => {
             </motion.h1>
             <div className={styles.selections_container}>
               {typeOfPlace?.map((type) => (
-                <motion.button
+                <motion.div
                   key={type.id}
                   initial={deepAppearAnimation.initial}
                   animate={deepAppearAnimation.animate}
                   transition={sloverTransition}
-                  className={`${styles.type_button} ${styles.button_selection}`}
-                  onClick={(e) => handleSelectTypeOfPlace(e, type)}
+                  className={`${styles.type_button} ${styles.selection}`}
                   data-selected={
                     selectedTypeOfPlace && type.id === selectedTypeOfPlace.id
                   }
                 >
+                  <input
+                    type="checkbox"
+                    id={`typeOfPlace${type.id}`}
+                    className={styles.hidden_checkbox}
+                    {...register("typeOfPlace")}
+                    onChange={(e) => handleSelectTypeOfPlace(e, type)}
+                  />
+
                   <div className={styles.type_of_place_text}>
                     <motion.span className={styles.type_name}>
                       {type.type_name}
@@ -451,7 +494,7 @@ export const CreateForm: React.FC = () => {
                     height={30}
                     className={styles.type_img}
                   />
-                </motion.button>
+                </motion.div>
               ))}
             </div>
           </motion.div>
@@ -474,8 +517,8 @@ export const CreateForm: React.FC = () => {
             </motion.h1>
 
             <GoogleMapComponent
-              cordinates={selectedCordinates!}
-              setCordinates={setSelectedCordinates}
+              cordinates={selectedCordinates}
+              setCordinates={handleCordinatesChange}
             />
             <motion.p className={styles.description}>
               Please ensure the pin is accurately placed on your address. If
@@ -484,6 +527,56 @@ export const CreateForm: React.FC = () => {
           </motion.div>
         )}
 
+        {formStep === CreateListingSteps.BASICS && (
+          <motion.div
+            className={styles.basics}
+            initial={appearAnimation.initial}
+            animate={appearAnimation.animate}
+            transition={transition}
+          >
+            <motion.h1
+              className={styles.title}
+              initial={appearAnimation.initial}
+              animate={appearAnimation.animate}
+              transition={sloverTransition}
+            >
+              Share with us some basics about your place.
+            </motion.h1>
+            <motion.div
+              className={styles.basic_selections}
+              initial={deepAppearAnimation.initial}
+              animate={deepAppearAnimation.animate}
+              transition={sloverTransition}
+            >
+              <span className={styles.basic_selections_title}>
+                How many guests will have their own private space?
+              </span>
+              <Counter state={amoutOfGuests} callback={handleCounter} />
+            </motion.div>
+            <motion.div
+              className={styles.basic_selections}
+              initial={deepAppearAnimation.initial}
+              animate={deepAppearAnimation.animate}
+              transition={sloverTransition}
+            >
+              <span className={styles.basic_selections_title}>
+                Is your place pet-friendly?
+              </span>
+              <Switch />
+            </motion.div>
+            <motion.div
+              className={styles.basic_selections}
+              initial={deepAppearAnimation.initial}
+              animate={deepAppearAnimation.animate}
+              transition={sloverTransition}
+            >
+              <span className={styles.basic_selections_title}>
+                Is your place wheelchair accessible?
+              </span>
+              <Switch />
+            </motion.div>
+          </motion.div>
+        )}
         {formStep === CreateListingSteps.INTRODUCING_2 && (
           <motion.div className={styles.introducing}>
             <motion.div
@@ -519,7 +612,6 @@ export const CreateForm: React.FC = () => {
               initial={deepAppearAnimation.initial}
               animate={deepAppearAnimation.animate}
               transition={sloverTransition}
-              preload="auto"
             >
               <source src={videos.apartament_building2} type="video/mp4" />
             </motion.video>
@@ -587,6 +679,7 @@ export const CreateForm: React.FC = () => {
             size="md"
             onClick={!isLastStep ? handleNextStep : submitCreatedListing}
             data-last={isLastStep}
+            disabled={isDoesntSelected}
           >
             {!isLastStep ? "Next" : "Submit"}
           </Button>

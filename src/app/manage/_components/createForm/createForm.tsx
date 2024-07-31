@@ -24,7 +24,7 @@ import {
   StandaloneSearchBox,
   MarkerF,
 } from "@react-google-maps/api";
-import { Controller, useForm } from "react-hook-form";
+import { useForm, UseFormRegister } from "react-hook-form";
 
 import { InitialState, reducer } from "./reducer/reducer";
 import {
@@ -61,6 +61,7 @@ export interface GoogleMapProps {
     lng: number;
     name: string;
   }) => void;
+  register: any;
 }
 
 // FORMAT DATE TO DD/MM/HH/MM
@@ -105,6 +106,7 @@ const options = {
 };
 
 const GoogleMapComponent: React.FC<GoogleMapProps> = ({
+  register,
   cordinates,
   setCordinates,
 }) => {
@@ -146,13 +148,12 @@ const GoogleMapComponent: React.FC<GoogleMapProps> = ({
         }
       );
       setCordinates({
-        lat: e.latLng.lat(),
-        lng: e.latLng.lng(),
-        name: street.results[0].formatted_address,
+        lat: e.latLng.lat() as number,
+        lng: e.latLng.lng() as number,
+        name: street.results[0].formatted_address as string,
       });
     }
   };
-
   return (
     <motion.div className={styles.location_map}>
       <StandaloneSearchBox
@@ -163,15 +164,15 @@ const GoogleMapComponent: React.FC<GoogleMapProps> = ({
           type="text"
           placeholder="Type your house address..."
           id="location"
-          name="location"
           className="input"
           initial={appearAnimation.initial}
           animate={appearAnimation.animate}
           transition={sloverTransition}
-          value={cordinates?.name}
+          value={cordinates.name}
           onChange={(e) => {
             return setCordinates({ ...cordinates, name: e.target.value });
           }}
+          {...register("selectedCordinates")}
         />
       </StandaloneSearchBox>
       <motion.div
@@ -206,21 +207,27 @@ export const CreateForm: React.FC = () => {
     (state: RootState) => state.listingsAdditionals
   );
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const { control, register, watch, handleSubmit, setValue } = useForm({
+  const { register, watch, handleSubmit, setValue } = useForm({
     defaultValues: {
       step: 0 as CreateListingSteps | number,
-      selectedCategory: null as Category | null | [],
-      typeOfPlace: null as TypeOfPlace | null | [],
+      selectedCategory: null as Category | null,
+      selectedTypeOfPlace: null as TypeOfPlace | null,
+      selectedCordinates: {
+        lat: 0,
+        lng: 0,
+        name: "",
+      } as GoogleMapProps["cordinates"],
+      amoutOfPeople: 1 as number,
     },
   });
+
+  // WATCH VALUES
   const formStep = watch("step");
   const selectedCategory = watch("selectedCategory");
-  const selectedTypeOfPlace = watch("typeOfPlace");
+  const selectedTypeOfPlace = watch("selectedTypeOfPlace");
+  const selectedCordinates = watch("selectedCordinates");
+  const amoutOfPeople = watch("amoutOfPeople");
 
-  const [{ selectedCordinates, amoutOfGuests }, dispathAction] = useReducer(
-    reducer,
-    InitialState
-  );
   const [startingDate] = useState<string>(() => {
     return formatDate(new Date());
   });
@@ -237,10 +244,12 @@ export const CreateForm: React.FC = () => {
     (formStep === CreateListingSteps.CATEGORY && selectedCategory === null) ||
     (formStep === CreateListingSteps.TYPE_OF_PLACE &&
       selectedTypeOfPlace === null);
+
   // NAVIGATION
   const handleNextStep = () => {
     if (!isLastStep) {
       setValue("step", formStep + 1);
+      localStorage.setItem("step", JSON.stringify(formStep + 1));
     }
   };
   const handlePreviousStep = () => {
@@ -248,6 +257,7 @@ export const CreateForm: React.FC = () => {
       onOpen();
     } else {
       setValue("step", formStep - 1);
+      localStorage.setItem("step", JSON.stringify(formStep - 1));
     }
   };
   const handleLeaveTheForm = () => {
@@ -263,15 +273,9 @@ export const CreateForm: React.FC = () => {
   ) => {
     e.preventDefault();
     setValue("selectedCategory", category);
-    // dispathAction(
-    //   setSelectedCategories((prev) => {
-    //     if (prev !== category) {
-    //       return category;
-    //     } else {
-    //       return prev;
-    //     }
-    //   })
-    // );
+    if (category) {
+      localStorage.setItem("category", JSON.stringify({ ...category }));
+    }
   };
 
   // TYPE_OF_PLACE
@@ -280,16 +284,22 @@ export const CreateForm: React.FC = () => {
     type: TypeOfPlace
   ) => {
     e.preventDefault();
-    setValue("typeOfPlace", type);
+    setValue("selectedTypeOfPlace", type);
+    if (type) {
+      localStorage.setItem("typeOfPlace", JSON.stringify({ ...type }));
+    }
   };
 
   // CORDINATES
   const handleCordinatesChange = (cordinates: GoogleMapProps["cordinates"]) => {
-    dispathAction(setSelectedCordinates(cordinates));
+    setValue("selectedCordinates", cordinates);
+    if (cordinates) {
+      localStorage.setItem("cordinates", JSON.stringify({ ...cordinates }));
+    }
   };
 
   const handleCounter = (value: (prev: number) => number) => {
-    dispathAction(setAmoutOfGuests(value));
+    // setValue("amoutOfPeople", value);
   };
 
   // SUBMIT
@@ -297,49 +307,43 @@ export const CreateForm: React.FC = () => {
     e.preventDefault();
     localStorage.removeItem("step");
     localStorage.removeItem("state");
-    dispathAction(setFormStep(CreateListingSteps.INTRODUCING));
     router.back();
   };
 
   useEffect(() => {
+    const typeOfPlace = localStorage.getItem("typeOfPlace");
+    const category = localStorage.getItem("category");
+    const cordinates = localStorage.getItem("cordinates");
+
     const body = document.body;
     if (formStep !== CreateListingSteps.CATEGORY && window.innerWidth >= 375)
       body.classList.add("disable-scroll");
-    localStorage.setItem(
-      "state",
-      JSON.stringify({
-        step: formStep !== 0 ? formStep : CreateListingSteps.INTRODUCING,
-        category: selectedCategory !== null && selectedCategory,
-        type: selectedTypeOfPlace !== null && selectedTypeOfPlace,
-        cordinates: selectedCordinates !== null && selectedCordinates,
-        startingDate: startingDate,
-      } as FormState)
-    );
+
+    if (category) setValue("selectedCategory", JSON.parse(category));
+
+    if (typeOfPlace) setValue("selectedTypeOfPlace", JSON.parse(typeOfPlace));
+
+    if (cordinates) setValue("selectedCordinates", JSON.parse(cordinates));
 
     return () => {
       body.classList.remove("disable-scroll");
     };
-  }, [
-    formStep,
-    selectedCategory,
-    selectedCordinates,
-    selectedTypeOfPlace,
-    startingDate,
-  ]);
+  }, [formStep, setValue, startingDate]);
 
   useLayoutEffect(() => {
     if (typeof localStorage !== "undefined") {
-      const formState = localStorage.getItem("state");
-      if (formState) {
-        const state = JSON.parse(formState);
-        console.log(state, "check");
-        if (state.cordinates || state.type || state.category || state.step) {
-          setValue("step", state.step || CreateListingSteps.INTRODUCING);
-          setValue("selectedCategory", state.category && state.category);
-          setValue("typeOfPlace", state.type && state.type);
-          dispathAction(setSelectedCordinates(state.cordinates || null));
-        }
-      }
+      const step = localStorage.getItem("step");
+      const type = localStorage.getItem("typeOfPlace");
+      const category = localStorage.getItem("category");
+      const cordinates = localStorage.getItem("cordinates");
+
+      if (step) setValue("step", Number(step));
+
+      if (category) setValue("selectedCategory", JSON.parse(category));
+
+      if (type) setValue("selectedTypeOfPlace", JSON.parse(type));
+
+      if (cordinates) setValue("selectedCordinates", JSON.parse(cordinates));
     }
   }, [setValue]);
 
@@ -412,7 +416,9 @@ export const CreateForm: React.FC = () => {
                     initial={deepAppearAnimation.initial}
                     animate={deepAppearAnimation.animate}
                     transition={sloverTransition}
-                    data-selected={selectedCategory?.id === category?.id}
+                    data-selected={
+                      selectedCategory && selectedCategory?.id === category?.id
+                    }
                   >
                     <input
                       type="checkbox"
@@ -475,7 +481,7 @@ export const CreateForm: React.FC = () => {
                     type="checkbox"
                     id={`typeOfPlace${type.id}`}
                     className={styles.hidden_checkbox}
-                    {...register("typeOfPlace")}
+                    {...register("selectedTypeOfPlace")}
                     onChange={(e) => handleSelectTypeOfPlace(e, type)}
                   />
 
@@ -517,6 +523,7 @@ export const CreateForm: React.FC = () => {
             </motion.h1>
 
             <GoogleMapComponent
+              register={register}
               cordinates={selectedCordinates}
               setCordinates={handleCordinatesChange}
             />
@@ -551,7 +558,7 @@ export const CreateForm: React.FC = () => {
               <span className={styles.basic_selections_title}>
                 How many guests will have their own private space?
               </span>
-              <Counter state={amoutOfGuests} callback={handleCounter} />
+              <Counter state={amoutOfPeople} callback={handleCounter} />
             </motion.div>
             <motion.div
               className={styles.basic_selections}

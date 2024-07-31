@@ -224,6 +224,9 @@
 .location,
 .basics {
   width: 100%;
+  &[data-show="false"] {
+    opacity: 0 !important;
+  }
 }
 .selection {
   border: 1px solid var(--booking-app-lightgrey-color);

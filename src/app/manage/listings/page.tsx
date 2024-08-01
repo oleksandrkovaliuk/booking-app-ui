@@ -7,25 +7,24 @@ import { FormState } from "../_components/createForm/createForm";
 
 import styles from "./listings.module.scss";
 
+interface ListingInProgress extends FormState {
+  startingDate: string;
+}
 export default function ListingsPage() {
   const { data: session } = useSession();
-  const [listingInProgress, setListingInProgress] = useState<FormState | null>(
-    null
-  );
+  const [listingInProgress, setListingInProgress] =
+    useState<ListingInProgress | null>(null);
 
   useLayoutEffect(() => {
     if (typeof localStorage !== "undefined") {
-      const formState = localStorage.getItem("state");
-      if (formState) {
-        const state = JSON.parse(formState);
-        if (
-          state.category ||
-          state.type ||
-          state.cordinates ||
-          state.startingDate
-        ) {
-          setListingInProgress(state);
-        }
+      const date = localStorage.getItem("startingDate");
+      const cordinates = localStorage.getItem("cordinates");
+
+      if (date || cordinates) {
+        setListingInProgress({
+          startingDate: date ? JSON.parse(date) : null,
+          cordinates: cordinates ? JSON.parse(cordinates) : null,
+        });
       }
     }
   }, []);
@@ -52,8 +51,9 @@ export default function ListingsPage() {
                   <div className={styles.listing_in_progress_img}></div>
                 </Skeleton>
                 <p className={styles.listing_in_progress_text}>
-                  You began creating a listing on{" "}
-                  <span>{listingInProgress.startingDate}</span> at{" "}
+                  You made the last changes on{" "}
+                  <span>{listingInProgress.startingDate}</span> for the listing
+                  located at{" "}
                   {listingInProgress.cordinates?.name && (
                     <span>{listingInProgress.cordinates.name}.</span>
                   )}

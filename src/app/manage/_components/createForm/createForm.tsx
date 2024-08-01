@@ -581,7 +581,7 @@ export const CreateForm: React.FC = () => {
             </motion.h1>
 
             <GoogleMapComponent
-              register={register as UseFormRegister<FormState>}
+              register={register}
               cordinates={selectedCordinates!}
               setCordinates={handleCordinatesChange}
             />

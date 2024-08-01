@@ -24,16 +24,8 @@ import {
   StandaloneSearchBox,
   MarkerF,
 } from "@react-google-maps/api";
-import { useForm, UseFormRegister } from "react-hook-form";
+import { FieldValues, useForm, UseFormRegister } from "react-hook-form";
 
-import { InitialState, reducer } from "./reducer/reducer";
-import {
-  setAmoutOfGuests,
-  setFormStep,
-  setSelectedCategories,
-  setSelectedCordinates,
-  setSelectedTypeOfPlace,
-} from "./reducer/actions";
 import { RootState } from "@/store";
 import { Counter } from "@/components/counter";
 import { videos } from "@/information/data";
@@ -44,10 +36,10 @@ import styles from "./createForm.module.scss";
 import "./additionalStyles.scss";
 
 export interface FormState {
-  category: Category;
-  type: TypeOfPlace;
-  cordinates: { lat: number; lng: number; name: string };
-  startingDate: string;
+  category?: Category;
+  type?: TypeOfPlace;
+  cordinates?: { lat: number; lng: number; name: string };
+  startingDate?: string;
 }
 
 export interface GoogleMapProps {
@@ -61,7 +53,7 @@ export interface GoogleMapProps {
     lng: number;
     name: string;
   }) => void;
-  register: any;
+  register: UseFormRegister<FieldValues>;
 }
 
 // FORMAT DATE TO DD/MM/HH/MM
@@ -169,10 +161,10 @@ const GoogleMapComponent: React.FC<GoogleMapProps> = ({
           animate={appearAnimation.animate}
           transition={sloverTransition}
           value={cordinates.name}
-          onChange={(e) => {
-            return setCordinates({ ...cordinates, name: e.target.value });
-          }}
-          {...register("selectedCordinates")}
+          {...register("cordinates", {
+            onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+              setCordinates({ ...cordinates, name: e.target.value }),
+          })}
         />
       </StandaloneSearchBox>
       <motion.div
@@ -210,9 +202,9 @@ export const CreateForm: React.FC = () => {
   const { register, watch, handleSubmit, setValue } = useForm({
     defaultValues: {
       step: 0 as CreateListingSteps | number,
-      selectedCategory: null as Category | null,
-      selectedTypeOfPlace: null as TypeOfPlace | null,
-      selectedCordinates: {
+      category: null as Category | null,
+      type: null as TypeOfPlace | null,
+      cordinates: {
         lat: 0,
         lng: 0,
         name: "",
@@ -223,9 +215,9 @@ export const CreateForm: React.FC = () => {
 
   // WATCH VALUES
   const formStep = watch("step");
-  const selectedCategory = watch("selectedCategory");
-  const selectedTypeOfPlace = watch("selectedTypeOfPlace");
-  const selectedCordinates = watch("selectedCordinates");
+  const selectedCategory = watch("category");
+  const selectedTypeOfPlace = watch("type");
+  const selectedCordinates = watch("cordinates");
   const amoutOfPeople = watch("amoutOfPeople");
 
   const [startingDate] = useState<string>(() => {
@@ -262,7 +254,9 @@ export const CreateForm: React.FC = () => {
   };
   const handleLeaveTheForm = () => {
     localStorage.removeItem("step");
-    localStorage.removeItem("state");
+    localStorage.removeItem("typeOfPlace");
+    localStorage.removeItem("category");
+    localStorage.removeItem("cordinates");
     onOpenChange();
     router.back();
   };
@@ -272,7 +266,7 @@ export const CreateForm: React.FC = () => {
     category: Category
   ) => {
     e.preventDefault();
-    setValue("selectedCategory", category);
+    setValue("category", category);
     if (category) {
       localStorage.setItem("category", JSON.stringify({ ...category }));
     }
@@ -284,7 +278,7 @@ export const CreateForm: React.FC = () => {
     type: TypeOfPlace
   ) => {
     e.preventDefault();
-    setValue("selectedTypeOfPlace", type);
+    setValue("type", type);
     if (type) {
       localStorage.setItem("typeOfPlace", JSON.stringify({ ...type }));
     }
@@ -292,8 +286,8 @@ export const CreateForm: React.FC = () => {
 
   // CORDINATES
   const handleCordinatesChange = (cordinates: GoogleMapProps["cordinates"]) => {
-    setValue("selectedCordinates", cordinates);
-    if (cordinates) {
+    if (cordinates.name) {
+      setValue("cordinates", cordinates);
       localStorage.setItem("cordinates", JSON.stringify({ ...cordinates }));
     }
   };
@@ -306,7 +300,9 @@ export const CreateForm: React.FC = () => {
   const submitCreatedListing = (e: React.FormEvent) => {
     e.preventDefault();
     localStorage.removeItem("step");
-    localStorage.removeItem("state");
+    localStorage.removeItem("typeOfPlace");
+    localStorage.removeItem("category");
+    localStorage.removeItem("cordinates");
     router.back();
   };
 
@@ -319,11 +315,11 @@ export const CreateForm: React.FC = () => {
     if (formStep !== CreateListingSteps.CATEGORY && window.innerWidth >= 375)
       body.classList.add("disable-scroll");
 
-    if (category) setValue("selectedCategory", JSON.parse(category));
+    if (category) setValue("category", JSON.parse(category));
 
-    if (typeOfPlace) setValue("selectedTypeOfPlace", JSON.parse(typeOfPlace));
+    if (typeOfPlace) setValue("type", JSON.parse(typeOfPlace));
 
-    if (cordinates) setValue("selectedCordinates", JSON.parse(cordinates));
+    if (cordinates) setValue("cordinates", JSON.parse(cordinates));
 
     return () => {
       body.classList.remove("disable-scroll");
@@ -339,13 +335,14 @@ export const CreateForm: React.FC = () => {
 
       if (step) setValue("step", Number(step));
 
-      if (category) setValue("selectedCategory", JSON.parse(category));
+      if (category) setValue("category", JSON.parse(category));
 
-      if (type) setValue("selectedTypeOfPlace", JSON.parse(type));
+      if (type) setValue("type", JSON.parse(type));
 
-      if (cordinates) setValue("selectedCordinates", JSON.parse(cordinates));
+      if (cordinates) setValue("cordinates", JSON.parse(cordinates));
+      localStorage.setItem("startingDate", JSON.stringify(startingDate));
     }
-  }, [setValue]);
+  }, [setValue, startingDate]);
 
   return (
     <>
@@ -424,8 +421,8 @@ export const CreateForm: React.FC = () => {
                       type="checkbox"
                       id={`category${category.id}`}
                       className={styles.hidden_checkbox}
-                      {...register("selectedCategory")}
-                      onChange={(e) => handleSelectCategory(e, category)}
+                      {...(register("category"),
+                      { onChange: (e) => handleSelectCategory(e, category) })}
                     />
                     <label
                       htmlFor={`category${category.id}`}
@@ -481,8 +478,8 @@ export const CreateForm: React.FC = () => {
                     type="checkbox"
                     id={`typeOfPlace${type.id}`}
                     className={styles.hidden_checkbox}
-                    {...register("selectedTypeOfPlace")}
-                    onChange={(e) => handleSelectTypeOfPlace(e, type)}
+                    {...(register("type"),
+                    { onChange: (e) => handleSelectTypeOfPlace(e, type) })}
                   />
 
                   <div className={styles.type_of_place_text}>

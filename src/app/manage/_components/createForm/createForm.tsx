@@ -38,8 +38,8 @@ import { toast } from "sonner";
 
 export interface FormState {
   step?: CreateListingSteps;
-  category?: Category;
-  type?: TypeOfPlace;
+  category?: Category | null;
+  type?: TypeOfPlace | null;
   cordinates?: GoogleMapProps["cordinates"];
   address: string;
   amoutOfPeople?: number;
@@ -215,8 +215,8 @@ export const CreateForm: React.FC = () => {
   const { register, watch, setValue } = useForm({
     defaultValues: {
       step: 0,
-      category: null as Category | null,
-      type: null as TypeOfPlace | null,
+      category: null,
+      type: null,
       cordinates: { lat: 0, lng: 0 } as GoogleMapProps["cordinates"],
       address: "",
       amoutOfPeople: guests,

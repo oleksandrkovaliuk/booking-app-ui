@@ -18,16 +18,18 @@ export default function ListingsPage() {
   useLayoutEffect(() => {
     if (typeof localStorage !== "undefined") {
       const date = localStorage.getItem("startingDate");
-      const cordinates = localStorage.getItem("cordinates");
+      const address = localStorage.getItem("address");
 
-      if (date || cordinates) {
+      console.log(date, address);
+      if (date || address) {
         setListingInProgress({
           startingDate: date ? JSON.parse(date) : null,
-          cordinates: cordinates ? JSON.parse(cordinates) : null,
+          address: address ? JSON.parse(address) : null,
         });
       }
     }
   }, []);
+  console.log(listingInProgress, "listingInProgress");
 
   return (
     <div className={styles.listing_page_container}>
@@ -54,8 +56,8 @@ export default function ListingsPage() {
                   You made the last changes on{" "}
                   <span>{listingInProgress.startingDate}</span> for the listing
                   located at{" "}
-                  {listingInProgress.cordinates?.name && (
-                    <span>{listingInProgress.cordinates.name}.</span>
+                  {listingInProgress.address && (
+                    <span>{listingInProgress.address}.</span>
                   )}
                 </p>
                 <div className={styles.status}>

@@ -44,17 +44,17 @@ import "./additionalStyles.scss";
 import { toast } from "sonner";
 
 export interface FormState {
-  step: CreateListingSteps;
-  category: Category | null;
-  type: TypeOfPlace | null;
-  cordinates: GoogleMapProps["cordinates"];
+  step?: CreateListingSteps;
+  category?: Category | null;
+  type?: TypeOfPlace | null;
+  cordinates?: GoogleMapProps["cordinates"];
   address: string;
-  amoutOfPeople: number;
-  additionalDetails: {
+  amoutOfPeople?: number;
+  additionalDetails?: {
     pets: boolean;
     accesable: boolean;
   };
-  startingDate: string;
+  startingDate?: string;
 }
 export interface GoogleMapProps {
   cordinates: { lat: number; lng: number; name?: string };

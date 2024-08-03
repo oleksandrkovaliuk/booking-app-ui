@@ -3,22 +3,24 @@ import styles from "./counter.module.scss";
 import { Button } from "@nextui-org/react";
 
 interface CounterProps {
-  state: number;
-  callback: (value: (prev: number) => number) => void;
+  counter: number;
+  setCounter: (value: number) => void;
 }
-export const Counter: React.FC<CounterProps> = ({ state, callback }) => {
+export const Counter: React.FC<CounterProps> = ({ counter, setCounter }) => {
   return (
     <div className={styles.counter_buttons}>
       <Button
-        onClick={() => callback((prev) => (prev -= 1))}
-        disabled={state <= 1}
+        onClick={() => {
+          setCounter((counter -= 1));
+        }}
+        disabled={counter <= 1}
         color="primary"
         isIconOnly
       />
-      <span className={styles.counter_value}>{state}</span>
+      <span className={styles.counter_value}>{counter}</span>
       <Button
-        onClick={() => callback((prev) => (prev += 1))}
-        disabled={state >= 16}
+        onClick={() => setCounter((counter += 1))}
+        disabled={counter >= 16}
         color="primary"
         isIconOnly
       />

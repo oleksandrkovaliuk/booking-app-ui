@@ -1,16 +1,14 @@
 "use client";
-import React, {
-  useEffect,
-  useLayoutEffect,
-  useReducer,
-  useRef,
-  useState,
-} from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
+import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import { DevTool } from "@hookform/devtools";
+import { useSession } from "next-auth/react";
+
 import {
   Button,
   Modal,
@@ -20,53 +18,25 @@ import {
   Switch,
   useDisclosure,
 } from "@nextui-org/react";
-import {
-  GoogleMap,
-  useLoadScript,
-  StandaloneSearchBox,
-  MarkerF,
-} from "@react-google-maps/api";
-import { useForm, UseFormRegister } from "react-hook-form";
 
 import { RootState } from "@/store";
-import { Counter } from "@/components/counter";
-import { videos } from "@/information/data";
-import { CreateListingSteps } from "./type";
-import { Category, TypeOfPlace } from "@/store/reducers/listingsReducer";
 import camera from "@/assets/3d-camera.png";
+import { videos } from "@/information/data";
+import { Counter } from "@/components/counter";
 
-import styles from "./createForm.module.scss";
-import "./additionalStyles.scss";
+import { CreateListingSteps } from "../enums";
+import { FormState, GoogleMapProps } from "../type";
+import { GoogleMap } from "../googleMap/googleMap";
 import { uploadUserListingImages } from "@/sharing/firebaseImages/users/listings/uploadImg";
-import { useSession } from "next-auth/react";
 
-export interface FormState {
-  step?: CreateListingSteps;
-  category?: Category | null;
-  type?: TypeOfPlace | null;
-  cordinates?: GoogleMapProps["cordinates"];
-  address: string;
-  amoutOfPeople?: number;
-  additionalDetails?: {
-    pets: boolean;
-    accesable: boolean;
-  };
-  startingDate?: string;
-  images?: string[];
-}
-export interface GoogleMapProps {
-  cordinates: { lat: number; lng: number; name?: string };
-  setCordinates: ({
-    lat,
-    lng,
-    name,
-  }: {
-    lat: number;
-    lng: number;
-    name: string;
-  }) => void;
-  register: UseFormRegister<FormState>;
-}
+import { clearAllStorage, initialFormState } from "./utils";
+
+import {
+  transition,
+  appearAnimation,
+  sloverTransition,
+  deepAppearAnimation,
+} from "../consts";
 
 // FORMAT DATE TO DD/MM/HH/MM
 
@@ -79,132 +49,9 @@ const formatDate = (date: Date) => {
     hour12: false,
   }).format(date);
 };
-// ANIMATIONS
-const appearAnimation = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-};
-const deepAppearAnimation = {
-  initial: { opacity: 0, y: 30 },
-  animate: { opacity: 1, y: 0 },
-};
-const transition = { duration: 0.4, ease: "easeOut" };
-const sloverTransition = { ...transition, duration: 0.6 };
 
-// MAP OPATIONS/STYLES
-const mapContainerStyle = {
-  width: "100%",
-  height: "100%",
-  borderRadius: "10px",
-  outline: "none",
-};
-
-const options = {
-  gestureHandling: "greedy",
-  scrollwheel: true,
-  draggable: true,
-  fullscreenControl: false,
-  mapTypeControl: false,
-  zoomControl: false,
-  streetViewControl: true,
-};
-
-const GoogleMapComponent: React.FC<GoogleMapProps> = ({
-  register,
-  cordinates,
-  setCordinates,
-}) => {
-  const searchBar = useRef<google.maps.places.SearchBox | null>(null);
-
-  const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY!,
-    libraries: ["places"],
-  });
-
-  if (loadError) return <div>Error loading map</div>;
-  if (!isLoaded) return <div>Loading...</div>;
-
-  const handleCordinatesChange = () => {
-    if (searchBar.current) {
-      const [places] =
-        searchBar.current.getPlaces() as google.maps.places.PlaceResult[];
-      if (places) {
-        setCordinates({
-          lat: places.geometry?.location?.lat() as number,
-          lng: places.geometry?.location?.lng() as number,
-          name: places.formatted_address as string,
-        });
-      }
-    }
-  };
-
-  const handleMarkerDragEnd = async (e: google.maps.MapMouseEvent) => {
-    if (e.latLng) {
-      const street = await new google.maps.Geocoder().geocode(
-        {
-          location: {
-            lat: e.latLng.lat(),
-            lng: e.latLng.lng(),
-          },
-        },
-        (results) => {
-          return results;
-        }
-      );
-      setCordinates({
-        lat: e.latLng.lat() as number,
-        lng: e.latLng.lng() as number,
-        name: street.results[0].formatted_address as string,
-      });
-    }
-  };
-
-  return (
-    <motion.div className={styles.location_map}>
-      <StandaloneSearchBox
-        onLoad={(searchBox) => (searchBar.current = searchBox)}
-        onPlacesChanged={handleCordinatesChange}
-      >
-        <motion.input
-          type="text"
-          placeholder="Type your house address..."
-          id="location"
-          className="input"
-          initial={appearAnimation.initial}
-          animate={appearAnimation.animate}
-          transition={sloverTransition}
-          {...register("address", {
-            onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
-              setCordinates({ ...cordinates!, name: e.target.value }),
-          })}
-        />
-      </StandaloneSearchBox>
-      <motion.div
-        className={styles.map_container}
-        initial={appearAnimation.initial}
-        animate={appearAnimation.animate}
-        transition={sloverTransition}
-      >
-        <GoogleMap
-          mapContainerStyle={mapContainerStyle}
-          center={cordinates}
-          zoom={17}
-          options={options}
-        >
-          <MarkerF
-            position={cordinates}
-            draggable={true}
-            onDragEnd={handleMarkerDragEnd}
-            icon={{
-              url: "https://firebasestorage.googleapis.com/v0/b/booking-app-31ebf.appspot.com/o/home.png?alt=media&token=5117ac6d-3d52-478b-a971-67f20e72bb40",
-              scaledSize: new google.maps.Size(50, 50),
-            }}
-          />
-        </GoogleMap>
-      </motion.div>
-    </motion.div>
-  );
-};
+import styles from "./createForm.module.scss";
+import "./additionalStyles.scss";
 export const CreateForm: React.FC = () => {
   const router = useRouter();
   const { data: session } = useSession();
@@ -213,31 +60,29 @@ export const CreateForm: React.FC = () => {
   );
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [guests, setGuests] = useState(1);
-  const [additionalDetails, setAdditionalDetails] = useState<
-    FormState["additionalDetails"]
-  >({ pets: false, accesable: false });
 
   const [isLoading, setIsLoading] = useState(false);
-  const { register, watch, setValue } = useForm({
-    defaultValues: {
-      step: 0,
-      category: null,
-      type: null,
-      cordinates: { lat: 0, lng: 0 } as GoogleMapProps["cordinates"],
-      address: "",
-      amoutOfPeople: guests,
-      additionalDetails: additionalDetails,
-      images: [],
-    } as FormState,
+
+  const { register, watch, setValue, control } = useForm({
+    defaultValues: initialFormState as FormState,
   });
+
+  const handleUpdateFormAndLocalStorage = (
+    name: keyof FormState,
+    value: FormState[keyof FormState]
+  ) => {
+    setValue(name, value);
+    localStorage.setItem(name, JSON.stringify(value));
+  };
 
   // WATCH VALUES
   const formStep = watch("step");
-  const selectedCategory = watch("category");
-  const selectedTypeOfPlace = watch("type");
-  const selectedCordinates = watch("cordinates");
   const selectedAdress = watch("address");
+  const selectedTypeOfPlace = watch("typeOfPlace");
+  const selectedCategory = watch("category");
+  const selectedCordinates = watch("cordinates");
+  const selectedAdditionalDetails = watch("additionalDetails");
+  const selectedGuests = watch("guests");
 
   const [startingDate] = useState<string>(() => {
     return formatDate(new Date());
@@ -277,29 +122,6 @@ export const CreateForm: React.FC = () => {
     onOpenChange();
     router.back();
   };
-  // CATEGORIES
-  const handleSelectCategory = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    category: Category
-  ) => {
-    e.preventDefault();
-    setValue("category", category);
-    if (category) {
-      localStorage.setItem("category", JSON.stringify({ ...category }));
-    }
-  };
-
-  // TYPE_OF_PLACE
-  const handleSelectTypeOfPlace = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    type: TypeOfPlace
-  ) => {
-    e.preventDefault();
-    setValue("type", type);
-    if (type) {
-      localStorage.setItem("typeOfPlace", JSON.stringify({ ...type }));
-    }
-  };
 
   // CORDINATES
   const handleCordinatesChange = (cordinates: GoogleMapProps["cordinates"]) => {
@@ -309,23 +131,6 @@ export const CreateForm: React.FC = () => {
     localStorage.setItem(
       "cordinates",
       JSON.stringify({ lat: cordinates.lat, lng: cordinates.lng })
-    );
-  };
-
-  // ADDITIONAL DETAILS
-  const handleAdditionalDetailsChange = (
-    name: keyof FormState["additionalDetails"]
-  ) => {
-    setAdditionalDetails({
-      ...additionalDetails!,
-      [name]: !additionalDetails![name],
-    });
-    localStorage.setItem(
-      "additionalDetails",
-      JSON.stringify({
-        ...additionalDetails!,
-        [name]: !additionalDetails![name],
-      })
     );
   };
 
@@ -342,17 +147,6 @@ export const CreateForm: React.FC = () => {
     } catch (error) {}
   };
 
-  // CLEAR
-  const clearAllStorage = () => {
-    localStorage.removeItem("step");
-    localStorage.removeItem("typeOfPlace");
-    localStorage.removeItem("category");
-    localStorage.removeItem("cordinates");
-    localStorage.removeItem("address");
-    localStorage.removeItem("guests");
-    localStorage.removeItem("additionalDetails");
-    localStorage.removeItem("startingDate");
-  };
   // SUBMIT
   const submitCreatedListing = (e: React.FormEvent) => {
     e.preventDefault();
@@ -366,64 +160,45 @@ export const CreateForm: React.FC = () => {
   };
 
   useEffect(() => {
-    const typeOfPlace = localStorage.getItem("typeOfPlace");
-    const category = localStorage.getItem("category");
-    const address = localStorage.getItem("address");
-    const cordinates = localStorage.getItem("cordinates");
-    const guests = localStorage.getItem("guests");
-    const additionalDetails = localStorage.getItem("additionalDetails");
     const body = document.body;
     if (formStep !== CreateListingSteps.CATEGORY && window.innerWidth >= 375)
       body.classList.add("disable-scroll");
 
-    if (category) setValue("category", JSON.parse(category));
-
-    if (typeOfPlace) setValue("type", JSON.parse(typeOfPlace));
-
-    if (address) setValue("address", JSON.parse(address));
-
-    if (cordinates) setValue("cordinates", JSON.parse(cordinates));
-
-    if (guests) setGuests(Number(guests));
-
-    if (additionalDetails) setAdditionalDetails(JSON.parse(additionalDetails));
+    localStorage?.setItem("startingDate", JSON.stringify(startingDate));
 
     return () => {
       body.classList.remove("disable-scroll");
     };
-  }, [formStep, setValue, startingDate]);
+  }, [formStep, startingDate]);
 
-  useEffect(() => {
-    if (guests !== 1) localStorage.setItem("guests", JSON.stringify(guests));
-  }, [guests]);
-  useLayoutEffect(() => {
-    if (typeof localStorage !== "undefined") {
-      const step = localStorage.getItem("step");
-      const type = localStorage.getItem("typeOfPlace");
-      const category = localStorage.getItem("category");
-      const address = localStorage.getItem("address");
-      const cordinates = localStorage.getItem("cordinates");
-      const guests = localStorage.getItem("guests");
-      const additionalDetails = localStorage.getItem("additionalDetails");
+  // useLayoutEffect(() => {
+  //   if (typeof localStorage !== "undefined") {
+  //     const step = localStorage.getItem("step");
+  //     const type = localStorage.getItem("typeOfPlace");
+  //     const category = localStorage.getItem("category");
+  //     const address = localStorage.getItem("address");
+  //     const cordinates = localStorage.getItem("cordinates");
+  //     const guests = localStorage.getItem("guests");
+  //     const additionalDetails = localStorage.getItem("additionalDetails");
 
-      if (step) setValue("step", Number(step));
+  //     if (step) setValue("step", Number(step));
 
-      if (category) setValue("category", JSON.parse(category));
+  //     if (category) setValue("category", JSON.parse(category));
 
-      if (type) setValue("type", JSON.parse(type));
+  //     if (type) setValue("type", JSON.parse(type));
 
-      if (address) setValue("address", JSON.parse(address));
+  //     if (address) setValue("address", JSON.parse(address));
 
-      if (cordinates) setValue("cordinates", JSON.parse(cordinates));
+  //     if (cordinates) setValue("cordinates", JSON.parse(cordinates));
 
-      if (guests) setGuests(Number(guests));
+  //     if (guests) setGuests(Number(guests));
 
-      if (additionalDetails)
-        setAdditionalDetails(JSON.parse(additionalDetails));
+  //     if (additionalDetails)
+  //       setValue("additionalDetails", JSON.parse(additionalDetails));
 
-      localStorage.setItem("startingDate", JSON.stringify(startingDate));
-    }
-  }, [setValue, startingDate]);
+  // localStorage.setItem("startingDate", JSON.stringify(startingDate));
+  //   }
+  // }, [setValue, startingDate]);
 
   return (
     <>
@@ -469,7 +244,6 @@ export const CreateForm: React.FC = () => {
             </motion.video>
           </motion.div>
         )}
-
         {formStep === CreateListingSteps.CATEGORY && (
           <motion.div
             className={styles.category_selections}
@@ -504,7 +278,11 @@ export const CreateForm: React.FC = () => {
                       id={`category${category.id}`}
                       className={styles.hidden_checkbox}
                       {...(register("category"),
-                      { onChange: (e) => handleSelectCategory(e, category) })}
+                      {
+                        onChange: () => {
+                          handleUpdateFormAndLocalStorage("category", category);
+                        },
+                      })}
                     />
                     <label
                       htmlFor={`category${category.id}`}
@@ -527,7 +305,6 @@ export const CreateForm: React.FC = () => {
             </div>
           </motion.div>
         )}
-
         {formStep === CreateListingSteps.TYPE_OF_PLACE && (
           <motion.div
             className={styles.type_of_place}
@@ -560,8 +337,12 @@ export const CreateForm: React.FC = () => {
                     id={`typeOfPlace${type.id}`}
                     aria-label={`typeOfPlace${type.id}`}
                     className={styles.hidden_checkbox}
-                    {...(register("type"),
-                    { onChange: (e) => handleSelectTypeOfPlace(e, type) })}
+                    {...(register("typeOfPlace"),
+                    {
+                      onChange: (e) => {
+                        handleUpdateFormAndLocalStorage("typeOfPlace", type);
+                      },
+                    })}
                   />
 
                   <div className={styles.type_of_place_text}>
@@ -584,7 +365,6 @@ export const CreateForm: React.FC = () => {
             </div>
           </motion.div>
         )}
-
         {formStep === CreateListingSteps.LOCATION && (
           <motion.div
             className={styles.location}
@@ -601,7 +381,7 @@ export const CreateForm: React.FC = () => {
               Where is your place located?
             </motion.h1>
 
-            <GoogleMapComponent
+            <GoogleMap
               register={register}
               cordinates={selectedCordinates!}
               setCordinates={handleCordinatesChange}
@@ -612,7 +392,6 @@ export const CreateForm: React.FC = () => {
             </motion.p>
           </motion.div>
         )}
-
         {formStep === CreateListingSteps.BASICS && (
           <motion.div
             className={styles.basics}
@@ -637,7 +416,15 @@ export const CreateForm: React.FC = () => {
               <span className={styles.basic_selections_title}>
                 How many guests will have their own private space?
               </span>
-              <Counter state={guests!} callback={setGuests} />
+              <Counter
+                counter={Number(selectedGuests) || 1}
+                {...(register("guests"),
+                {
+                  setCounter: (value) => {
+                    handleUpdateFormAndLocalStorage("guests", value);
+                  },
+                })}
+              />
             </motion.div>
             <motion.div
               className={styles.basic_selections}
@@ -649,13 +436,17 @@ export const CreateForm: React.FC = () => {
                 Is your place pet-friendly?
               </span>
               <Switch
-                isSelected={additionalDetails?.pets}
                 aria-label={`pets-friedly-switch`}
-                onValueChange={() =>
-                  handleAdditionalDetailsChange(
-                    "pets" as keyof FormState["additionalDetails"]
-                  )
-                }
+                {...(register("additionalDetails"),
+                {
+                  onValueChange: (e) => {
+                    handleUpdateFormAndLocalStorage("additionalDetails", {
+                      pets: !selectedAdditionalDetails?.pets,
+                      accesable: selectedAdditionalDetails?.accesable!,
+                    });
+                  },
+                })}
+                isSelected={selectedAdditionalDetails?.pets}
               />
             </motion.div>
             <motion.div
@@ -668,13 +459,17 @@ export const CreateForm: React.FC = () => {
                 Is your place wheelchair accessible?
               </span>
               <Switch
-                isSelected={additionalDetails?.accesable}
                 aria-label={`pets-friedly-switch`}
-                onValueChange={() =>
-                  handleAdditionalDetailsChange(
-                    "accesable" as keyof FormState["additionalDetails"]
-                  )
-                }
+                {...(register("additionalDetails"),
+                {
+                  onValueChange: (e) => {
+                    handleUpdateFormAndLocalStorage("additionalDetails", {
+                      pets: selectedAdditionalDetails?.pets!,
+                      accesable: !selectedAdditionalDetails?.accesable,
+                    });
+                  },
+                })}
+                isSelected={selectedAdditionalDetails?.accesable}
               />
             </motion.div>
           </motion.div>
@@ -720,7 +515,6 @@ export const CreateForm: React.FC = () => {
             </motion.video>
           </motion.div>
         )}
-
         {formStep === CreateListingSteps.IMAGES && (
           <motion.div
             className={styles.images_container}
@@ -777,6 +571,8 @@ export const CreateForm: React.FC = () => {
             </motion.p>
           </motion.div>
         )}
+
+        {/* <DevTool control={control} /> */}
       </form>
       <motion.div
         className={styles.navigation_bar}

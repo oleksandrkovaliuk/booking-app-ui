@@ -7,6 +7,7 @@ import React, {
   useState,
 } from "react";
 import Image from "next/image";
+import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
@@ -15,6 +16,7 @@ import {
   Modal,
   ModalContent,
   Progress,
+  Spinner,
   Switch,
   useDisclosure,
 } from "@nextui-org/react";
@@ -24,17 +26,19 @@ import {
   StandaloneSearchBox,
   MarkerF,
 } from "@react-google-maps/api";
-import { FieldValues, useForm, UseFormRegister } from "react-hook-form";
+import { useForm, UseFormRegister } from "react-hook-form";
 
 import { RootState } from "@/store";
 import { Counter } from "@/components/counter";
 import { videos } from "@/information/data";
 import { CreateListingSteps } from "./type";
 import { Category, TypeOfPlace } from "@/store/reducers/listingsReducer";
+import camera from "@/assets/3d-camera.png";
 
 import styles from "./createForm.module.scss";
 import "./additionalStyles.scss";
-import { toast } from "sonner";
+import { uploadUserListingImages } from "@/sharing/firebaseImages/users/listings/uploadImg";
+import { useSession } from "next-auth/react";
 
 export interface FormState {
   step?: CreateListingSteps;
@@ -48,8 +52,8 @@ export interface FormState {
     accesable: boolean;
   };
   startingDate?: string;
+  images?: string[];
 }
-
 export interface GoogleMapProps {
   cordinates: { lat: number; lng: number; name?: string };
   setCordinates: ({
@@ -203,6 +207,7 @@ const GoogleMapComponent: React.FC<GoogleMapProps> = ({
 };
 export const CreateForm: React.FC = () => {
   const router = useRouter();
+  const { data: session } = useSession();
   const { categories, typeOfPlace } = useSelector(
     (state: RootState) => state.listingsAdditionals
   );
@@ -212,6 +217,8 @@ export const CreateForm: React.FC = () => {
   const [additionalDetails, setAdditionalDetails] = useState<
     FormState["additionalDetails"]
   >({ pets: false, accesable: false });
+
+  const [isLoading, setIsLoading] = useState(false);
   const { register, watch, setValue } = useForm({
     defaultValues: {
       step: 0,
@@ -221,6 +228,7 @@ export const CreateForm: React.FC = () => {
       address: "",
       amoutOfPeople: guests,
       additionalDetails: additionalDetails,
+      images: [],
     } as FormState,
   });
 
@@ -319,6 +327,19 @@ export const CreateForm: React.FC = () => {
         [name]: !additionalDetails![name],
       })
     );
+  };
+
+  // IMAGES
+  const handleImagesUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsLoading(true);
+    try {
+      await uploadUserListingImages({
+        event: e,
+        user: session?.user.name!,
+        location: selectedAdress,
+      });
+      setIsLoading(false);
+    } catch (error) {}
   };
 
   // CLEAR
@@ -442,6 +463,7 @@ export const CreateForm: React.FC = () => {
               initial={deepAppearAnimation.initial}
               animate={deepAppearAnimation.animate}
               transition={sloverTransition}
+              preload="auto"
             >
               <source src={videos.apartament_building} type="video/mp4" />
             </motion.video>
@@ -680,7 +702,7 @@ export const CreateForm: React.FC = () => {
                 transition={sloverTransition}
               >
                 In this step, you’ll add some of the amenities your place
-                offers, plus 5 or more photos. Then, you’ll create a title and
+                offers, plus 5 or more images. Then, you’ll create a title and
                 description.
               </motion.p>
             </motion.div>
@@ -692,9 +714,67 @@ export const CreateForm: React.FC = () => {
               initial={deepAppearAnimation.initial}
               animate={deepAppearAnimation.animate}
               transition={sloverTransition}
+              preload="auto"
             >
               <source src={videos.apartament_building2} type="video/mp4" />
             </motion.video>
+          </motion.div>
+        )}
+
+        {formStep === CreateListingSteps.IMAGES && (
+          <motion.div
+            className={styles.images_container}
+            initial={appearAnimation.initial}
+            animate={appearAnimation.animate}
+            transition={transition}
+          >
+            <motion.h1
+              className={styles.title}
+              initial={appearAnimation.initial}
+              animate={appearAnimation.animate}
+              transition={sloverTransition}
+            >
+              Please provide at least 5 creative images of your place.
+            </motion.h1>
+            <motion.div
+              initial={deepAppearAnimation.initial}
+              animate={deepAppearAnimation.animate}
+              transition={sloverTransition}
+              className={styles.images_files_container}
+              data-isLoading={isLoading}
+            >
+              <label
+                htmlFor="images"
+                className={`${styles.uploading_images_button}`}
+              >
+                <input
+                  type="file"
+                  {...register("images")}
+                  multiple
+                  className={styles.hidden_input}
+                  onChange={(e) => handleImagesUpload(e)}
+                />
+                {isLoading ? (
+                  <Spinner
+                    color="default"
+                    size="lg"
+                    style={{ pointerEvents: "none" }}
+                  />
+                ) : (
+                  <Image
+                    src={camera}
+                    alt="3d_camera"
+                    width={100}
+                    height={100}
+                    className={styles.camera_icon}
+                  />
+                )}
+              </label>
+            </motion.div>
+            <motion.p className={styles.description}>
+              Please ensure that all provided photo has good lighting and are of
+              good quality.
+            </motion.p>
           </motion.div>
         )}
       </form>
@@ -744,7 +824,7 @@ export const CreateForm: React.FC = () => {
         </Modal>
         <Progress
           size="sm"
-          value={formStep! * 10}
+          value={formStep! * 12}
           className={styles.progress_bar}
         />
         <div className={styles.navigation_buttons}>

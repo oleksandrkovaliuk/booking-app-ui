@@ -1,4 +1,5 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp, FirebaseApp } from "firebase/app";
+import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_APIKEY,
@@ -8,4 +9,5 @@ const firebaseConfig = {
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.NEXT_PUBLIC_COUNTRIES_APP_ID,
 };
-const firebase_app = initializeApp(firebaseConfig);
+const firebase_app: FirebaseApp = initializeApp(firebaseConfig);
+export const storage = getStorage(firebase_app);

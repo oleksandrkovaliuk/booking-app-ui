@@ -1,6 +1,6 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 
-import { listingsAdditionalsReducer } from "./reducers/listingsReducer";
+import { reducer as listingsAdditionalsReducer } from "./reducers/listingsReducer";
 
 const rootReducers = combineReducers({
   listingsAdditionals: listingsAdditionalsReducer,

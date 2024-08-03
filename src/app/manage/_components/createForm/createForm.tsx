@@ -517,7 +517,6 @@ export const CreateForm: React.FC = () => {
                   </motion.div>
                 );
               })}
-              ;
             </div>
           </motion.div>
         )}

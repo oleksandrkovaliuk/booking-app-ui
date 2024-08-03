@@ -1,6 +1,6 @@
 import { getAllCategories } from "@/store/thunks/listings/categories";
 import { getTypeOfPlace } from "@/store/thunks/listings/typeOfPlace";
-import { createReducer } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 export interface Category {
   id: number;
   category_name: string;
@@ -19,15 +19,16 @@ interface State {
   typeOfPlace: TypeOfPlace[];
 }
 
-const initState: State = {
+const initialState: State = {
   categories: [],
   typeOfPlace: [],
 };
 
-export const listingsAdditionalsReducer = createReducer(
-  initState,
-  (builder) => {
-    // CATEGORIES
+const listingsAdditionalsSlice = createSlice({
+  name: "listingsAdditionals",
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
     builder.addCase(getAllCategories.pending, (state) => {
       state.categories = [];
     });
@@ -38,16 +39,16 @@ export const listingsAdditionalsReducer = createReducer(
       state.categories = [];
     });
 
-    // TYPE OF PLACE
     builder.addCase(getTypeOfPlace.pending, (state) => {
       state.typeOfPlace = [];
     });
     builder.addCase(getTypeOfPlace.fulfilled, (state, action) => {
-      console.log(action.payload);
       state.typeOfPlace = action.payload;
     });
     builder.addCase(getTypeOfPlace.rejected, (state) => {
       state.typeOfPlace = [];
     });
-  }
-);
+  },
+});
+
+export const { actions, reducer } = listingsAdditionalsSlice;

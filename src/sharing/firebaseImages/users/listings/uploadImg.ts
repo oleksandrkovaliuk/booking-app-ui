@@ -2,6 +2,7 @@ import {
   deleteObject,
   getDownloadURL,
   listAll,
+  ListResult,
   ref,
   uploadBytes,
 } from "firebase/storage";
@@ -24,17 +25,30 @@ export const uploadUserListingImages = async ({
     if (!event || !user || !location) {
       throw new Error("Some details are missing");
     } else {
-      const pathToUserFolder = ref(storage, `users/${user}/`);
       const uploadedImages = event.target.files as FileList;
-      const uploadImagesIntoUserFolder = ref(
-        storage,
-        `users/${user}/listings/${location}/`
-      );
-
       if (!validateImagesTypes(uploadedImages)) {
         throw new Error("Some of the uploaded images are not supported");
       } else {
-        console.log("all images are supported");
+        const uploadImagesIntoUserFolder = ref(
+          storage,
+          `users/${user}/listings/${location}/`
+        );
+
+        for (let i = 0; i < uploadedImages.length; i++) {
+          const uploadingImg = uploadedImages[i];
+          const pathToUserImg = ref(
+            uploadImagesIntoUserFolder,
+            uploadingImg.name
+          );
+          await uploadBytes(pathToUserImg, uploadingImg);
+        }
+
+        const resultImages = await listAll(uploadImagesIntoUserFolder);
+        console.log(
+          resultImages.items.map((item) => getDownloadURL(item)),
+          "result urls"
+        );
+        return resultImages.items.map((item) => getDownloadURL(item));
       }
     }
   } catch (error) {

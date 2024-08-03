@@ -16,6 +16,7 @@ import {
   Modal,
   ModalContent,
   Progress,
+  Spinner,
   Switch,
   useDisclosure,
 } from "@nextui-org/react";
@@ -216,6 +217,8 @@ export const CreateForm: React.FC = () => {
   const [additionalDetails, setAdditionalDetails] = useState<
     FormState["additionalDetails"]
   >({ pets: false, accesable: false });
+
+  const [isLoading, setIsLoading] = useState(false);
   const { register, watch, setValue } = useForm({
     defaultValues: {
       step: 0,
@@ -328,11 +331,15 @@ export const CreateForm: React.FC = () => {
 
   // IMAGES
   const handleImagesUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    await uploadUserListingImages({
-      event: e,
-      user: session?.user.name!,
-      location: selectedAdress,
-    });
+    setIsLoading(true);
+    try {
+      await uploadUserListingImages({
+        event: e,
+        user: session?.user.name!,
+        location: selectedAdress,
+      });
+      setIsLoading(false);
+    } catch (error) {}
   };
 
   // CLEAR
@@ -734,6 +741,7 @@ export const CreateForm: React.FC = () => {
               animate={deepAppearAnimation.animate}
               transition={sloverTransition}
               className={styles.images_files_container}
+              data-isLoading={isLoading}
             >
               <label
                 htmlFor="images"
@@ -746,13 +754,21 @@ export const CreateForm: React.FC = () => {
                   className={styles.hidden_input}
                   onChange={(e) => handleImagesUpload(e)}
                 />
-                <Image
-                  src={camera}
-                  alt="3d_camera"
-                  width={100}
-                  height={100}
-                  className={styles.camera_icon}
-                />
+                {isLoading ? (
+                  <Spinner
+                    color="default"
+                    size="lg"
+                    style={{ pointerEvents: "none" }}
+                  />
+                ) : (
+                  <Image
+                    src={camera}
+                    alt="3d_camera"
+                    width={100}
+                    height={100}
+                    className={styles.camera_icon}
+                  />
+                )}
               </label>
             </motion.div>
             <motion.p className={styles.description}>

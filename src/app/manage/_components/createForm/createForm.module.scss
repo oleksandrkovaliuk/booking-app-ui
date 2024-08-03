@@ -206,6 +206,14 @@
   }
   .images_files_container {
     margin-bottom: 20px;
+    &[data-isLoading="true"] {
+      .uploading_images_button {
+        cursor: not-allowed;
+      }
+      .hidden_input {
+        pointer-events: none;
+      }
+    }
     .uploading_images_button {
       position: relative;
       display: flex;
@@ -216,16 +224,9 @@
       padding: 20px;
       border-radius: 20px;
       border: 2px solid var(--booking-app-lightgrey-color);
-      cursor: pointer;
       will-change: scale;
       transition: scale 0.2s ease-in-out, border 0.2s ease-in-out;
-      .camera_icon {
-        width: 100px;
-        height: 100px;
-        flex-shrink: 0;
-        transition: scale 0.2s ease-in-out;
-        pointer-events: none;
-      }
+
       &:hover {
         border: 2px solid var(--booking-app-black-color);
         .camera_icon {
@@ -234,6 +235,14 @@
       }
       &:active {
         scale: 0.98;
+      }
+
+      .camera_icon {
+        width: 100px;
+        height: 100px;
+        flex-shrink: 0;
+        transition: scale 0.2s ease-in-out;
+        pointer-events: none;
       }
     }
   }

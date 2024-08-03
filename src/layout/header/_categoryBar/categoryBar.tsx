@@ -14,8 +14,6 @@ import {
 } from "@nextui-org/react";
 import Image from "next/image";
 import { FilterIcon } from "@/svgs/FilterIcon";
-import { getAllCategories } from "@/store/thunks/listings/categories";
-import { getTypeOfPlace } from "@/store/thunks/listings/typeOfPlace";
 
 const Categories: React.FC = () => {
   const { categories } = useSelector(

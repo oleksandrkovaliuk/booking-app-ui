@@ -16,7 +16,8 @@ import { AdminFlag } from "@/svgs/AdminFlag";
 import { UserIcon } from "@/svgs/UserIcon";
 import { LogOutIcon } from "@/svgs/LogOutIcon";
 import { Roles } from "@/utilities/enums";
-import { FormState } from "@/app/manage/_components/createForm/createForm";
+import { FormState } from "@/app/manage/_components/type";
+import { CreateListingSteps } from "@/app/manage/_components/enums";
 
 import styles from "./userMenu.module.scss";
 import "./dropdown.scss";
@@ -26,15 +27,10 @@ export const UserMenu: React.FC = () => {
   const [mobile, setMobile] = useState(false);
   const [listingInProgress] = useState<FormState | null>(() => {
     if (typeof localStorage !== "undefined") {
-      const formState = localStorage.getItem("state")!;
+      const formState = localStorage.getItem("step")!;
       if (formState) {
         const state = JSON.parse(formState);
-        if (
-          state.category ||
-          state.type ||
-          state.cordinates ||
-          state.startingDate
-        ) {
+        if (state) {
           return state;
         } else {
           return null;

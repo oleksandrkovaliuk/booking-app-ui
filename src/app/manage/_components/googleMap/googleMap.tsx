@@ -1,4 +1,5 @@
-import { useRef } from "react";
+"use client";
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import {
   MarkerF,
@@ -27,18 +28,16 @@ export const GoogleMap: React.FC<GoogleMapProps> = ({
     libraries: ["places"],
   });
 
-  if (loadError) return <div>Error loading map</div>;
-  if (!isLoaded) return <div>Loading...</div>;
-
   const handleCordinatesChange = () => {
     if (searchBar.current) {
-      const [places] =
+      const places =
         searchBar.current.getPlaces() as google.maps.places.PlaceResult[];
+
       if (places) {
         setCordinates({
-          lat: places.geometry?.location?.lat() as number,
-          lng: places.geometry?.location?.lng() as number,
-          name: places.formatted_address as string,
+          lat: places[0].geometry?.location?.lat() as number,
+          lng: places[0].geometry?.location?.lng() as number,
+          name: places[0].formatted_address as string,
         });
       }
     }
@@ -64,6 +63,19 @@ export const GoogleMap: React.FC<GoogleMapProps> = ({
       });
     }
   };
+
+  useEffect(() => {
+    const handlePreventEvent = (e: KeyboardEvent) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+      }
+    };
+    document.addEventListener("keydown", handlePreventEvent);
+    return () => document.removeEventListener("keydown", handlePreventEvent);
+  }, []);
+
+  if (loadError) return <div>Error loading map</div>;
+  if (!isLoaded) return <div>Loading...</div>;
 
   return (
     <motion.div className={styles.location_map}>

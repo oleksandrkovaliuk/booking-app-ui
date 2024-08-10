@@ -321,8 +321,8 @@ export const Images: React.FC<ContentProps> = ({
           animate={deepAppearAnimation.animate}
           transition={sloverTransition}
           className={styles.images_files_container}
-          data-isLoading={isLoading}
-          data-isReady={uploadedImages.isImagesReady}
+          data-isloading={isLoading}
+          data-isready={uploadedImages.isImagesReady}
         >
           <Reorder.Group
             values={uploadedImages.images}

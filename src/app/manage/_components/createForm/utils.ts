@@ -1,19 +1,8 @@
 import { deleteUserListingImages } from "@/sharing/firebaseImages/users/listings/uploadImg";
 import { toast } from "sonner";
 
-export const clearAllStorage = async ({
-  user,
-  location,
-}: {
-  user: string;
-  location: string;
-}) => {
+export const clearAllStorage = () => {
   try {
-    await deleteUserListingImages({
-      user,
-      location,
-    });
-
     localStorage.removeItem("step");
     localStorage.removeItem("typeOfPlace");
     localStorage.removeItem("category");

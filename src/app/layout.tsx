@@ -20,7 +20,7 @@ export default function RootLayout({
         <Providers>
           <GlobalDataOnLoad />
           <Toaster />
-          {children}
+          <div className="wrapper">{children}</div>
         </Providers>
       </body>
     </html>

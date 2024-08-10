@@ -2,15 +2,14 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Switch } from "@nextui-org/react";
 
+import { ContentProps } from "../type";
 import {
   appearAnimation,
   deepAppearAnimation,
   sloverTransition,
-  transition,
+  motion_transition,
 } from "../../../consts";
 import { Counter } from "@/components/counter";
-
-import { ContentProps } from "../type";
 
 export const Basics: React.FC<ContentProps> = ({
   styles,
@@ -24,7 +23,7 @@ export const Basics: React.FC<ContentProps> = ({
       className={styles.basics}
       initial={appearAnimation.initial}
       animate={appearAnimation.animate}
-      transition={transition}
+      transition={motion_transition}
     >
       <motion.h1
         className={styles.title}

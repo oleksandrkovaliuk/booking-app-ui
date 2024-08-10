@@ -7,7 +7,6 @@ import {
   uploadBytes,
 } from "firebase/storage";
 import { storage } from "@/configs/firebase";
-import { validateImagesTypes } from "./validation";
 import { toast } from "sonner";
 
 interface UploadImgProps {
@@ -26,51 +25,77 @@ export const uploadUserListingImages = async ({
       throw new Error("Some details are missing");
     } else {
       const uploadedImages = event.target.files as FileList;
-      if (!validateImagesTypes(uploadedImages)) {
-        throw new Error("Some of the uploaded images are not supported");
-      } else {
-        const uploadImagesIntoUserFolder = ref(
-          storage,
-          `users/${user}/listings/${location}/`
-        );
+      const uploadImagesIntoUserFolder = ref(
+        storage,
+        `users/${user}/listings/${location}/`
+      );
 
-        for (let i = 0; i < uploadedImages.length; i++) {
-          const uploadingImg = uploadedImages[i];
-          const pathToUserImg = ref(
-            uploadImagesIntoUserFolder,
-            uploadingImg.name
-          );
-          await uploadBytes(pathToUserImg, uploadingImg);
-        }
-
-        const resultImages = await listAll(uploadImagesIntoUserFolder);
-        console.log(
-          resultImages.items.map((item) => getDownloadURL(item)),
-          "result urls"
+      for (let i = 0; i < uploadedImages.length; i++) {
+        const uploadingImg = uploadedImages[i];
+        const pathToUserImg = ref(
+          uploadImagesIntoUserFolder,
+          uploadingImg.name
         );
-        return resultImages.items.map((item) => getDownloadURL(item));
+        await uploadBytes(pathToUserImg, uploadingImg);
       }
+
+      const resultImages = await listAll(uploadImagesIntoUserFolder);
+      return await Promise.all(
+        resultImages.items.map((item) => getDownloadURL(item))
+      ).then((res) => res);
     }
   } catch (error) {
     toast.error((error as Error).message);
   }
+};
 
-  //   try {
-  //     if (validationOnImgType(uploadingImg.type)) {
-  //       const res = await listAll(pathToEventFolder);
-  //       if (res.items.length) {
-  //         await Promise.all(res.items.map((item) => deleteObject(item)));
-  //       }
+export const deleteUserListingImages = async ({
+  user,
+  location,
+}: {
+  user: string;
+  location: string;
+}) => {
+  try {
+    const uploadImagesIntoUserFolder = ref(
+      storage,
+      `users/${user}/listings/${location}/`
+    );
+    const resultImages = await listAll(uploadImagesIntoUserFolder);
+    await Promise.all(
+      resultImages.items.map((item) => deleteObject(item))
+    ).then((res) => res);
+  } catch (error) {
+    toast.error((error as Error).message);
+  }
+};
 
-  //       await uploadBytes(insertImgIntoFolder, uploadingImg);
-
-  //       const resWithUpdatedImg = await listAll(pathToEventFolder);
-  //       const returnedUrl = await getDownloadURL(resWithUpdatedImg.items[0]);
-  //       return { url: returnedUrl, message: "your img succesfully uploaded" };
-  //     } else {
-  //       return { message: "you cannot upload this type of file" };
-  //     }
-  //   } catch (error) {
-  //     return null;
-  //   }
+export const deleteIndividualListingImage = async ({
+  user,
+  location,
+  image,
+}: {
+  user: string;
+  location: string;
+  image: string;
+}) => {
+  try {
+    const uploadImagesIntoUserFolder = ref(
+      storage,
+      `users/${user}/listings/${location}/`
+    );
+    const resultImages = await listAll(uploadImagesIntoUserFolder);
+    return await Promise.all(
+      resultImages.items.map(async (item) => {
+        const urls = await getDownloadURL(item).then((res) => res);
+        if (urls === image) {
+          await deleteObject(item);
+        } else {
+          return urls;
+        }
+      })
+    ).then((res) => res);
+  } catch (error) {
+    toast.error((error as Error).message);
+  }
 };

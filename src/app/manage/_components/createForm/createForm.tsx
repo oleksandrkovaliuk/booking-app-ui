@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import {
   Button,
   Modal,
@@ -12,18 +12,19 @@ import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
-// import { DevTool } from "@hookform/devtools";
 
 import { RootState } from "@/store";
 
 import { CreateListingSteps } from "../enums";
 import { FormState, GoogleMapProps } from "../type";
-import { uploadUserListingImages } from "@/sharing/firebaseImages/users/listings/uploadImg";
 import { Category, TypeOfPlace } from "@/store/reducers/listingsReducer";
 import { clearAllStorage } from "./utils";
 
-import { transition, appearAnimation, deepAppearAnimation } from "../consts";
+import {
+  motion_transition,
+  appearAnimation,
+  deepAppearAnimation,
+} from "../consts";
 
 // FORMAT DATE TO DD/MM/HH/MM
 
@@ -40,6 +41,7 @@ const formatDate = (date: Date) => {
 import styles from "./createForm.module.scss";
 import "./additionalStyles.scss";
 import { Content } from "./content";
+import { useSession } from "next-auth/react";
 export const CreateForm: React.FC = () => {
   const router = useRouter();
   const { data: session } = useSession();
@@ -49,15 +51,16 @@ export const CreateForm: React.FC = () => {
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-  const [isLoading, setIsLoading] = useState(false);
-
   const { register, watch, setValue, handleSubmit } = useForm({
     defaultValues: {
       step: CreateListingSteps.INTRODUCING as CreateListingSteps,
       category: null as Category | null,
       typeOfPlace: null as TypeOfPlace | null,
       cordinates: { lat: 50, lng: 14 } as GoogleMapProps["cordinates"],
-      address: "",
+      address: {
+        formattedAddress: "",
+        shorterAddress: "",
+      },
       amoutOfPeople: 1,
       guests: 1,
       additionalDetails: {
@@ -66,6 +69,11 @@ export const CreateForm: React.FC = () => {
       },
       startingDate: "",
       images: [],
+      title: "",
+      aboutplace: "",
+      placeis: "",
+      notes: "",
+      price: "0",
     } as FormState,
   });
 
@@ -80,12 +88,18 @@ export const CreateForm: React.FC = () => {
 
   // WATCH VALUES
   const formStep = watch("step");
-  const selectedAdress = watch("address");
+  const selectedAddress = watch("address");
   const selectedTypeOfPlace = watch("typeOfPlace");
   const selectedCategory = watch("category");
   const selectedCordinates = watch("cordinates");
   const selectedAdditionalDetails = watch("additionalDetails");
   const selectedGuests = watch("guests");
+  const selectedImages = watch("images");
+  const selectedTitle = watch("title");
+  const selectedAboutPlace = watch("aboutplace");
+  const selectedPlaceIs = watch("placeis");
+  const selectedNotes = watch("notes");
+  const selectedPrice = watch("price");
 
   const [startingDate] = useState<string>(() => {
     return formatDate(new Date());
@@ -93,17 +107,39 @@ export const CreateForm: React.FC = () => {
 
   // CONDITIONS
   const enumsKeys = Object.keys(CreateListingSteps)
-    .map((item) => Number(item) + 1)
+    .map((item) => Number(item))
     .filter((item) => !isNaN(Number(item)));
 
   const isLastStep = formStep === Number(enumsKeys[enumsKeys.length - 1]);
+
+  const isAdditionalFieldsEmpty =
+    selectedTitle.trim() === "" ||
+    selectedTitle.length <= 10 ||
+    selectedAboutPlace.trim() === "" ||
+    selectedAboutPlace.length <= 10 ||
+    selectedPlaceIs.trim() === "" ||
+    selectedPlaceIs.length <= 10 ||
+    selectedNotes.trim() === "" ||
+    selectedNotes.length <= 10;
 
   const isDoesntSelected =
     (formStep === CreateListingSteps.LOCATION && selectedCordinates === null) ||
     (formStep === CreateListingSteps.CATEGORY && selectedCategory === null) ||
     (formStep === CreateListingSteps.TYPE_OF_PLACE &&
       selectedTypeOfPlace === null) ||
-    (formStep === CreateListingSteps.LOCATION && selectedAdress === "");
+    (formStep === CreateListingSteps.LOCATION &&
+      selectedAddress.formattedAddress === "") ||
+    selectedAddress.shorterAddress === "" ||
+    (formStep === CreateListingSteps.IMAGES && selectedImages!.length < 5) ||
+    (formStep === CreateListingSteps.ADDITIONAL_DETAILS &&
+      isAdditionalFieldsEmpty) ||
+    (formStep === CreateListingSteps.PRICE &&
+      selectedPrice.split("").length <= 0);
+
+  const allowScroll =
+    formStep === CreateListingSteps.CATEGORY ||
+    formStep === CreateListingSteps.IMAGES ||
+    formStep === CreateListingSteps.ADDITIONAL_DETAILS;
 
   // NAVIGATION
   const handleNextStep = () => {
@@ -124,38 +160,47 @@ export const CreateForm: React.FC = () => {
 
   // LEAVE THE FORM
   const handleLeaveTheForm = () => {
-    clearAllStorage();
+    clearAllStorage({
+      user: session?.user.name!,
+      location: selectedAddress.formattedAddress!,
+    });
     onOpenChange();
-    router.back();
+    router.push("/");
   };
 
   // CORDINATES
   const handleCordinatesChange = (cordinates: GoogleMapProps["cordinates"]) => {
-    setValue("cordinates", { lat: cordinates.lat, lng: cordinates.lng });
-    setValue("address", cordinates.name!);
-    localStorage.setItem("address", JSON.stringify(cordinates.name));
-    localStorage.setItem(
-      "cordinates",
-      JSON.stringify({ lat: cordinates.lat, lng: cordinates.lng })
-    );
-  };
+    const shorterAdress = cordinates.address?.address_components
+      ?.map((item) => item)
+      ?.filter((parts_of_adress) =>
+        parts_of_adress.types.every((item) =>
+          [
+            "route",
+            "neighborhood",
+            "administrative_area_level_1",
+            "country",
+          ].includes(item)
+        )
+      )
+      .map(({ short_name }) => short_name)
+      .join(", ");
 
-  // IMAGES
-  const handleImagesUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    setIsLoading(true);
-    try {
-      await uploadUserListingImages({
-        event: e,
-        user: session?.user.name!,
-        location: selectedAdress,
-      });
-      setIsLoading(false);
-    } catch (error) {}
+    handleUpdateFormAndLocalStorage("address", {
+      formattedAddress: cordinates.address?.formatted_address || "",
+      shorterAddress: shorterAdress || "",
+    });
+    handleUpdateFormAndLocalStorage("cordinates", {
+      lat: cordinates.lat,
+      lng: cordinates.lng,
+    });
   };
 
   // SUBMIT
   const submitCreatedListing = async () => {
-    clearAllStorage();
+    clearAllStorage({
+      user: session?.user.name!,
+      location: selectedAddress.formattedAddress!,
+    });
     toast(
       <div className="toast success">
         🎉 Your listing has been created successfully.
@@ -166,13 +211,15 @@ export const CreateForm: React.FC = () => {
 
   useEffect(() => {
     const body = document.body;
-    if (formStep !== CreateListingSteps.CATEGORY && window.innerWidth >= 375)
+    if (!allowScroll && window.innerWidth >= 375) {
+      window.scrollTo(0, 0);
       body.classList.add("disable-scroll");
+    }
 
     return () => {
       body.classList.remove("disable-scroll");
     };
-  }, [formStep]);
+  }, [allowScroll, formStep]);
 
   useEffect(() => {
     if (typeof localStorage !== "undefined") {
@@ -183,6 +230,12 @@ export const CreateForm: React.FC = () => {
       const cordinates = localStorage.getItem("cordinates");
       const guests = localStorage.getItem("guests");
       const additionalDetails = localStorage.getItem("additionalDetails");
+      const images = localStorage.getItem("images");
+      const title = localStorage.getItem("title");
+      const aboutplace = localStorage.getItem("aboutplace");
+      const placeis = localStorage.getItem("placeis");
+      const notes = localStorage.getItem("notes");
+      const price = localStorage.getItem("price");
 
       if (step) setValue("step", Number(step));
 
@@ -199,21 +252,35 @@ export const CreateForm: React.FC = () => {
       if (additionalDetails)
         setValue("additionalDetails", JSON.parse(additionalDetails));
 
+      if (images) setValue("images", JSON.parse(images));
+
+      if (title) setValue("title", JSON.parse(title));
+
+      if (placeis) setValue("placeis", JSON.parse(placeis));
+
+      if (aboutplace) setValue("aboutplace", JSON.parse(aboutplace));
+
+      if (notes) setValue("notes", JSON.parse(notes));
+
+      if (price) setValue("price", JSON.parse(price));
+
       localStorage.setItem("startingDate", JSON.stringify(startingDate));
     }
-  }, [setValue, startingDate]);
+  }, [formStep, setValue, startingDate]);
+
   return (
     <>
       <form className={styles.create_form}>
         <Content
           register={register}
-          isLoading={isLoading}
+          images={selectedImages!}
+          selectedPrice={selectedPrice!}
           selectedGuests={selectedGuests!}
+          selectedAdress={selectedAddress.formattedAddress}
           key={formStep as CreateListingSteps}
           selectedCategory={selectedCategory!}
           type={formStep as CreateListingSteps}
           categories={categories as Category[]}
-          handleImagesUpload={handleImagesUpload}
           selectedCordinates={selectedCordinates!}
           selectedTypeOfPlace={selectedTypeOfPlace!}
           typeOfPlace={typeOfPlace as TypeOfPlace[]}
@@ -221,13 +288,12 @@ export const CreateForm: React.FC = () => {
           selectedAdditionalDetails={selectedAdditionalDetails!}
           handleUpdateFormAndLocalStorage={handleUpdateFormAndLocalStorage}
         />
-        {/* <DevTool control={control} /> */}
       </form>
       <motion.div
         className={styles.navigation_bar}
         initial={appearAnimation.initial}
         animate={appearAnimation.animate}
-        transition={transition}
+        transition={motion_transition}
       >
         <Modal
           isOpen={isOpen}
@@ -243,7 +309,7 @@ export const CreateForm: React.FC = () => {
               <motion.p
                 initial={deepAppearAnimation.initial}
                 animate={deepAppearAnimation.animate}
-                transition={transition}
+                transition={motion_transition}
                 className="modal_description"
               >
                 Heads up! Are you sure you want to go back? 🫣
@@ -253,7 +319,7 @@ export const CreateForm: React.FC = () => {
               <motion.p
                 initial={deepAppearAnimation.initial}
                 animate={deepAppearAnimation.animate}
-                transition={transition}
+                transition={motion_transition}
                 className="modal_question"
               >
                 If you hit that back button once more, all your data will vanish
@@ -269,7 +335,7 @@ export const CreateForm: React.FC = () => {
         </Modal>
         <Progress
           size="sm"
-          value={formStep! * 12}
+          value={formStep! * 10}
           className={styles.progress_bar}
         />
         <div className={styles.navigation_buttons}>
@@ -286,7 +352,7 @@ export const CreateForm: React.FC = () => {
             data-last={isLastStep}
             disabled={isDoesntSelected}
           >
-            {!isLastStep ? "Next" : "Submit"}
+            {!isLastStep ? "Next" : "Publish"}
           </Button>
         </div>
       </motion.div>

@@ -27,7 +27,7 @@ export const UserMenu: React.FC = () => {
   const [mobile, setMobile] = useState(false);
   const [listingInProgress] = useState<FormState | null>(() => {
     if (typeof localStorage !== "undefined") {
-      const formState = localStorage.getItem("step")!;
+      const formState = localStorage.getItem("startingDate")!;
       if (formState) {
         const state = JSON.parse(formState);
         if (state) {

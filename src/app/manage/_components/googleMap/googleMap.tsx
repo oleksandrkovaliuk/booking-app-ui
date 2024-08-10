@@ -37,7 +37,7 @@ export const GoogleMap: React.FC<GoogleMapProps> = ({
         setCordinates({
           lat: places[0].geometry?.location?.lat() as number,
           lng: places[0].geometry?.location?.lng() as number,
-          name: places[0].formatted_address as string,
+          address: places[0] as google.maps.places.PlaceResult,
         });
       }
     }
@@ -56,10 +56,11 @@ export const GoogleMap: React.FC<GoogleMapProps> = ({
           return results;
         }
       );
+
       setCordinates({
         lat: e.latLng.lat() as number,
         lng: e.latLng.lng() as number,
-        name: street.results[0].formatted_address as string,
+        address: street.results[0] as google.maps.places.PlaceResult,
       });
     }
   };
@@ -91,10 +92,7 @@ export const GoogleMap: React.FC<GoogleMapProps> = ({
           initial={appearAnimation.initial}
           animate={appearAnimation.animate}
           transition={sloverTransition}
-          {...register("address", {
-            onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
-              setCordinates({ ...cordinates!, name: e.target.value }),
-          })}
+          {...register("address.formattedAddress")}
         />
       </StandaloneSearchBox>
       <motion.div

@@ -7,7 +7,7 @@ import {
   appearAnimation,
   deepAppearAnimation,
   sloverTransition,
-  transition,
+  motion_transition,
 } from "@/app/manage/_components/consts";
 
 export const Category: React.FC<ContentProps> = ({
@@ -22,7 +22,7 @@ export const Category: React.FC<ContentProps> = ({
       className={styles.category_selections}
       initial={appearAnimation.initial}
       animate={appearAnimation.animate}
-      transition={transition}
+      transition={motion_transition}
     >
       <motion.h1
         className={`${styles.title} ${styles.title_selections}`}
@@ -34,14 +34,14 @@ export const Category: React.FC<ContentProps> = ({
       </motion.h1>
 
       <div className={styles.selections_container}>
-        {categories?.map((category) => {
+        {categories?.map((category, i) => {
           return (
             <motion.div
               key={category.id}
               className={`${styles.category}  ${styles.selection}`}
               initial={deepAppearAnimation.initial}
               animate={deepAppearAnimation.animate}
-              transition={sloverTransition}
+              transition={{ delay: 0.05 * i, ease: "easeInOut" }}
               data-selected={
                 selectedCategory && selectedCategory?.id === category?.id
               }

@@ -1,37 +1,35 @@
-import { Category, TypeOfPlace } from "@/store/reducers/listingsReducer";
-import { FormState, GoogleMapProps } from "../type";
+import { deleteUserListingImages } from "@/sharing/firebaseImages/users/listings/uploadImg";
+import { toast } from "sonner";
 
-// export const initialFormState = {
-//   step:
-//     Number(localStorage !== undefined && localStorage?.getItem("step")) || 0,
-//   category: JSON.parse(
-//     localStorage.getItem("category") || "{}"
-//   ) as Category | null,
-//   typeOfPlace: JSON.parse(
-//     localStorage.getItem("typeOfPlace") || "{}"
-//   ) as TypeOfPlace | null,
-//   cordinates: JSON.parse(
-//     localStorage.getItem("cordinates") || '{"lat": 0, "lng": 0}'
-//   ) as GoogleMapProps["cordinates"],
-//   address: localStorage.getItem("address") ?? "",
-//   amoutOfPeople: Number(localStorage.getItem("guests")) ?? 1,
-//   guests: Number(localStorage.getItem("guests")) ?? 1,
-//   additionalDetails: JSON.parse(
-//     localStorage.getItem("additionalDetails") || "{}"
-//   ) as {
-//     pets: boolean;
-//     accesable: boolean;
-//   },
-//   images: JSON.parse(localStorage.getItem("images") || "[]") as string[],
-// };
+export const clearAllStorage = async ({
+  user,
+  location,
+}: {
+  user: string;
+  location: string;
+}) => {
+  try {
+    await deleteUserListingImages({
+      user,
+      location,
+    });
 
-export const clearAllStorage = () => {
-  localStorage.removeItem("step");
-  localStorage.removeItem("typeOfPlace");
-  localStorage.removeItem("category");
-  localStorage.removeItem("cordinates");
-  localStorage.removeItem("address");
-  localStorage.removeItem("guests");
-  localStorage.removeItem("additionalDetails");
-  localStorage.removeItem("startingDate");
+    localStorage.removeItem("step");
+    localStorage.removeItem("typeOfPlace");
+    localStorage.removeItem("category");
+    localStorage.removeItem("cordinates");
+    localStorage.removeItem("formattedAddress");
+    localStorage.removeItem("guests");
+    localStorage.removeItem("additionalDetails");
+    localStorage.removeItem("startingDate");
+    localStorage.removeItem("images");
+    localStorage.removeItem("title");
+    localStorage.removeItem("aboutplace");
+    localStorage.removeItem("placeis");
+    localStorage.removeItem("notes");
+    localStorage.removeItem("price");
+    localStorage.removeItem("description");
+  } catch (error) {
+    toast.error((error as Error).message);
+  }
 };

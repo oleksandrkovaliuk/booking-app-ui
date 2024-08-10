@@ -123,13 +123,12 @@ export const CreateForm: React.FC = () => {
     selectedNotes.length <= 10;
 
   const isDoesntSelected =
-    (formStep === CreateListingSteps.LOCATION && selectedCordinates === null) ||
     (formStep === CreateListingSteps.CATEGORY && selectedCategory === null) ||
     (formStep === CreateListingSteps.TYPE_OF_PLACE &&
       selectedTypeOfPlace === null) ||
     (formStep === CreateListingSteps.LOCATION &&
       selectedAddress.formattedAddress === "") ||
-    selectedAddress.shorterAddress === "" ||
+    (selectedAddress.shorterAddress === "" && selectedCordinates === null) ||
     (formStep === CreateListingSteps.IMAGES && selectedImages!.length < 5) ||
     (formStep === CreateListingSteps.ADDITIONAL_DETAILS &&
       isAdditionalFieldsEmpty) ||

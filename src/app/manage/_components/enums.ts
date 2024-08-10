@@ -6,4 +6,8 @@ export enum CreateListingSteps {
   BASICS,
   INTRODUCING_2,
   IMAGES,
+  ADDITIONAL_DETAILS,
+  INTRODUCING_3,
+  PRICE,
+  READY,
 }

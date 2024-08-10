@@ -41,9 +41,12 @@ a {
   text-decoration: unset;
 }
 
-.toast.success {
+.toast {
   font-size: 14px;
   font-family: var(--booking-app-Nunito-Sans-font);
   font-weight: 600;
   color: var(--booking-app-black-color);
+  &.error {
+    color: var(--booking-app-coral-color);
+  }
 }

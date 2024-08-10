@@ -10,7 +10,7 @@ import {
 } from "@/app/manage/_components/consts";
 import { videos } from "@/information/data";
 
-export const Introducing_2: React.FC<ContentProps> = ({
+export const Introducing_3: React.FC<ContentProps> = ({
   styles,
 }: ContentProps) => {
   return (
@@ -27,7 +27,7 @@ export const Introducing_2: React.FC<ContentProps> = ({
           animate={deepAppearAnimation.animate}
           transition={sloverTransition}
         >
-          Make your place stand out
+          Finish and publish.
         </motion.h1>
         <motion.p
           className={styles.description}
@@ -35,8 +35,8 @@ export const Introducing_2: React.FC<ContentProps> = ({
           animate={deepAppearAnimation.animate}
           transition={sloverTransition}
         >
-          In this step, you’ll add some of the amenities your place offers, plus
-          5 or more images. Then, you’ll create a title and description.
+          In this step, you will finalize your pricing details, and then publish
+          your listing. This will make your place available for guests to book.
         </motion.p>
       </motion.div>
       <motion.video
@@ -49,7 +49,7 @@ export const Introducing_2: React.FC<ContentProps> = ({
         transition={motion_transition}
         preload="auto"
       >
-        <source src={videos.apartament_building2} type="video/mp4" />
+        <source src={videos.apartament_building3} type="video/mp4" />
       </motion.video>
     </motion.div>
   );

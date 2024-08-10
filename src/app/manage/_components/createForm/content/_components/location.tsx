@@ -1,9 +1,13 @@
 import React from "react";
 import { motion } from "framer-motion";
 
+import {
+  appearAnimation,
+  sloverTransition,
+  motion_transition,
+} from "../../../consts";
 import { ContentProps } from "../type";
 import { GoogleMap } from "../../../googleMap/googleMap";
-import { appearAnimation, sloverTransition, transition } from "../../../consts";
 
 export const Location: React.FC<ContentProps> = ({
   styles,
@@ -16,7 +20,7 @@ export const Location: React.FC<ContentProps> = ({
       className={styles.location}
       initial={appearAnimation.initial}
       animate={appearAnimation.animate}
-      transition={transition}
+      transition={motion_transition}
     >
       <motion.h1
         className={styles.title}

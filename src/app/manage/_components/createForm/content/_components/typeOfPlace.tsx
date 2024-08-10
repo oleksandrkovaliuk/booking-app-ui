@@ -7,7 +7,7 @@ import {
   appearAnimation,
   deepAppearAnimation,
   sloverTransition,
-  transition,
+  motion_transition,
 } from "@/app/manage/_components/consts";
 
 export const TypeOfPlace: React.FC<ContentProps> = ({
@@ -22,7 +22,7 @@ export const TypeOfPlace: React.FC<ContentProps> = ({
       className={styles.type_of_place}
       initial={appearAnimation.initial}
       animate={appearAnimation.animate}
-      transition={transition}
+      transition={motion_transition}
     >
       <motion.h1
         className={`${styles.title} ${styles.title_selections}`}
@@ -33,12 +33,12 @@ export const TypeOfPlace: React.FC<ContentProps> = ({
         What type of place will guests have?
       </motion.h1>
       <div className={styles.selections_container}>
-        {typeOfPlace?.map((type) => (
+        {typeOfPlace?.map((type, i) => (
           <motion.div
             key={type.id}
             initial={deepAppearAnimation.initial}
             animate={deepAppearAnimation.animate}
-            transition={sloverTransition}
+            transition={{ delay: 0.2 * i, ease: "easeInOut" }}
             className={`${styles.type_button} ${styles.selection}`}
             data-selected={
               selectedTypeOfPlace && type.id === selectedTypeOfPlace.id

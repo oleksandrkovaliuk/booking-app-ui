@@ -4,23 +4,31 @@ import { UseFormRegister } from "react-hook-form";
 import { FormState, GoogleMapProps } from "../../type";
 
 export interface ContentProps {
+  props?: any;
+  images: string[];
+  [key: string]: any;
+  selectedPrice: string;
+  categories: Category[];
+  selectedAdress: string;
+  selectedGuests: number;
   key: CreateListingSteps;
   type: CreateListingSteps;
-  props?: any;
-  [key: string]: any;
-  isLoading: boolean;
-  categories: Category[];
   typeOfPlace: TypeOfPlace[];
-  register: UseFormRegister<FormState>;
   selectedCategory: Category;
   selectedTypeOfPlace: TypeOfPlace;
+  register: UseFormRegister<FormState>;
   selectedCordinates: GoogleMapProps["cordinates"];
-  selectedGuests: number;
-  selectedAdditionalDetails: FormState["additionalDetails"];
   handleCordinatesChange: GoogleMapProps["setCordinates"];
-  handleImagesUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  selectedAdditionalDetails: FormState["additionalDetails"];
   handleUpdateFormAndLocalStorage: (
     key: keyof FormState,
     value: FormState[keyof FormState]
   ) => void;
+}
+export interface ImagesType {
+  images: string[];
+}
+
+export interface ImagesStoreType extends ImagesType {
+  isImagesReady: boolean;
 }

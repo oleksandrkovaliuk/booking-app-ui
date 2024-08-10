@@ -7,7 +7,10 @@ export interface FormState {
   category?: Category | null;
   typeOfPlace?: TypeOfPlace | null;
   cordinates?: GoogleMapProps["cordinates"];
-  address: string;
+  address: {
+    formattedAddress: string;
+    shorterAddress: string;
+  };
   amoutOfPeople?: number;
   guests: number;
   additionalDetails?: {
@@ -15,18 +18,27 @@ export interface FormState {
     accesable: boolean;
   };
   startingDate?: string;
-  images?: string[];
+  images: string[];
+  title: string;
+  placeis: string;
+  aboutplace: string;
+  notes: string;
+  price: string;
 }
 export interface GoogleMapProps {
-  cordinates: { lat: number; lng: number; name?: string };
+  cordinates: {
+    lat: number;
+    lng: number;
+    address?: google.maps.places.PlaceResult;
+  };
   setCordinates: ({
     lat,
     lng,
-    name,
+    address,
   }: {
     lat: number;
     lng: number;
-    name: string;
+    address?: google.maps.places.PlaceResult;
   }) => void;
   register: UseFormRegister<FormState>;
 }

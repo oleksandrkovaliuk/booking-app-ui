@@ -7,8 +7,9 @@ export const deepAppearAnimation = {
   initial: { opacity: 0, y: 30 },
   animate: { opacity: 1, y: 0 },
 };
-export const transition = { duration: 0.4, ease: "easeOut" };
-export const sloverTransition = { ...transition, duration: 0.6 };
+
+export const motion_transition = { duration: 0.4, ease: "easeOut" };
+export const sloverTransition = { ...motion_transition, duration: 0.6 };
 
 // MAP OPATIONS/STYLES
 export const mapContainerStyle = {
@@ -27,3 +28,21 @@ export const options = {
   zoomControl: false,
   streetViewControl: true,
 };
+
+// ACCEPT FILES TYPE
+
+export const imageTypes = [
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/gif",
+  "image/bmp",
+  "image/svg",
+  "image/webp",
+  "image/tiff",
+  "image/ico",
+  "image/apng",
+  "image/jxr",
+  "image/wdp",
+  "image/avif",
+];

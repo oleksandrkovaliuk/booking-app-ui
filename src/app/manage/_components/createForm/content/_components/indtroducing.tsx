@@ -2,13 +2,13 @@ import React from "react";
 import { motion } from "framer-motion";
 
 import { ContentProps } from "../type";
-import { videos } from "@/information/data";
 import {
   appearAnimation,
   deepAppearAnimation,
   sloverTransition,
-  transition,
+  motion_transition,
 } from "@/app/manage/_components/consts";
+import { videos } from "@/information/data";
 
 export const Introducing: React.FC<ContentProps> = ({
   styles,
@@ -19,7 +19,7 @@ export const Introducing: React.FC<ContentProps> = ({
         className={styles.introducing_text}
         initial={appearAnimation.initial}
         animate={appearAnimation.animate}
-        transition={transition}
+        transition={motion_transition}
       >
         <motion.h1
           className={styles.title}

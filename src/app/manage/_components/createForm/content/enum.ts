@@ -1,4 +1,4 @@
 export enum PriceLimit {
-  MIN = 0,
+  MIN = 14,
   MAX = 30000,
 }

@@ -1,16 +1,18 @@
 "use client";
-
-import { getAllCategories } from "@/store/thunks/listings/categories";
-import { getTypeOfPlace } from "@/store/thunks/listings/typeOfPlace";
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
+
+import { getAllCategories } from "@/store/thunks/listings/categories";
+import { getAllListings } from "@/store/thunks/listings/listings";
+import { getTypeOfPlace } from "@/store/thunks/listings/typeOfPlace";
 
 export const GlobalDataOnLoad = () => {
   const dispath = useDispatch();
   useEffect(() => {
-    Promise.allSettled([
+    Promise.all([
       dispath(getAllCategories() as any),
       dispath(getTypeOfPlace() as any),
+      dispath(getAllListings() as any),
     ]);
   }, [dispath]);
   return <></>;

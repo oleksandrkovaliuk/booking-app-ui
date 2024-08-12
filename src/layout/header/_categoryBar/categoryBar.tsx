@@ -17,7 +17,7 @@ import { FilterIcon } from "@/svgs/FilterIcon";
 
 const Categories: React.FC = () => {
   const { categories } = useSelector(
-    (state: RootState) => state.listingsAdditionals
+    (state: RootState) => state.listingsInfo
   );
 
   const [selectedCategory, setSelectedCategory] = React.useState<number | null>(

@@ -1,6 +1,7 @@
 import { UseFormRegister } from "react-hook-form";
+
 import { CreateListingSteps } from "./enums";
-import { Category, TypeOfPlace } from "@/store/reducers/listingsReducer";
+import { Category, TypeOfPlace } from "@/store/slices/listingsInfoSlice/type";
 
 export interface FormState {
   step?: CreateListingSteps;
@@ -11,7 +12,7 @@ export interface FormState {
     formattedAddress: string;
     shorterAddress: string;
   };
-  amoutOfPeople?: number;
+
   guests: number;
   additionalDetails?: {
     pets: boolean;
@@ -20,8 +21,8 @@ export interface FormState {
   startingDate?: string;
   images: string[];
   title: string;
-  placeis: string;
-  aboutplace: string;
+  placeIs: string;
+  aboutPlace: string;
   notes: string;
   price: string;
 }

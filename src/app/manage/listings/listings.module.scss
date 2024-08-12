@@ -45,29 +45,6 @@
         font-weight: 600;
       }
     }
-    .status {
-      padding: 5px 10px;
-      border-radius: 10px;
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background-color: var(--booking-app-white-color);
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      .circle {
-        width: 7px;
-        height: 7px;
-        border-radius: 50%;
-        background-color: #ffa836;
-      }
-      .status_text {
-        font-size: 13px;
-        font-weight: 600;
-        font-family: var(--booking-app-Nunito-Sans-font);
-        color: var(--booking-app-black-color);
-      }
-    }
   }
 }
 

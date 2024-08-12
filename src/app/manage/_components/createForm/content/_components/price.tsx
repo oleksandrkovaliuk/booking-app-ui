@@ -49,6 +49,15 @@ export const Price: React.FC<ContentProps> = ({
       setInvalidPrice(true);
       return;
     }
+    if (Number(price) < PriceLimit.MIN) {
+      toast(
+        <div className="toast ">
+          🤔 Oppss . Price can not be lower then 14$/night. Contact our support
+          for more details.
+        </div>
+      );
+      setInvalidPrice(true);
+    }
     setInputWidth(
       e.target.value.split("")[0] === "0"
         ? 1
@@ -56,7 +65,6 @@ export const Price: React.FC<ContentProps> = ({
     );
     setInvalidPrice(false);
     handleUpdateFormAndLocalStorage("price", Number(price).toLocaleString());
-
     setIsValueChange(true);
   };
 

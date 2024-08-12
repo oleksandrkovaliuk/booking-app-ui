@@ -17,7 +17,6 @@ import { UserIcon } from "@/svgs/UserIcon";
 import { LogOutIcon } from "@/svgs/LogOutIcon";
 import { Roles } from "@/utilities/enums";
 import { FormState } from "@/app/manage/_components/type";
-import { CreateListingSteps } from "@/app/manage/_components/enums";
 
 import styles from "./userMenu.module.scss";
 import "./dropdown.scss";

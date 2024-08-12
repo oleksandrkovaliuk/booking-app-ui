@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import {
   Button,
@@ -38,13 +38,14 @@ export const ImagesCard: React.FC<ImagesCardProps> = ({
   makeHeadImage,
   setHeadImageDown,
 }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
 
   const handleShowFullImage = (e: React.FormEvent) => {
     e.preventDefault();
     if (isProccessing || isDrag) return;
     onOpen();
   };
+
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose} size="5xl" hideCloseButton>

@@ -37,10 +37,14 @@ export const Content: FC<ContentProps> = ({
   register,
   categories,
   typeOfPlace,
+  selectedNotes,
   selectedPrice,
+  selectedTitle,
   selectedGuests,
   selectedAdress,
+  selectedPlaceIs,
   selectedCategory,
+  selectedAboutPlace,
   selectedCordinates,
   selectedTypeOfPlace,
   handleCordinatesChange,
@@ -58,10 +62,14 @@ export const Content: FC<ContentProps> = ({
       register={register}
       categories={categories}
       typeOfPlace={typeOfPlace}
+      selectedTitle={selectedTitle}
+      selectedNotes={selectedNotes}
       selectedPrice={selectedPrice}
       selectedAdress={selectedAdress}
       selectedGuests={selectedGuests}
+      selectedPlaceIs={selectedPlaceIs}
       selectedCategory={selectedCategory}
+      selectedAboutPlace={selectedAboutPlace}
       selectedCordinates={selectedCordinates}
       selectedTypeOfPlace={selectedTypeOfPlace}
       handleCordinatesChange={handleCordinatesChange}

@@ -1,9 +1,9 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 
-import { reducer as listingsAdditionalsReducer } from "./reducers/listingsReducer";
+import { reducer as listingsInfoReducer } from "./slices/listingsInfoSlice";
 
 const rootReducers = combineReducers({
-  listingsAdditionals: listingsAdditionalsReducer,
+  listingsInfo: listingsInfoReducer,
 });
 
 export const store = configureStore({

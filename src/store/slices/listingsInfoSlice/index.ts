@@ -1,31 +1,19 @@
 import { getAllCategories } from "@/store/thunks/listings/categories";
 import { getTypeOfPlace } from "@/store/thunks/listings/typeOfPlace";
 import { createSlice } from "@reduxjs/toolkit";
-export interface Category {
-  id: number;
-  category_name: string;
-  category_icon?: string;
-}
-
-export interface TypeOfPlace {
-  id: number;
-  type_name: string;
-  type_img: string;
-  type_description: string;
-}
-
-interface State {
-  categories: Category[];
-  typeOfPlace: TypeOfPlace[];
-}
+import { State } from "./type";
+import { getAllListings } from "@/store/thunks/listings/listings";
+import { ParseJSONFields } from "@/sharing/parseJSONFields";
+import { ListingState } from "@/app/api/apiCalls";
 
 const initialState: State = {
   categories: [],
   typeOfPlace: [],
+  listings: [],
 };
 
-const listingsAdditionalsSlice = createSlice({
-  name: "listingsAdditionals",
+const listingsInfo = createSlice({
+  name: "listingsInfo",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
@@ -48,7 +36,20 @@ const listingsAdditionalsSlice = createSlice({
     builder.addCase(getTypeOfPlace.rejected, (state) => {
       state.typeOfPlace = [];
     });
+
+    builder.addCase(getAllListings.pending, (state) => {
+      state.listings = [];
+    });
+    builder.addCase(getAllListings.fulfilled, (state, action) => {
+      console.log(action.payload);
+      state.listings = action.payload.map((item: ListingState) =>
+        ParseJSONFields(item)
+      );
+    });
+    builder.addCase(getAllListings.rejected, (state) => {
+      state.listings = [];
+    });
   },
 });
 
-export const { actions, reducer } = listingsAdditionalsSlice;
+export const { actions, reducer } = listingsInfo;

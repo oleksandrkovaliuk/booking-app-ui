@@ -1,7 +1,8 @@
-import { Category, TypeOfPlace } from "@/store/reducers/listingsReducer";
-import { CreateListingSteps } from "../../enums";
 import { UseFormRegister } from "react-hook-form";
+
+import { CreateListingSteps } from "../../enums";
 import { FormState, GoogleMapProps } from "../../type";
+import { Category, TypeOfPlace } from "@/store/slices/listingsInfoSlice/type";
 
 export interface ContentProps {
   props?: any;
@@ -20,6 +21,10 @@ export interface ContentProps {
   selectedCordinates: GoogleMapProps["cordinates"];
   handleCordinatesChange: GoogleMapProps["setCordinates"];
   selectedAdditionalDetails: FormState["additionalDetails"];
+  selectedTitle: FormState["title"];
+  selectedPlaceIs: FormState["placeIs"];
+  selectedAboutPlace: FormState["aboutPlace"];
+  selectedNotes: FormState["notes"];
   handleUpdateFormAndLocalStorage: (
     key: keyof FormState,
     value: FormState[keyof FormState]

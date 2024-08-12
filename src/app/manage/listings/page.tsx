@@ -1,35 +1,61 @@
 "use client";
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import { Button, ScrollShadow, Skeleton } from "@nextui-org/react";
 import Link from "next/link";
-import { FormState } from "../_components/createForm/createForm";
+import { useSession } from "next-auth/react";
+import { useDispatch, useSelector } from "react-redux";
+import { Button, ScrollShadow, Skeleton } from "@nextui-org/react";
+
+import { FormState } from "../_components/type";
+import { ListingCard } from "@/components/listingCard";
+import { StatusBadge } from "@/components/statusBadge";
+import { RootState } from "@/store";
+import { getAllListings } from "@/store/thunks/listings/listings";
 
 import styles from "./listings.module.scss";
+import { ParseJSONFields } from "@/sharing/parseJSONFields";
 
-interface ListingInProgress extends FormState {
-  startingDate: string;
-}
 export default function ListingsPage() {
+  const dispath = useDispatch();
   const { data: session } = useSession();
-  const [listingInProgress, setListingInProgress] =
-    useState<ListingInProgress | null>(null);
+
+  const { listings } = useSelector((state: RootState) => state.listingsInfo);
+  const userListings = listings.filter(
+    (item) =>
+      item.hostemail === session?.user?.email &&
+      item.hostname === session?.user?.name
+  );
+
+  const [listingInProccess, setListingInProgress] = useState<FormState | null>(
+    null
+  );
+  const inProcessData =
+    !listingInProccess?.images &&
+    !listingInProccess?.title &&
+    !listingInProccess?.price;
+
+  useEffect(() => {
+    dispath(getAllListings() as any);
+  }, []);
 
   useLayoutEffect(() => {
     if (typeof localStorage !== "undefined") {
       const date = localStorage.getItem("startingDate");
       const address = localStorage.getItem("address");
+      const title = localStorage.getItem("title");
+      const images = localStorage.getItem("images");
+      const price = localStorage.getItem("price");
 
-      console.log(date, address);
       if (date || address) {
         setListingInProgress({
-          startingDate: date ? JSON.parse(date) : null,
-          address: address ? JSON.parse(address) : null,
-        });
+          startingDate: date && JSON.parse(date),
+          address: address && JSON.parse(address),
+          title: title && JSON.parse(title),
+          images: images && JSON.parse(images),
+          price: price && JSON.parse(price),
+        } as FormState | null);
       }
     }
   }, []);
-  console.log(listingInProgress, "listingInProgress");
 
   return (
     <div className={styles.listing_page_container}>
@@ -46,27 +72,47 @@ export default function ListingsPage() {
       </section>
       <section className={styles.listings_container}>
         <ScrollShadow>
-          {listingInProgress && (
-            <div className={styles.listing_in_progress}>
-              <Link href="/manage/listings/create">
-                <Skeleton className={styles.skeleton}>
-                  <div className={styles.listing_in_progress_img}></div>
-                </Skeleton>
-                <p className={styles.listing_in_progress_text}>
-                  You made the last changes on{" "}
-                  <span>{listingInProgress.startingDate}</span> for the listing
-                  located at{" "}
-                  {listingInProgress.address && (
-                    <span>{listingInProgress.address}.</span>
-                  )}
-                </p>
-                <div className={styles.status}>
-                  <span className={styles.circle} />
-                  <span className={styles.status_text}>In progress</span>
-                </div>
-              </Link>
-            </div>
-          )}
+          {listingInProccess &&
+            (inProcessData ? (
+              <div className={styles.listing_in_progress}>
+                <Link href="/manage/listings/create">
+                  <Skeleton className={styles.skeleton}>
+                    <div className={styles.listing_in_progress_img}></div>
+                  </Skeleton>
+                  <p className={styles.listing_in_progress_text}>
+                    You made the last changes on{" "}
+                    <span>{listingInProccess.startingDate}</span> for the
+                    listing located at{" "}
+                    {listingInProccess.address && (
+                      <span>{listingInProccess.address.formattedAddress}</span>
+                    )}
+                  </p>
+                  <StatusBadge status="in progress" color="#ffa836" />
+                </Link>
+              </div>
+            ) : (
+              <ListingCard
+                images={listingInProccess?.images}
+                title={listingInProccess?.title}
+                price={listingInProccess?.price}
+                isInProccess
+              />
+            ))}
+
+          {userListings?.map((item) => (
+            <ListingCard
+              key={item.id}
+              images={item.images}
+              price={item.price}
+              title={item.title}
+              location={item.address.formattedAddress}
+              description={item.aboutPlace}
+              typeOfPlace={item.typeOfPlace?.type_name}
+              allowPets={item.additionalDetails?.pets}
+              accessible={item.additionalDetails?.accesable}
+              guests={item.guests}
+            />
+          ))}
         </ScrollShadow>
       </section>
     </div>

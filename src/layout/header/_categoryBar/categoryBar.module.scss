@@ -89,9 +89,9 @@
 }
 @media (width <= 1080px) {
   .category_container {
-    top: 93px;
+    top: 113px;
     &[data-scrolled="true"] {
-      top: 93px;
+      top: 113px;
     }
   }
 }
@@ -99,5 +99,9 @@
   .category_container {
     gap: 20px;
     padding-inline: 20px;
+    top: 93px;
+    &[data-scrolled="true"] {
+      top: 93px;
+    }
   }
 }

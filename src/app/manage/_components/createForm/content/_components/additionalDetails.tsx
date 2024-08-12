@@ -57,6 +57,18 @@ export const AdditionalDetails: React.FC<ContentProps> = ({
           onValueChange={(value) =>
             handleUpdateFormAndLocalStorage("title", value)
           }
+          validate={(value) => {
+            if (value === "") return;
+            if (value?.length > 10 && value?.length < 33) {
+              return true;
+            }
+            if (value?.length >= 33) {
+              return "Please enter less than 33 characters";
+            }
+            if (value?.length < 10) {
+              return "Please enter at least 10 characters";
+            }
+          }}
           {...register("title")}
         />
       </motion.div>
@@ -78,9 +90,16 @@ export const AdditionalDetails: React.FC<ContentProps> = ({
           placeholder="..."
           description="Describe the key features and unique aspects of your listing. Highlight what makes it special and why guests would love to stay here."
           onValueChange={(value) =>
-            handleUpdateFormAndLocalStorage("aboutplace", value)
+            handleUpdateFormAndLocalStorage("aboutPlace", value)
           }
-          {...register("aboutplace")}
+          validate={(value) =>
+            value !== ""
+              ? value?.length > 10
+                ? true
+                : "Please enter at least 10 characters"
+              : true
+          }
+          {...register("aboutPlace")}
         />
       </motion.div>
       <motion.div
@@ -101,9 +120,16 @@ export const AdditionalDetails: React.FC<ContentProps> = ({
           placeholder="..."
           description="Provide a brief overview of the location and setting of your listing. Mention key attributes that make it appealing."
           onValueChange={(value) =>
-            handleUpdateFormAndLocalStorage("placeis", value)
+            handleUpdateFormAndLocalStorage("placeIs", value)
           }
-          {...register("placeis")}
+          validate={(value) =>
+            value !== ""
+              ? value?.length > 10
+                ? true
+                : "Please enter at least 10 characters"
+              : true
+          }
+          {...register("placeIs")}
         />
       </motion.div>
       <motion.div
@@ -125,6 +151,13 @@ export const AdditionalDetails: React.FC<ContentProps> = ({
           description="Mention any additional details or important information guests should know about your listing. This can include house rules, special instructions, or unique features."
           onValueChange={(value) =>
             handleUpdateFormAndLocalStorage("notes", value)
+          }
+          validate={(value) =>
+            value !== ""
+              ? value?.length > 10
+                ? true
+                : "Please enter at least 10 characters"
+              : true
           }
           {...register("notes")}
         />

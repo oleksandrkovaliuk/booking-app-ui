@@ -41,7 +41,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
   const [checkInInputValue, setCheckInInputValue] = useState<string>("");
   const [checkOutInputValue, setCheckOutInputValue] = useState<string>("");
 
-  const [amoutOfGuests, setAmoutOfGuests] = useState<number>(0);
+  const [amoutOfGuests, setAmoutOfGuests] = useState<number>(1);
   const [includePets, setIncludePets] = useState<boolean>(false);
 
   const isDateSelection = triggeredSelection === TypesOfSelections.DATE;
@@ -263,43 +263,47 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                           className={styles.search_results_selections_container}
                         >
                           {responseForRegion?.map(
-                            (countires: regionResponceType) => (
-                              <button
-                                className={styles.countrie_responce_block}
-                                key={countires.id}
-                                onClick={() =>
-                                  setRegionSelection((prev) => {
-                                    setTriggeredSelection(
-                                      staysButtonState
-                                        ? TypesOfSelections.DATE_EXPERIENCES_CHECKIN
-                                        : TypesOfSelections.DATE
-                                    );
-                                    const value = countires.city;
-                                    if (prev !== value) {
-                                      return value;
-                                    }
-                                    return prev;
-                                  })
-                                }
-                              >
-                                <div
-                                  className={
-                                    styles.countrie_responce_location_icon
+                            (countires: regionResponceType) => {
+                              const formattedValue =
+                                countires.city.length +
+                                  countires.country.length >
+                                20
+                                  ? `${countires.city}, ${countires.countryCode}`
+                                  : `${countires.city}, ${countires.country}`;
+                              return (
+                                <button
+                                  className={styles.countrie_responce_block}
+                                  key={countires.id}
+                                  onClick={() =>
+                                    setRegionSelection((prev) => {
+                                      setTriggeredSelection(
+                                        staysButtonState
+                                          ? TypesOfSelections.DATE_EXPERIENCES_CHECKIN
+                                          : TypesOfSelections.DATE
+                                      );
+                                      const value = formattedValue;
+                                      if (prev !== value) {
+                                        return formattedValue;
+                                      }
+                                      return prev;
+                                    })
                                   }
                                 >
-                                  <Location />
-                                </div>
-                                <span
-                                  className={styles.countrie_responce_value}
-                                >
-                                  {countires.city.length +
-                                    countires.country.length >
-                                  20
-                                    ? `${countires.city}, ${countires.countryCode}`
-                                    : `${countires.city}, ${countires.country}`}
-                                </span>
-                              </button>
-                            )
+                                  <div
+                                    className={
+                                      styles.countrie_responce_location_icon
+                                    }
+                                  >
+                                    <Location />
+                                  </div>
+                                  <span
+                                    className={styles.countrie_responce_value}
+                                  >
+                                    {formattedValue}
+                                  </span>
+                                </button>
+                              );
+                            }
                           )}
                         </div>
                       )}
@@ -463,7 +467,10 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                       Including children
                     </p>
                   </div>
-                  <Counter state={amoutOfGuests} callback={setAmoutOfGuests} />
+                  <Counter
+                    counter={amoutOfGuests}
+                    setCounter={setAmoutOfGuests}
+                  />
                 </div>
                 <div className={styles.modal_menu_guest_settings}>
                   <div className={styles.modal_menu_guest_settings_text}>

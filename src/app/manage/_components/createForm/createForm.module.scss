@@ -399,6 +399,59 @@
   }
 }
 
+.submit {
+  max-width: 70%;
+  .description {
+    margin-bottom: 5dvh;
+  }
+  .preview_of_listing_container {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    .preview_of_listing {
+      padding: 15px;
+      border-radius: 20px;
+      border: 1px solid var(--booking-app-lightgrey-color);
+      box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.2);
+    }
+  }
+  .info_blocks_container {
+    max-width: 45%;
+    .title {
+      margin-bottom: 5dvh;
+      font-size: 22px;
+    }
+    .steps {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      &:not(:last-child) {
+        margin-bottom: 6dvh;
+      }
+      .steps_icon {
+        width: 35px;
+        height: 35px;
+        flex-shrink: 0;
+      }
+      .steps_title {
+        color: var(--booking-app-black-color);
+        font-family: var(--booking-app-Nunito-Sans-font);
+        font-size: 19px;
+        font-weight: 600;
+        line-height: 100%;
+
+        margin-bottom: 5px;
+      }
+      .steps_description {
+        font-size: 13px;
+        font-weight: 400;
+        line-height: 100%;
+        font-family: var(--booking-app-Nunito-Sans-font);
+        color: var(--booking-app-grey-color);
+      }
+    }
+  }
+}
 // GLOBAL
 .hidden_checkbox,
 .hidden_input {
@@ -433,7 +486,8 @@
 .basics,
 .images_container,
 .additional_details,
-.price {
+.price,
+.submit {
   width: 100%;
 }
 .selection {

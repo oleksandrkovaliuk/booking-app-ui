@@ -9,22 +9,28 @@ import {
 } from "@nextui-org/react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-import { useForm, UseFormSetValue } from "react-hook-form";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { useForm, UseFormSetValue } from "react-hook-form";
 
 import { RootState } from "@/store";
 
+import { Content } from "./content";
+import { clearAllStorage } from "./utils";
 import { CreateListingSteps } from "../enums";
 import { FormState, GoogleMapProps } from "../type";
-import { Category, TypeOfPlace } from "@/store/reducers/listingsReducer";
-import { clearAllStorage } from "./utils";
+
+import { deleteUserListingImages } from "../../../../sharing/firebaseImages/users/listings/uploadImg";
 
 import {
   motion_transition,
   appearAnimation,
   deepAppearAnimation,
 } from "../consts";
+
+import { RequestCreateListing } from "@/store/thunks/listings/create";
+import { Category, TypeOfPlace } from "@/store/slices/listingsInfoSlice/type";
 
 // FORMAT DATE TO DD/MM/HH/MM
 
@@ -40,16 +46,15 @@ const formatDate = (date: Date) => {
 
 import styles from "./createForm.module.scss";
 import "./additionalStyles.scss";
-import { Content } from "./content";
-import { useSession } from "next-auth/react";
-import { deleteUserListingImages } from "../../../../sharing/firebaseImages/users/listings/uploadImg";
+import { getAllListings } from "@/store/thunks/listings/listings";
 export const CreateForm: React.FC = () => {
   const setValueRef = useRef<UseFormSetValue<FormState> | null>(null);
 
+  const dispath = useDispatch();
   const router = useRouter();
   const { data: session } = useSession();
   const { categories, typeOfPlace } = useSelector(
-    (state: RootState) => state.listingsAdditionals
+    (state: RootState) => state.listingsInfo
   );
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -64,7 +69,6 @@ export const CreateForm: React.FC = () => {
         formattedAddress: "",
         shorterAddress: "",
       },
-      amoutOfPeople: 1,
       guests: 1,
       additionalDetails: {
         pets: false,
@@ -73,10 +77,10 @@ export const CreateForm: React.FC = () => {
       startingDate: "",
       images: [],
       title: "",
-      aboutplace: "",
-      placeis: "",
+      aboutPlace: "",
+      placeIs: "",
       notes: "",
-      price: "0",
+      price: "14",
     } as FormState,
   });
 
@@ -99,8 +103,8 @@ export const CreateForm: React.FC = () => {
   const selectedGuests = watch("guests");
   const selectedImages = watch("images");
   const selectedTitle = watch("title");
-  const selectedAboutPlace = watch("aboutplace");
-  const selectedPlaceIs = watch("placeis");
+  const selectedAboutPlace = watch("aboutPlace");
+  const selectedPlaceIs = watch("placeIs");
   const selectedNotes = watch("notes");
   const selectedPrice = watch("price");
 
@@ -114,6 +118,7 @@ export const CreateForm: React.FC = () => {
   const isAdditionalFieldsEmpty =
     selectedTitle.trim() === "" ||
     selectedTitle.length <= 10 ||
+    selectedTitle.length >= 33 ||
     selectedAboutPlace.trim() === "" ||
     selectedAboutPlace.length <= 10 ||
     selectedPlaceIs.trim() === "" ||
@@ -126,14 +131,13 @@ export const CreateForm: React.FC = () => {
     (formStep === CreateListingSteps.TYPE_OF_PLACE &&
       selectedTypeOfPlace === null) ||
     (formStep === CreateListingSteps.LOCATION &&
-      selectedAddress.formattedAddress === "") ||
-    selectedAddress.shorterAddress === "" ||
-    selectedCordinates === null ||
+      selectedAddress.shorterAddress === "") ||
+    (selectedAddress.formattedAddress === "" && selectedCordinates === null) ||
     (formStep === CreateListingSteps.IMAGES && selectedImages!.length < 5) ||
     (formStep === CreateListingSteps.ADDITIONAL_DETAILS &&
       isAdditionalFieldsEmpty) ||
     (formStep === CreateListingSteps.PRICE &&
-      selectedPrice.split("").length <= 0);
+      Number(selectedPrice.split(",")) <= 14);
 
   const allowScroll =
     formStep === CreateListingSteps.CATEGORY ||
@@ -197,16 +201,40 @@ export const CreateForm: React.FC = () => {
     });
   };
 
+  const h = JSON.stringify(selectedImages);
+  console.log(JSON.parse(h));
+
   // SUBMIT
   const submitCreatedListing = async () => {
-    handleClearForm();
-
-    toast(
-      <div className="toast success">
-        🎉 Your listing has been created successfully.
-      </div>
-    );
-    router.back();
+    try {
+      await dispath(
+        RequestCreateListing({
+          hostname: session?.user.name!,
+          hostemail: session?.user.email!,
+          category: selectedCategory,
+          typeOfPlace: selectedTypeOfPlace,
+          cordinates: selectedCordinates,
+          address: selectedAddress,
+          guests: selectedGuests,
+          additionalDetails: selectedAdditionalDetails,
+          images: selectedImages,
+          title: selectedTitle,
+          aboutPlace: selectedAboutPlace,
+          placeIs: selectedPlaceIs,
+          notes: selectedNotes,
+          price: selectedPrice,
+        }) as any
+      );
+      toast(
+        <div className="toast success">
+          🎉 Your listing has been created successfully.
+        </div>
+      );
+      clearAllStorage();
+      router.push("/manage/listings");
+    } catch (error) {
+      toast.error((error as Error).message);
+    }
   };
 
   useEffect(() => {
@@ -236,8 +264,8 @@ export const CreateForm: React.FC = () => {
       const additionalDetails = localStorage.getItem("additionalDetails");
       const images = localStorage.getItem("images");
       const title = localStorage.getItem("title");
-      const aboutplace = localStorage.getItem("aboutplace");
-      const placeis = localStorage.getItem("placeis");
+      const aboutplace = localStorage.getItem("aboutPlace");
+      const placeis = localStorage.getItem("placeIs");
       const notes = localStorage.getItem("notes");
       const price = localStorage.getItem("price");
 
@@ -264,10 +292,10 @@ export const CreateForm: React.FC = () => {
 
       if (title) setValueRef?.current!("title", JSON.parse(title));
 
-      if (placeis) setValueRef?.current!("placeis", JSON.parse(placeis));
+      if (placeis) setValueRef?.current!("placeIs", JSON.parse(placeis));
 
       if (aboutplace)
-        setValueRef?.current!("aboutplace", JSON.parse(aboutplace));
+        setValueRef?.current!("aboutPlace", JSON.parse(aboutplace));
 
       if (notes) setValueRef?.current!("notes", JSON.parse(notes));
 
@@ -298,6 +326,10 @@ export const CreateForm: React.FC = () => {
           typeOfPlace={typeOfPlace as TypeOfPlace[]}
           handleCordinatesChange={handleCordinatesChange}
           selectedAdditionalDetails={selectedAdditionalDetails!}
+          selectedTitle={selectedTitle}
+          selectedPlaceIs={selectedPlaceIs}
+          selectedAboutPlace={selectedAboutPlace}
+          selectedNotes={selectedNotes}
           handleUpdateFormAndLocalStorage={handleUpdateFormAndLocalStorage}
         />
       </form>

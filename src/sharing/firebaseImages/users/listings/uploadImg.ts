@@ -62,7 +62,7 @@ export const deleteUserListingImages = async ({
       `users/${user}/listings/${location}/`
     );
     const resultImages = await listAll(uploadImagesIntoUserFolder);
-    await Promise.all(
+    return await Promise.all(
       resultImages.items.map((item) => deleteObject(item))
     ).then((res) => res);
   } catch (error) {

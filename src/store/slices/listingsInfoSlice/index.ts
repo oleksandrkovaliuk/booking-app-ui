@@ -41,9 +41,8 @@ const listingsInfo = createSlice({
       state.listings = [];
     });
     builder.addCase(getAllListings.fulfilled, (state, action) => {
-      console.log(action.payload);
-      state.listings = action.payload.map((item: ListingState) =>
-        ParseJSONFields(item)
+      state.listings = action.payload.map((listing: ListingState) =>
+        ParseJSONFields(listing)
       );
     });
     builder.addCase(getAllListings.rejected, (state) => {

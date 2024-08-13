@@ -5,12 +5,18 @@ export const ParseJSONFields = (data: ListingState) => {
 
   for (let [key, values] of Object.entries(data)) {
     try {
-      parsedObj[key] = JSON.parse(values);
+      if (key === "images" && typeof values === "string") {
+        parsedObj[key] = values
+          .slice(1, -1)
+          .split('","')
+          .map((url) => url.replace(/\\/g, ""));
+      } else {
+        parsedObj[key] = JSON.parse(values);
+      }
     } catch (e) {
       parsedObj[key] = values;
     }
   }
 
-  console.log(parsedObj);
   return parsedObj;
 };

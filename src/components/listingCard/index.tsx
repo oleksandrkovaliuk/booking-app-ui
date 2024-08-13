@@ -32,6 +32,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   guests,
   price,
   isPreview,
+  isPublic,
   isInProccess,
 }) => {
   const { data: session } = useSession();
@@ -44,6 +45,9 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   // CONDITIONS
   const isLastSlider = currentSlide === images.length - 1;
   const isFirstSlider = currentSlide === 0;
+
+  const isNotPreview = isPreview || !isInProccess || isPublic;
+  console.log(isNotPreview, "isNotPreview");
 
   // OPTIONS
   const options = {
@@ -81,7 +85,6 @@ export const ListingCard: React.FC<ListingCardProps> = ({
     };
   }, []);
 
-  console.log(images, "check");
   return (
     <>
       {isPreview && (
@@ -106,8 +109,9 @@ export const ListingCard: React.FC<ListingCardProps> = ({
                       {typeOfPlace} hosted by{" "}
                       <span>
                         {" "}
-                        {session?.user.name &&
-                          `, ${session?.user?.name?.split(" ")[0]}`}
+                        {session?.user.name
+                          ? `, ${session?.user?.name?.split(" ")[0]}`
+                          : session?.user.email}
                       </span>
                       !
                     </div>
@@ -121,20 +125,28 @@ export const ListingCard: React.FC<ListingCardProps> = ({
                       )}
                     </div>
                   </div>
-                  <Image
-                    src={session?.user.image!}
-                    alt="user"
-                    width={50}
-                    height={50}
-                    className="modal_hosted_by_image"
-                  />
+                  {session?.user.image ? (
+                    <Image
+                      src={session?.user.image!}
+                      alt={session?.user.email!}
+                      width={50}
+                      height={50}
+                      className="modal_hosted_by_image"
+                    />
+                  ) : (
+                    <div className="modal_hosted_by_image no_user_image">
+                      {session?.user.email?.split("@")[0]!}
+                    </div>
+                  )}
                 </li>
                 <li className="modal_info_item description">
                   <p className="modal_info_description">{description}</p>
                 </li>
                 <li className="modal_info_item location">
                   <div className="modal_info_title">Location</div>
-                  <p className="modal_info_description">{location}</p>
+                  <p className="modal_info_description">
+                    {location?.formattedAddress}
+                  </p>
                   <p className="modal_info_description">
                     We’ll only share your address with guests who are booked.
                   </p>
@@ -147,6 +159,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
       <Link
         href={isInProccess ? "/manage/listings/create" : "#"}
         className={styles.listing_card}
+        data-isnotpreview={isNotPreview}
       >
         <div
           className={styles.slider_container}
@@ -191,9 +204,12 @@ export const ListingCard: React.FC<ListingCardProps> = ({
           </button>
         </div>
         <div className={styles.listing_info}>
+          {isNotPreview && (
+            <div className={styles.location}>{location?.shorterAddress}</div>
+          )}
           <h5 className={styles.title}>{title}</h5>
           <span className={styles.price}>
-            <b>${price}</b> night
+            <b>${Number(price).toLocaleString()}</b> night
           </span>
         </div>
       </Link>

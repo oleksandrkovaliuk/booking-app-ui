@@ -110,6 +110,7 @@ export const Price: React.FC<ContentProps> = ({
             min={PriceLimit.MIN}
             aria-label="price"
             style={{ maxWidth: `${inputWidth}ch` }}
+            autoFocus
             transition={motion_transition}
             {...(register("price"),
             {

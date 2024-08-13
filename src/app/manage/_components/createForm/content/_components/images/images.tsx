@@ -52,7 +52,7 @@ export const Images: React.FC<ContentProps> = ({
 
   const [uploadedImages, setUploadedImages] = useState<ImagesStoreType>({
     images: images,
-    isImagesReady: images.length >= 1 ? true : false,
+    isImagesReady: images?.length >= 1 ? true : false,
   });
 
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -100,8 +100,8 @@ export const Images: React.FC<ContentProps> = ({
       onOpen();
       const res = await uploadUserListingImages({
         event: e,
-        user: session?.user.name!,
-        location: selectedAdress,
+        user: session?.user.email!,
+        location: selectedAdress.formattedAddress,
       });
       setUploadedImages({
         ...uploadedImages,
@@ -118,8 +118,8 @@ export const Images: React.FC<ContentProps> = ({
     try {
       setIsLoading({ ...isLoading, deletingImages: true });
       await deleteUserListingImages({
-        user: session?.user.name!,
-        location: selectedAdress,
+        user: session?.user.email!,
+        location: selectedAdress.formattedAddress,
       });
       setUploadedImages({
         ...uploadedImages,
@@ -136,8 +136,8 @@ export const Images: React.FC<ContentProps> = ({
   const handleDeleteIndividualImage = async (image: string) => {
     try {
       const res = await deleteIndividualListingImage({
-        user: session?.user.name!,
-        location: selectedAdress,
+        user: session?.user.email!,
+        location: selectedAdress.formattedAddress,
         image,
       });
       if (res?.length! <= 1) {

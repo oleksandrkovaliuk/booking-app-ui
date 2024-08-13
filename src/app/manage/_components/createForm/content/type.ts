@@ -10,7 +10,10 @@ export interface ContentProps {
   [key: string]: any;
   selectedPrice: string;
   categories: Category[];
-  selectedAdress: string;
+  selectedAdress: {
+    formattedAddress: string;
+    shorterAddress: string;
+  };
   selectedGuests: number;
   key: CreateListingSteps;
   type: CreateListingSteps;

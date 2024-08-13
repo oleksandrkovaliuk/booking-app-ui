@@ -75,7 +75,10 @@ export const UserMenu: React.FC = () => {
                   className={styles.user_img}
                 />
               ) : (
-                <UserIcon className={styles.user_icon} />
+                <div className={`${styles.user_img} ${styles.no_user_image}`}>
+                  {" "}
+                  {session?.user.email?.split("")[0]!}
+                </div>
               )}
             </button>
           </DropdownTrigger>
@@ -87,7 +90,7 @@ export const UserMenu: React.FC = () => {
                   description={session?.user?.email}
                   avatarProps={{
                     size: "sm",
-                    src: session?.user?.image!,
+                    src: session?.user?.image ? session?.user?.image : "N",
                   }}
                 />
                 {session?.user?.role === Roles.ADMIN && (

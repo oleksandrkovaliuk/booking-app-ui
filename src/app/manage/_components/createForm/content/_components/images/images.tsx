@@ -16,6 +16,7 @@ import { motion, Reorder } from "framer-motion";
 import { useSession } from "next-auth/react";
 
 import { ImagesCard } from "./card";
+import { LoadingValue } from "./type";
 import { AddIcon } from "@/svgs/Addicon";
 import camera from "@/assets/3d-camera.png";
 import {
@@ -44,15 +45,19 @@ export const Images: React.FC<ContentProps> = ({
 }) => {
   const { data: session } = useSession();
 
-  const [isLoading, setIsLoading] = useState<{ [key: string]: boolean }>({
-    deletingImages: false,
+  const [isLoading, setIsLoading] = useState<LoadingValue>({
+    deletingImages: {
+      status: false,
+      item: "",
+    },
+    uploadingImgs: false,
   });
 
   const [isDragged, setIsDragged] = useState(false);
 
   const [uploadedImages, setUploadedImages] = useState<ImagesStoreType>({
     images: images,
-    isImagesReady: images.length >= 1 ? true : false,
+    isImagesReady: images?.length >= 1 ? true : false,
   });
 
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -63,10 +68,10 @@ export const Images: React.FC<ContentProps> = ({
   };
   const handleSetHeadImage = (image: string, i: number) => {
     let copyOfImages = [...uploadedImages.images];
-    let prevHeadImage = copyOfImages[0];
+    let prevHeadImage = copyOfImages[0].url;
     if (i) {
-      copyOfImages[0] = image;
-      copyOfImages[i] = prevHeadImage;
+      copyOfImages[0].url = image;
+      copyOfImages[i].url = prevHeadImage;
     }
     setUploadedImages({
       ...uploadedImages,
@@ -77,16 +82,17 @@ export const Images: React.FC<ContentProps> = ({
 
   const handleSetHeadImageDown = (image: string, i: number) => {
     let copyOfImages = [...uploadedImages.images];
-    let underHeadImage = copyOfImages[i + 1];
-    if (!underHeadImage)
+    let underHeadImage = copyOfImages[i + 1]?.url;
+    if (!underHeadImage) {
       toast.info(
         <div className="toast">
           🫣 Oops! You’ve reached the end of your list.
         </div>
       );
-    else {
-      copyOfImages[i + 1] = image;
-      copyOfImages[i] = underHeadImage;
+      return;
+    } else {
+      copyOfImages[i + 1].url = image;
+      copyOfImages[i].url = underHeadImage;
       setUploadedImages({
         ...uploadedImages,
         images: copyOfImages,
@@ -98,11 +104,13 @@ export const Images: React.FC<ContentProps> = ({
   const handleImagesUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
       onOpen();
+      setIsLoading({ ...isLoading, uploadingImgs: true });
       const res = await uploadUserListingImages({
         event: e,
-        user: session?.user.name!,
-        location: selectedAdress,
+        user_email: session?.user.email!,
+        location: selectedAdress.formattedAddress,
       });
+      setIsLoading({ ...isLoading, uploadingImgs: false });
       setUploadedImages({
         ...uploadedImages,
         images: res!,
@@ -116,10 +124,15 @@ export const Images: React.FC<ContentProps> = ({
 
   const handleCancelUploading = async () => {
     try {
-      setIsLoading({ ...isLoading, deletingImages: true });
+      setIsLoading({
+        ...isLoading,
+        deletingImages: {
+          status: true,
+        },
+      });
       await deleteUserListingImages({
-        user: session?.user.name!,
-        location: selectedAdress,
+        user_email: session?.user.email!,
+        location: selectedAdress.formattedAddress,
       });
       setUploadedImages({
         ...uploadedImages,
@@ -127,7 +140,12 @@ export const Images: React.FC<ContentProps> = ({
       });
       handleUpdateFormAndLocalStorage("images", []);
       onClose();
-      setIsLoading({ ...isLoading, deletingImages: false });
+      setIsLoading({
+        ...isLoading,
+        deletingImages: {
+          status: false,
+        },
+      });
     } catch (error) {
       toast.error("Something went wrong");
     }
@@ -135,11 +153,27 @@ export const Images: React.FC<ContentProps> = ({
 
   const handleDeleteIndividualImage = async (image: string) => {
     try {
+      setIsLoading({
+        ...isLoading,
+        deletingImages: {
+          status: true,
+          item: image,
+        },
+      });
+
       const res = await deleteIndividualListingImage({
-        user: session?.user.name!,
-        location: selectedAdress,
+        user_email: session?.user.email!,
+        location: selectedAdress.formattedAddress,
         image,
       });
+      setIsLoading({
+        ...isLoading,
+        deletingImages: {
+          status: false,
+          item: image,
+        },
+      });
+
       if (res?.length! <= 1) {
         onClose();
         setUploadedImages({
@@ -150,11 +184,11 @@ export const Images: React.FC<ContentProps> = ({
       } else {
         setUploadedImages({
           ...uploadedImages,
-          images: uploadedImages.images.filter((item) => item !== image),
+          images: uploadedImages.images.filter((item) => item.url !== image),
         });
         handleUpdateFormAndLocalStorage(
           "images",
-          uploadedImages.images.filter((item) => item !== image)
+          uploadedImages.images.filter((item) => item.url !== image)
         );
       }
       toast.info(
@@ -208,16 +242,24 @@ export const Images: React.FC<ContentProps> = ({
               content: ["text-white bg-[#2f2f2f]"],
             }}
           >
-            <label className="images_modal_add_images">
+            <label
+              className="images_modal_add_images"
+              data-isdisabled={isLoading.uploadingImgs}
+            >
               <input
                 title=""
                 type="file"
                 multiple
                 accept={imageTypes.join(",")}
                 className={styles.hidden_input}
+                disabled={isLoading.uploadingImgs}
                 onChange={(e) => handleImagesUpload(e)}
               />
-              <AddIcon />
+              {isLoading.uploadingImgs ? (
+                <Spinner color="default" size="sm" />
+              ) : (
+                <AddIcon />
+              )}
             </label>
           </Tooltip>
           <ModalHeader className="images_modal_header">
@@ -249,8 +291,9 @@ export const Images: React.FC<ContentProps> = ({
                 uploadedImages.images?.map((item, i) => (
                   <ImagesCard
                     i={i}
-                    key={item + i}
-                    item={item}
+                    isImgsProcessing={isLoading.deletingImages}
+                    key={item.url + i}
+                    item={item.url}
                     isProccessing={true}
                     onDelete={handleDeleteIndividualImage}
                   />
@@ -267,12 +310,13 @@ export const Images: React.FC<ContentProps> = ({
                   uploadedImages.isImagesReady ? onClose : handleCancelUploading
                 }
               >
-                {isLoading.deletingImages ? (
+                {isLoading.deletingImages.status &&
+                !isLoading.deletingImages.item ? (
                   <Spinner color="default" size="sm" />
-                ) : uploadedImages.images.length > 0 ? (
-                  "Cancel"
-                ) : (
+                ) : uploadedImages.images.length >= 0 ? (
                   "Done"
+                ) : (
+                  "Cancel"
                 )}
               </Button>
 
@@ -335,7 +379,7 @@ export const Images: React.FC<ContentProps> = ({
             {uploadedImages.isImagesReady &&
               uploadedImages.images?.map((item, i) => (
                 <Reorder.Item
-                  key={item + i}
+                  key={item.url + i}
                   value={item}
                   className={styles.image_wrapper}
                   onDrag={() => setIsDragged(true)}
@@ -343,10 +387,11 @@ export const Images: React.FC<ContentProps> = ({
                 >
                   <ImagesCard
                     i={i}
-                    item={item}
+                    item={item.url}
+                    isImgsProcessing={isLoading.deletingImages}
                     isProccessing={false}
-                    makeHeadImage={() => handleSetHeadImage(item, i)}
-                    setHeadImageDown={() => handleSetHeadImageDown(item, i)}
+                    makeHeadImage={() => handleSetHeadImage(item.url, i)}
+                    setHeadImageDown={() => handleSetHeadImageDown(item.url, i)}
                     onDelete={handleDeleteIndividualImage}
                     isDrag={isDragged}
                   />

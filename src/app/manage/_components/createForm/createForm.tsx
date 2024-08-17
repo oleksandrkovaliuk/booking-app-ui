@@ -46,7 +46,7 @@ const formatDate = (date: Date) => {
 
 import styles from "./createForm.module.scss";
 import "./additionalStyles.scss";
-import { getAllListings } from "@/store/thunks/listings/listings";
+
 export const CreateForm: React.FC = () => {
   const setValueRef = useRef<UseFormSetValue<FormState> | null>(null);
 
@@ -133,7 +133,7 @@ export const CreateForm: React.FC = () => {
     (formStep === CreateListingSteps.LOCATION &&
       selectedAddress.shorterAddress === "") ||
     (selectedAddress.formattedAddress === "" && selectedCordinates === null) ||
-    (formStep === CreateListingSteps.IMAGES && selectedImages!.length < 5) ||
+    (formStep === CreateListingSteps.IMAGES && selectedImages?.length < 5) ||
     (formStep === CreateListingSteps.ADDITIONAL_DETAILS &&
       isAdditionalFieldsEmpty) ||
     (formStep === CreateListingSteps.PRICE &&
@@ -164,7 +164,7 @@ export const CreateForm: React.FC = () => {
   const handleClearForm = async () => {
     clearAllStorage();
     await deleteUserListingImages({
-      user: session?.user.name!,
+      user_email: session?.user.email!,
       location: selectedAddress.formattedAddress!,
     });
   };
@@ -173,7 +173,7 @@ export const CreateForm: React.FC = () => {
   const handleLeaveTheForm = () => {
     handleClearForm();
     onOpenChange();
-    router.push("/");
+    router.back();
   };
 
   // CORDINATES
@@ -201,15 +201,14 @@ export const CreateForm: React.FC = () => {
     });
   };
 
-  const h = JSON.stringify(selectedImages);
-  console.log(JSON.parse(h));
-
   // SUBMIT
   const submitCreatedListing = async () => {
     try {
       await dispath(
         RequestCreateListing({
-          hostname: session?.user.name!,
+          hostname: session?.user.name
+            ? session?.user.name!
+            : session?.user.email!,
           hostemail: session?.user.email!,
           category: selectedCategory,
           typeOfPlace: selectedTypeOfPlace,
@@ -225,6 +224,7 @@ export const CreateForm: React.FC = () => {
           price: selectedPrice,
         }) as any
       );
+
       toast(
         <div className="toast success">
           🎉 Your listing has been created successfully.
@@ -316,7 +316,7 @@ export const CreateForm: React.FC = () => {
           images={selectedImages!}
           selectedPrice={selectedPrice!}
           selectedGuests={selectedGuests!}
-          selectedAdress={selectedAddress.formattedAddress}
+          selectedAdress={selectedAddress}
           key={formStep as CreateListingSteps}
           selectedCategory={selectedCategory!}
           type={formStep as CreateListingSteps}

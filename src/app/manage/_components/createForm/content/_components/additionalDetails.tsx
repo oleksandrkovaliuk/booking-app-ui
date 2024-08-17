@@ -65,7 +65,7 @@ export const AdditionalDetails: React.FC<ContentProps> = ({
             if (value?.length >= 33) {
               return "Please enter less than 33 characters";
             }
-            if (value?.length < 10) {
+            if (value?.length <= 10) {
               return "Please enter at least 10 characters";
             }
           }}

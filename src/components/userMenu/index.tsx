@@ -75,7 +75,10 @@ export const UserMenu: React.FC = () => {
                   className={styles.user_img}
                 />
               ) : (
-                <UserIcon className={styles.user_icon} />
+                <div className={`${styles.user_img} ${styles.no_user_image}`}>
+                  {" "}
+                  {session?.user.email?.split("")[0]!}
+                </div>
               )}
             </button>
           </DropdownTrigger>
@@ -87,7 +90,7 @@ export const UserMenu: React.FC = () => {
                   description={session?.user?.email}
                   avatarProps={{
                     size: "sm",
-                    src: session?.user?.image!,
+                    src: session?.user?.image ? session?.user?.image : "N",
                   }}
                 />
                 {session?.user?.role === Roles.ADMIN && (
@@ -97,7 +100,8 @@ export const UserMenu: React.FC = () => {
             </DropdownSection>
             <DropdownSection showDivider>
               <DropdownItem key="home" className={"drop_down_item"}>
-                <Link href="/">Home</Link>
+                <Link href="/" className="hidden_link" />
+                <span>Home</span>
               </DropdownItem>
               <DropdownItem
                 key="accout"
@@ -107,15 +111,17 @@ export const UserMenu: React.FC = () => {
                 <Link href="/account">Account</Link>
               </DropdownItem>
               <DropdownItem key="manage" className={"drop_down_item"}>
-                <Link href="/manage/listings">
+                <Link href="/manage/listings" className="hidden_link" />
+                <span>
                   Manage listings{" "}
                   {listingInProgress && <span className="notification" />}
-                </Link>
+                </span>
               </DropdownItem>
             </DropdownSection>
             <DropdownSection>
               <DropdownItem key="help" className={"drop_down_item"}>
-                <Link href="/help&feedback">Help & Feedback</Link>
+                <Link href="/help&feedback" className="hidden_link" />
+                <span>Help & Feedback</span>
               </DropdownItem>
               <DropdownItem
                 key="log out"

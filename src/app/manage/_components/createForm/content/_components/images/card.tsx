@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import {
-  Button,
   Dropdown,
   DropdownItem,
   DropdownMenu,
@@ -9,10 +8,12 @@ import {
   Modal,
   ModalBody,
   ModalContent,
+  Spinner,
   Tooltip,
   useDisclosure,
 } from "@nextui-org/react";
 
+import { LoadingValue } from "./type";
 import { TrashCan } from "@/svgs/TrashCan";
 import { ThreeDots } from "@/svgs/ThreeDots";
 import { deepAppearAnimation } from "@/app/manage/_components/consts";
@@ -25,6 +26,7 @@ interface ImagesCardProps {
   item: string;
   isDrag?: boolean;
   isProccessing: boolean;
+  isImgsProcessing: LoadingValue["deletingImages"];
   onDelete: (item: string) => void;
   setHeadImageDown?: () => void;
   makeHeadImage?: () => void;
@@ -34,6 +36,7 @@ export const ImagesCard: React.FC<ImagesCardProps> = ({
   item,
   isDrag,
   onDelete,
+  isImgsProcessing,
   isProccessing,
   makeHeadImage,
   setHeadImageDown,
@@ -60,7 +63,7 @@ export const ImagesCard: React.FC<ImagesCardProps> = ({
       </Modal>
       <motion.div
         {...deepAppearAnimation}
-        transition={{ delay: 0.15 * i, ease: "easeInOut" }}
+        transition={{ delay: 0.05 * i, ease: "easeInOut" }}
         data-isprocessing={isProccessing}
         className={styles.image_container}
         style={{ backgroundImage: `url(${item})` }}
@@ -79,9 +82,16 @@ export const ImagesCard: React.FC<ImagesCardProps> = ({
           >
             <button
               className={styles.manage_button}
+              disabled={
+                isImgsProcessing.status && isImgsProcessing.item === item
+              }
               onClick={() => onDelete(item)}
             >
-              <TrashCan />
+              {isImgsProcessing.status && isImgsProcessing.item === item ? (
+                <Spinner color="default" size="sm" />
+              ) : (
+                <TrashCan />
+              )}
             </button>
           </Tooltip>
         ) : (
@@ -97,8 +107,17 @@ export const ImagesCard: React.FC<ImagesCardProps> = ({
               }}
             >
               <DropdownTrigger>
-                <button className={styles.manage_button}>
-                  <ThreeDots />
+                <button
+                  className={styles.manage_button}
+                  disabled={
+                    isImgsProcessing.status && isImgsProcessing.item === item
+                  }
+                >
+                  {isImgsProcessing.status && isImgsProcessing.item === item ? (
+                    <Spinner color="default" size="sm" />
+                  ) : (
+                    <ThreeDots />
+                  )}
                 </button>
               </DropdownTrigger>
             </Tooltip>

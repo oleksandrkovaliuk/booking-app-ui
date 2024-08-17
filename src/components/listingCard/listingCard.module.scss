@@ -3,6 +3,47 @@
   width: 300px;
   cursor: pointer;
   outline: none;
+  &[data-isnotpreview="true"] {
+    width: 280px;
+    .slider_container {
+      height: 280px;
+      .slider_content {
+        .slider_image {
+          height: 280px;
+        }
+      }
+    }
+  }
+  &[data-ismanagable="true"] {
+    width: 400px;
+    .slider_container {
+      height: 400px;
+      .slider_content {
+        .slider_image {
+          height: 400px;
+        }
+      }
+    }
+  }
+  .listing_info {
+    .location {
+      font-size: 15px;
+      font-weight: 700;
+      font-family: var(--booking-app-Nunito-Sans-font);
+      color: var(--booking-app-black-color);
+    }
+    .title {
+      font-size: 13px;
+      font-weight: 500;
+      font-family: var(--booking-app-Nunito-Sans-font);
+      color: var(--booking-app-black-color);
+    }
+    .price {
+      font-size: 15px;
+      font-family: var(--booking-app-Nunito-Sans-font);
+      color: var(--booking-app-black-color);
+    }
+  }
 }
 .slider_container {
   position: relative;

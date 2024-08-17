@@ -6,11 +6,14 @@ import { Category, TypeOfPlace } from "@/store/slices/listingsInfoSlice/type";
 
 export interface ContentProps {
   props?: any;
-  images: string[];
+  images: { url: string }[];
   [key: string]: any;
   selectedPrice: string;
   categories: Category[];
-  selectedAdress: string;
+  selectedAdress: {
+    formattedAddress: string;
+    shorterAddress: string;
+  };
   selectedGuests: number;
   key: CreateListingSteps;
   type: CreateListingSteps;
@@ -31,7 +34,9 @@ export interface ContentProps {
   ) => void;
 }
 export interface ImagesType {
-  images: string[];
+  images: {
+    url: string;
+  }[];
 }
 
 export interface ImagesStoreType extends ImagesType {

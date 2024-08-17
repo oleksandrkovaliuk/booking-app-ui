@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import {
   Modal,
   ModalBody,
@@ -8,20 +9,23 @@ import {
 } from "@nextui-org/react";
 import Image from "next/image";
 import Slider from "react-slick";
+import { useDispatch } from "react-redux";
 import { useSession } from "next-auth/react";
 
-import { LeftArrow } from "@/svgs/LeftArrow";
-import { RightArrow } from "@/svgs/RightArrow";
 import { ListingCardProps } from "./type";
+import { LeftArrow } from "@/svgs/LeftArrow";
+import { StatusBadge } from "../statusBadge";
+import { RightArrow } from "@/svgs/RightArrow";
+import { ManageModalComponent } from "./components/modals/manage";
 
 import "./additional.scss";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import styles from "./listingCard.module.scss";
-import Link from "next/link";
-import { StatusBadge } from "../statusBadge";
+import { PreviewModalComponent } from "./components/modals/preview";
 
 export const ListingCard: React.FC<ListingCardProps> = ({
+  id,
   images,
   title,
   location,
@@ -32,18 +36,29 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   guests,
   price,
   isPreview,
+  isManagable,
+  isPublic,
   isInProccess,
 }) => {
+  const dispatch = useDispatch();
   const { data: session } = useSession();
 
   const sliderRef = useRef<Slider | null>(null);
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [currentSlide, setCurrentSlide] = useState<number>(0);
 
   // CONDITIONS
   const isLastSlider = currentSlide === images.length - 1;
   const isFirstSlider = currentSlide === 0;
+
+  const isNotPreview = !isPreview || !isInProccess;
+  const isPublicView = !isPreview && !isManagable && isPublic;
+  const mainHref = isPublicView
+    ? isInProccess
+      ? "/manage/listings/create"
+      : `/listing/${location?.shorterAddress}/${id}`
+    : "#";
 
   // OPTIONS
   const options = {
@@ -81,88 +96,53 @@ export const ListingCard: React.FC<ListingCardProps> = ({
     };
   }, []);
 
-  console.log(images, "check");
   return (
     <>
       {isPreview && (
-        <Modal size="5xl" isOpen={isOpen} onClose={onClose} className="modal">
-          <ModalContent>
-            <ModalHeader className="modal_header">Full preview</ModalHeader>
-            <ModalBody className="modal_body">
-              <Image
-                src={images[0]}
-                alt="preview"
-                width={1000}
-                height={600}
-                className="modal_listing_image"
-              />
-              <ul className="modal_info">
-                <li className="modal_info_item">
-                  <div className="modal_info_title">{title}</div>
-                </li>
-                <li className="modal_info_item host">
-                  <div className="modal_hosted_by">
-                    <div className="modal_info_title">
-                      {typeOfPlace} hosted by{" "}
-                      <span>
-                        {" "}
-                        {session?.user.name &&
-                          `, ${session?.user?.name?.split(" ")[0]}`}
-                      </span>
-                      !
-                    </div>
-                    <div className="modal_hosted_additional_info">
-                      <p className="modal_info_description">{guests} guests</p>
-                      {allowPets && (
-                        <p className="modal_info_description">Pets allowed</p>
-                      )}
-                      {accessible && (
-                        <p className="modal_info_description">Accessible</p>
-                      )}
-                    </div>
-                  </div>
-                  <Image
-                    src={session?.user.image!}
-                    alt="user"
-                    width={50}
-                    height={50}
-                    className="modal_hosted_by_image"
-                  />
-                </li>
-                <li className="modal_info_item description">
-                  <p className="modal_info_description">{description}</p>
-                </li>
-                <li className="modal_info_item location">
-                  <div className="modal_info_title">Location</div>
-                  <p className="modal_info_description">{location}</p>
-                  <p className="modal_info_description">
-                    We’ll only share your address with guests who are booked.
-                  </p>
-                </li>
-              </ul>
-            </ModalBody>
-          </ModalContent>
-        </Modal>
+        <PreviewModalComponent
+          isOpen={isOpen}
+          onClose={onClose}
+          images={images}
+          title={title}
+          typeOfPlace={typeOfPlace}
+          description={description}
+          location={location}
+          guests={guests}
+          allowPets={allowPets}
+          accessible={accessible}
+        />
       )}
+      {isManagable && (
+        <ManageModalComponent
+          id={id}
+          isOpen={isOpen}
+          onClose={onClose}
+          images={images}
+          title={title}
+          location={location}
+          onOpenChange={onOpenChange}
+        />
+      )}
+
       <Link
-        href={isInProccess ? "/manage/listings/create" : "#"}
+        href={mainHref}
         className={styles.listing_card}
+        data-isnotpreview={isNotPreview}
+        data-ismanagable={isManagable}
+        onClick={onOpen}
       >
-        <div
-          className={styles.slider_container}
-          onWheel={handleWhellScroll}
-          onClick={isPreview ? onOpen : () => null}
-        >
+        <div className={styles.slider_container} onWheel={handleWhellScroll}>
           {isInProccess && <StatusBadge status="In progress" color="#ffa836" />}
           {isPreview && (
             <span className={styles.show_preview}>show preview</span>
           )}
+
           <Slider {...options} ref={sliderRef}>
             {images.map((image) => (
-              <div key={image} className={styles.slider_content}>
+              <div key={image.url} className={styles.slider_content}>
                 <div
                   className={styles.slider_image}
-                  style={{ backgroundImage: `url(${image})` }}
+                  style={{ backgroundImage: `url(${image.url})` }}
                 />
               </div>
             ))}
@@ -191,9 +171,15 @@ export const ListingCard: React.FC<ListingCardProps> = ({
           </button>
         </div>
         <div className={styles.listing_info}>
+          {isNotPreview && (
+            <div className={styles.location}>{location?.shorterAddress}</div>
+          )}
           <h5 className={styles.title}>{title}</h5>
           <span className={styles.price}>
-            <b>${price}</b> night
+            <b>
+              ${isNaN(Number(price)) ? price : Number(price).toLocaleString()}
+            </b>{" "}
+            night
           </span>
         </div>
       </Link>

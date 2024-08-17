@@ -1,0 +1,108 @@
+.navigationBar_container {
+  position: sticky;
+  top: 81px;
+  padding-block: 30px;
+
+  width: 100%;
+  flex-shrink: 0;
+  background-color: var(--booking-app-white-color);
+  border-right: 1px solid var(--booking-app-lightgrey-color);
+}
+.navigationBar_wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100dvh;
+  overflow: hidden;
+  .navigation_tabs_wrap,
+  .edit_title {
+    min-width: 140px;
+  }
+
+  .edit_title {
+    color: var(--booking-app-grey-color);
+    font-size: 13px;
+    font-family: var(--booking-app-Nunito-Sans-font);
+    font-weight: 500;
+    padding-inline: 7px;
+  }
+
+  .navigation_tabs_wrap {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    gap: 5px;
+
+    .navigation_tab {
+      padding: 5px 7px;
+      font-size: 15px;
+      font-family: var(--booking-app-Nunito-Sans-font);
+      font-weight: 600;
+      color: var(--booking-app-black-color);
+      border-radius: 5px;
+
+      transition: all 0.2s ease;
+      cursor: pointer;
+      &:hover {
+        background-color: var(--booking-app-background-hover-color);
+      }
+      &[data-active="true"] {
+        background-color: var(--booking-app-background-hover-color);
+      }
+    }
+  }
+}
+.close_button {
+  position: absolute;
+  padding-left: 15px;
+  right: -40px;
+  top: 0;
+  height: 100dvh;
+  cursor: pointer;
+
+  .close_icon {
+    position: relative;
+    transform: translateY(-50%);
+    z-index: 1;
+    width: 25px;
+    height: 25px;
+    padding: 4px;
+    &::after,
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0%;
+      width: 14px;
+      height: 4px;
+      background-color: var(--booking-app-lightgrey-color);
+      border-radius: 7px;
+      transition: transform 0.4s ease-in-out, background-color 0.2s ease-in-out;
+    }
+    &::before {
+      transform: rotate(50deg);
+      top: 25%;
+    }
+    &::after {
+      bottom: 24%;
+      transform: rotate(-50deg);
+    }
+  }
+  &:hover {
+    .close_icon {
+      &::after,
+      &::before {
+        background-color: var(--booking-app-black-color);
+      }
+    }
+  }
+  &[data-navigation-bar-active="true"] {
+    .close_icon {
+      &::before {
+        transform: rotate(130deg);
+      }
+      &::after {
+        transform: rotate(-130deg);
+      }
+    }
+  }
+}

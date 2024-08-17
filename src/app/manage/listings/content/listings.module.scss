@@ -1,0 +1,78 @@
+.listing_page_container {
+  padding-block: 50px;
+  max-width: 1300px;
+  margin: auto;
+}
+
+.title_section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  .welcoming_text {
+    text-transform: capitalize;
+    font-size: 30px;
+  }
+  .create_listing_button {
+    background-color: transparent;
+    border: 1px solid var(--booking-app-black-color);
+    color: var(--booking-app-black-color);
+    font-family: var(--booking-app-Nunito-Sans-font) !important;
+    font-weight: 600;
+  }
+}
+
+.listings_container {
+  display: flex;
+
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 30px;
+}
+
+.listing_in_progress {
+  text-align: left;
+  position: relative;
+  max-width: 400px !important;
+  .skeleton {
+    border-radius: 10px;
+    margin-bottom: 5px;
+  }
+  .listing_in_progress_img {
+    max-width: 400px !important;
+    width: 100%;
+    height: 400px;
+    border-radius: 10px;
+  }
+  .listing_in_progress_text {
+    font-size: 14px;
+    font-weight: 500;
+    font-family: var(--booking-app-Nunito-Sans-font);
+    color: var(--booking-app-black-color);
+
+    span {
+      font-weight: 600;
+    }
+  }
+}
+
+.empty_page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 60dvh;
+  max-width: 400px;
+  margin: auto;
+  .not_found_icon {
+    width: 200px;
+    height: 200px;
+    flex-shrink: 0;
+  }
+}
+@media (width <= 1280px) {
+  .listing_page_container {
+    padding-inline: 20px;
+  }
+}

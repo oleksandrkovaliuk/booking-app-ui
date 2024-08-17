@@ -1,0 +1,14 @@
+.home_container {
+  padding: 20px 50px;
+  .listings_container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px;
+    justify-content: flex-start;
+  }
+}
+@media (width <= 768px) {
+  .home_container {
+    padding: 20px 15px;
+  }
+}

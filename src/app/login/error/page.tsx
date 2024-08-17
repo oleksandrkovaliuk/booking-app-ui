@@ -3,14 +3,14 @@ import React from "react";
 import Link from "next/link";
 import { Button } from "@nextui-org/react";
 
-import { EyesIcon } from "@/svgs/EyesIcon";
+import { NotFoundIcon } from "@/svgs/NotFoundIcon";
 
 import "@/app/error.scss";
 
 const ErrorOAuth = () => {
   return (
     <div className="error_wrap">
-      <EyesIcon />
+      <NotFoundIcon />
       <h2>Opppsss...</h2>
       <p>
         Something went wrong with your authentication. Please try again or use

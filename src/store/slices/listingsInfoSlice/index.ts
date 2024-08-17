@@ -11,6 +11,7 @@ const initialState: State = {
   categories: [],
   typeOfPlace: [],
   listings: [],
+  isLoading: false,
 };
 
 const listingsInfo = createSlice({
@@ -40,12 +41,15 @@ const listingsInfo = createSlice({
 
     builder.addCase(getAllListings.pending, (state) => {
       state.listings = [];
+      state.isLoading = true;
     });
     builder.addCase(getAllListings.fulfilled, (state, action) => {
       state.listings = action.payload;
+      state.isLoading = false;
     });
     builder.addCase(getAllListings.rejected, (state) => {
       state.listings = [];
+      state.isLoading = false;
     });
 
     builder.addCase(RequestDeleteListing.fulfilled, (state, action) => {

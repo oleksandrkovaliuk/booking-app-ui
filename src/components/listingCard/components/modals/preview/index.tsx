@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import { ModalProps } from "../type";
 import { Modal, ModalBody, ModalContent, ModalHeader } from "@nextui-org/react";
 
-const PreviewModal: React.FC<ModalProps> = ({
+export const PreviewModal: React.FC<ModalProps> = ({
   isOpen,
   onClose,
   images,
@@ -88,5 +88,3 @@ const PreviewModal: React.FC<ModalProps> = ({
     </Modal>
   );
 };
-
-export const PreviewModalComponent = React.memo(PreviewModal);

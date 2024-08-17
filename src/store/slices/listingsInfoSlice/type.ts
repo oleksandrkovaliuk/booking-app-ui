@@ -17,4 +17,5 @@ export interface State {
   categories: Category[];
   typeOfPlace: TypeOfPlace[];
   listings: ListingState[];
+  isLoading: boolean;
 }

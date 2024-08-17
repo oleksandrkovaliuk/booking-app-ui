@@ -10,7 +10,7 @@ import { ModalProps } from "../type";
 import { RequestDeleteListing } from "@/store/thunks/listings/delete";
 import { deleteUserListingImages } from "@/sharing/firebaseImages/users/listings/uploadImg";
 
-const ManageModal: React.FC<ModalProps> = ({
+export const ManageModal: React.FC<ModalProps> = ({
   id,
   isOpen,
   onClose,
@@ -124,5 +124,3 @@ const ManageModal: React.FC<ModalProps> = ({
     </Modal>
   );
 };
-
-export const ManageModalComponent = React.memo(ManageModal);

@@ -21,7 +21,9 @@ export const ListingsPage: React.FC = () => {
   const dispath = useDispatch();
   const { data: session } = useSession();
 
-  const { listings } = useSelector((state: RootState) => state.listingsInfo);
+  const { listings, isLoading } = useSelector(
+    (state: RootState) => state.listingsInfo
+  );
   const userListings = listings.filter(
     (item) =>
       item.hostemail === session?.user?.email ||
@@ -59,6 +61,8 @@ export const ListingsPage: React.FC = () => {
       }
     }
   }, []);
+
+  console.log(isLoading, "isLoading");
 
   return (
     <div className={styles.listing_page_container}>

@@ -1,28 +1,21 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import {
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalHeader,
-  useDisclosure,
-} from "@nextui-org/react";
-import Image from "next/image";
 import Slider from "react-slick";
-import { useDispatch } from "react-redux";
-import { useSession } from "next-auth/react";
+import { useDisclosure } from "@nextui-org/react";
+
+import { LeftArrow } from "@/svgs/LeftArrow";
+import { RightArrow } from "@/svgs/RightArrow";
+
+import { StatusBadge } from "../statusBadge";
+import { ManageModal } from "./components/modals/manage";
+import { PreviewModal } from "./components/modals/preview";
 
 import { ListingCardProps } from "./type";
-import { LeftArrow } from "@/svgs/LeftArrow";
-import { StatusBadge } from "../statusBadge";
-import { RightArrow } from "@/svgs/RightArrow";
-import { ManageModalComponent } from "./components/modals/manage";
 
 import "./additional.scss";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import styles from "./listingCard.module.scss";
-import { PreviewModalComponent } from "./components/modals/preview";
 
 export const ListingCard: React.FC<ListingCardProps> = ({
   id,
@@ -40,9 +33,6 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   isPublic,
   isInProccess,
 }) => {
-  const dispatch = useDispatch();
-  const { data: session } = useSession();
-
   const sliderRef = useRef<Slider | null>(null);
 
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
@@ -76,10 +66,8 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   };
 
   const handleWhellScroll = (e: React.WheelEvent) => {
-    e.preventDefault();
-
-    if (e.deltaX > 20) sliderRef.current?.slickNext();
-    else if (e.deltaX < -20) sliderRef.current?.slickPrev();
+    if (e.deltaX > 10) sliderRef.current?.slickNext();
+    else if (e.deltaX < -10) sliderRef.current?.slickPrev();
   };
 
   useEffect(() => {
@@ -99,7 +87,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   return (
     <>
       {isPreview && (
-        <PreviewModalComponent
+        <PreviewModal
           isOpen={isOpen}
           onClose={onClose}
           images={images}
@@ -113,7 +101,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
         />
       )}
       {isManagable && (
-        <ManageModalComponent
+        <ManageModal
           id={id}
           isOpen={isOpen}
           onClose={onClose}

@@ -1,10 +1,11 @@
+import { createSlice } from "@reduxjs/toolkit";
+
+import { State } from "./type";
+
 import { getAllCategories } from "@/store/thunks/listings/categories";
 import { getTypeOfPlace } from "@/store/thunks/listings/typeOfPlace";
-import { createSlice } from "@reduxjs/toolkit";
-import { State } from "./type";
 import { getAllListings } from "@/store/thunks/listings/listings";
-import { ParseJSONFields } from "@/sharing/parseJSONFields";
-import { ListingState } from "@/app/api/apiCalls";
+import { RequestDeleteListing } from "@/store/thunks/listings/delete";
 
 const initialState: State = {
   categories: [],
@@ -41,12 +42,15 @@ const listingsInfo = createSlice({
       state.listings = [];
     });
     builder.addCase(getAllListings.fulfilled, (state, action) => {
-      state.listings = action.payload.map((listing: ListingState) =>
-        ParseJSONFields(listing)
-      );
+      state.listings = action.payload;
     });
     builder.addCase(getAllListings.rejected, (state) => {
       state.listings = [];
+    });
+
+    builder.addCase(RequestDeleteListing.fulfilled, (state, action) => {
+      console.log(action.payload);
+      state.listings = action.payload;
     });
   },
 });

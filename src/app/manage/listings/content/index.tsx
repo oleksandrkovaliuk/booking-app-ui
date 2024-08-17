@@ -2,15 +2,18 @@
 
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
 import { useDispatch, useSelector } from "react-redux";
-import { Button, Skeleton } from "@nextui-org/react";
+import { Button, Skeleton, Tooltip } from "@nextui-org/react";
 
+import { RootState } from "@/store";
+import { NotFoundIcon } from "@/svgs/NotFoundIcon";
 import { FormState } from "../../_components/type";
 import { ListingCard } from "@/components/listingCard";
 import { StatusBadge } from "@/components/statusBadge";
-import { RootState } from "@/store";
 import { getAllListings } from "@/store/thunks/listings/listings";
+import { appearAnimation, motion_transition } from "../../_components/consts";
 
 import styles from "./listings.module.scss";
 
@@ -71,6 +74,24 @@ export const ListingsPage: React.FC = () => {
         </Link>
       </section>
       <section className={styles.listings_container}>
+        {!listingInProccess && !userListings.length && (
+          <Link href="/manage/listings/create" className={styles.empty_page}>
+            <Tooltip
+              placement="top"
+              content={"Create your first listing"}
+              color="primary"
+              size="sm"
+              delay={1500}
+              classNames={{
+                content: ["text-white font-medium bg-[#2f2f2f]"],
+              }}
+            >
+              <motion.div {...appearAnimation} transition={motion_transition}>
+                <NotFoundIcon className={styles.not_found_icon} />
+              </motion.div>
+            </Tooltip>
+          </Link>
+        )}
         {listingInProccess &&
           (inProcessData ? (
             <div className={styles.listing_in_progress}>
@@ -100,16 +121,18 @@ export const ListingsPage: React.FC = () => {
 
         {userListings?.map((item) => (
           <ListingCard
+            isManagable
+            id={item.id}
             key={item.id}
-            images={item.images}
             price={item.price}
             title={item.title}
+            images={item.images}
+            guests={item.guests}
             location={item.address}
             description={item.aboutPlace}
             typeOfPlace={item.typeOfPlace?.type_name}
             allowPets={item.additionalDetails?.pets}
             accessible={item.additionalDetails?.accesable}
-            guests={item.guests}
           />
         ))}
       </section>

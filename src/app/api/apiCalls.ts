@@ -32,6 +32,7 @@ export interface ListingState extends FormState {
 export const GetListingsCategories = () => GET("listings/categories");
 export const GetTypeOfPlace = () => GET("listings/typeofplace");
 export const GetListings = () => GET("listings/listings");
+
 export const CreateListing = ({
   hostname,
   hostemail,
@@ -64,3 +65,6 @@ export const CreateListing = ({
     notes,
     price,
   });
+
+export const DeleteListing = (id: number) =>
+  POST("listings/deleteListing", { id });

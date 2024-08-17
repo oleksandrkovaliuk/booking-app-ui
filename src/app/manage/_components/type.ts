@@ -19,7 +19,9 @@ export interface FormState {
     accesable: boolean;
   };
   startingDate?: string;
-  images: string[];
+  images: {
+    url: string;
+  }[];
   title: string;
   placeIs: string;
   aboutPlace: string;

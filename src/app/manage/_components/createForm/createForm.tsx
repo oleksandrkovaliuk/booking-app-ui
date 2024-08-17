@@ -164,7 +164,7 @@ export const CreateForm: React.FC = () => {
   const handleClearForm = async () => {
     clearAllStorage();
     await deleteUserListingImages({
-      user: session?.user.name!,
+      user_email: session?.user.email!,
       location: selectedAddress.formattedAddress!,
     });
   };

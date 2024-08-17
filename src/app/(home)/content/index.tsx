@@ -22,6 +22,7 @@ export const HomeContent: React.FC = () => {
             transition={{ delay: 0.1 * i, ease: "easeInOut" }}
           >
             <ListingCard
+              id={listing.id}
               images={listing.images}
               title={listing.title}
               price={listing.price}

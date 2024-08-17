@@ -1,5 +1,8 @@
 export interface ListingCardProps {
-  images: string[];
+  id?: number;
+  images: {
+    url: string;
+  }[];
   title: string;
   price: string;
   location?: {
@@ -12,6 +15,7 @@ export interface ListingCardProps {
   description?: string;
   isPreview?: boolean;
   isPublic?: boolean;
+  isManagable?: boolean;
   isInProccess?: boolean;
   typeOfPlace?: string;
 }

@@ -7,6 +7,22 @@
     width: 280px;
     .slider_container {
       height: 280px;
+      .slider_content {
+        .slider_image {
+          height: 280px;
+        }
+      }
+    }
+  }
+  &[data-ismanagable="true"] {
+    width: 400px;
+    .slider_container {
+      height: 400px;
+      .slider_content {
+        .slider_image {
+          height: 400px;
+        }
+      }
     }
   }
   .listing_info {

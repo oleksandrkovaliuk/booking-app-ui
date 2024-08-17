@@ -4,7 +4,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 25px;
-    justify-content: center;
+    justify-content: flex-start;
   }
 }
 @media (width <= 768px) {

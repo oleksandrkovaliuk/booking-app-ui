@@ -1,21 +1,14 @@
-export interface ListingCardProps {
+import { FormState } from "@/app/manage/_components/type";
+
+type optionalTypes = "guests" | "placeis" | "notes" | "aboutplace" | "address";
+export interface ListingCardProps
+  extends Omit<FormState, optionalTypes>,
+    Partial<Pick<FormState, optionalTypes>> {
   id?: number;
-  images: {
-    url: string;
-  }[];
-  title: string;
-  price: string;
-  location?: {
-    formattedAddress: string;
-    shorterAddress: string;
-  };
-  guests?: number;
-  allowPets?: boolean;
-  accessible?: boolean;
-  description?: string;
   isPreview?: boolean;
   isPublic?: boolean;
   isManagable?: boolean;
   isInProccess?: boolean;
   typeOfPlace?: string;
+  isComplete?: boolean;
 }

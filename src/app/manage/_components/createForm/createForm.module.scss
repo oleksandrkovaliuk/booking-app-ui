@@ -573,7 +573,7 @@
       max-width: unset;
     }
     .price_container {
-      justify-content: flex-end;
+      justify-content: center;
       .input_wrap {
         .price_input,
         .price_label {
@@ -581,6 +581,11 @@
         }
       }
     }
+  }
+
+  .submit,
+  .additional_details {
+    max-width: unset;
   }
   .title {
     font-size: 25px;
@@ -622,6 +627,17 @@
       .type_button {
         gap: 20px;
       }
+    }
+  }
+
+  .submit {
+    .preview_of_listing_container {
+      gap: 20px;
+      align-items: flex-start;
+      flex-direction: column;
+    }
+    .info_blocks_container {
+      max-width: unset;
     }
   }
   .video {

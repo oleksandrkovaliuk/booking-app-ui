@@ -15,3 +15,7 @@ export interface UserTypes
   > {
   password: string;
 }
+
+export interface UploadImgProps {
+  incomingData: FormData;
+}

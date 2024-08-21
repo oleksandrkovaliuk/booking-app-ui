@@ -90,7 +90,7 @@ export const AdditionalDetails: React.FC<ContentProps> = ({
           placeholder="..."
           description="Describe the key features and unique aspects of your listing. Highlight what makes it special and why guests would love to stay here."
           onValueChange={(value) =>
-            handleUpdateFormAndLocalStorage("aboutPlace", value)
+            handleUpdateFormAndLocalStorage("aboutplace", value)
           }
           validate={(value) =>
             value !== ""
@@ -99,7 +99,7 @@ export const AdditionalDetails: React.FC<ContentProps> = ({
                 : "Please enter at least 10 characters"
               : true
           }
-          {...register("aboutPlace")}
+          {...register("aboutplace")}
         />
       </motion.div>
       <motion.div
@@ -120,7 +120,7 @@ export const AdditionalDetails: React.FC<ContentProps> = ({
           placeholder="..."
           description="Provide a brief overview of the location and setting of your listing. Mention key attributes that make it appealing."
           onValueChange={(value) =>
-            handleUpdateFormAndLocalStorage("placeIs", value)
+            handleUpdateFormAndLocalStorage("placeis", value)
           }
           validate={(value) =>
             value !== ""
@@ -129,7 +129,7 @@ export const AdditionalDetails: React.FC<ContentProps> = ({
                 : "Please enter at least 10 characters"
               : true
           }
-          {...register("placeIs")}
+          {...register("placeis")}
         />
       </motion.div>
       <motion.div

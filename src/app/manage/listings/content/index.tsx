@@ -4,10 +4,10 @@ import React, { useEffect, useLayoutEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Button, Skeleton, Tooltip } from "@nextui-org/react";
 
-import { RootState } from "@/store";
+import { useSelector } from "@/store";
 import { NotFoundIcon } from "@/svgs/NotFoundIcon";
 import { FormState } from "../../_components/type";
 import { ListingCard } from "@/components/listingCard";
@@ -16,24 +16,29 @@ import { getAllListings } from "@/store/thunks/listings/listings";
 import { appearAnimation, motion_transition } from "../../_components/consts";
 
 import styles from "./listings.module.scss";
+import { SkeletonListingCard } from "@/components/listingCard/components/skeleton";
+import { skeletonData } from "@/information/data";
 
 export const ListingsPage: React.FC = () => {
   const dispath = useDispatch();
   const { data: session } = useSession();
 
-  const { listings, isLoading } = useSelector(
-    (state: RootState) => state.listingsInfo
+  const { listings, categories, typeOfPlace, isLoading } = useSelector(
+    (state) => state.listingsInfo
   );
-  const userListings = listings.filter(
-    (item) =>
-      item.hostemail === session?.user?.email ||
-      item.hostname === session?.user?.name
-  );
+  const userListings = listings.length
+    ? listings.filter(
+        (item) =>
+          item.hostemail === session?.user?.email ||
+          item.hostname === session?.user?.name
+      )
+    : [];
 
   const [listingInProccess, setListingInProgress] = useState<FormState | null>(
     null
   );
-  const inProcessData =
+
+  const dataInProccess =
     !listingInProccess?.images &&
     !listingInProccess?.title &&
     !listingInProccess?.price;
@@ -62,8 +67,6 @@ export const ListingsPage: React.FC = () => {
     }
   }, []);
 
-  console.log(isLoading, "isLoading");
-
   return (
     <div className={styles.listing_page_container}>
       <section className={styles.title_section}>
@@ -71,15 +74,18 @@ export const ListingsPage: React.FC = () => {
           Welcome{" "}
           {session?.user.name && `, ${session?.user?.name?.split(" ")[0]}`}!
         </h1>
-        <Link href="/manage/listings/create">
+        <Link href={!isLoading.listings ? "/manage/listings/create" : "#"}>
           <Button className={styles.create_listing_button} size="sm">
-            Create your listing
+            {listingInProccess ? "Continue creating" : "Create Listing"}
           </Button>
         </Link>
       </section>
       <section className={styles.listings_container}>
-        {!listingInProccess && !userListings.length && (
-          <Link href="/manage/listings/create" className={styles.empty_page}>
+        {!userListings?.length && !isLoading.listings && !listingInProccess && (
+          <Link
+            href={!isLoading.listings ? "/manage/listings/create" : "#"}
+            className={styles.empty_page}
+          >
             <Tooltip
               placement="top"
               content={"Create your first listing"}
@@ -97,9 +103,12 @@ export const ListingsPage: React.FC = () => {
           </Link>
         )}
         {listingInProccess &&
-          (inProcessData ? (
+          !isLoading.listings &&
+          (dataInProccess ? (
             <div className={styles.listing_in_progress}>
-              <Link href="/manage/listings/create">
+              <Link
+                href={!isLoading.listings ? "/manage/listings/create" : "#"}
+              >
                 <Skeleton className={styles.skeleton}>
                   <div className={styles.listing_in_progress_img}></div>
                 </Skeleton>
@@ -123,22 +132,26 @@ export const ListingsPage: React.FC = () => {
             />
           ))}
 
-        {userListings?.map((item) => (
-          <ListingCard
-            isManagable
-            id={item.id}
-            key={item.id}
-            price={item.price}
-            title={item.title}
-            images={item.images}
-            guests={item.guests}
-            location={item.address}
-            description={item.aboutPlace}
-            typeOfPlace={item.typeOfPlace?.type_name}
-            allowPets={item.additionalDetails?.pets}
-            accessible={item.additionalDetails?.accesable}
-          />
-        ))}
+        {isLoading.listings
+          ? skeletonData.map((item) => (
+              <SkeletonListingCard key={item} item={item} size="lg" />
+            ))
+          : userListings?.map((item) => (
+              <ListingCard
+                key={item.id}
+                id={item.id!}
+                isManagable
+                isComplete={item.iscomplete}
+                price={item.price}
+                title={item.title}
+                images={item.images}
+                guests={item.guests}
+                address={item.address}
+                type={item.type}
+                pets_allowed={item.pets_allowed}
+                accesable={item.accesable}
+              />
+            ))}
       </section>
     </div>
   );

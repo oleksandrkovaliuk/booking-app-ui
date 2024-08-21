@@ -6,7 +6,6 @@ import { Category, TypeOfPlace } from "@/store/slices/listingsInfoSlice/type";
 
 export interface ContentProps {
   props?: any;
-  images: { url: string }[];
   [key: string]: any;
   selectedPrice: string;
   categories: Category[];
@@ -17,16 +16,18 @@ export interface ContentProps {
   selectedGuests: number;
   key: CreateListingSteps;
   type: CreateListingSteps;
+  images: { url: string }[];
   typeOfPlace: TypeOfPlace[];
   selectedCategory: Category;
   selectedTypeOfPlace: TypeOfPlace;
   register: UseFormRegister<FormState>;
   selectedCordinates: GoogleMapProps["cordinates"];
   handleCordinatesChange: GoogleMapProps["setCordinates"];
-  selectedAdditionalDetails: FormState["additionalDetails"];
+  selectedAccesable: FormState["accesable"];
+  selectedPetsAllowed: FormState["pets_allowed"];
   selectedTitle: FormState["title"];
-  selectedPlaceIs: FormState["placeIs"];
-  selectedAboutPlace: FormState["aboutPlace"];
+  selectedPlaceIs: FormState["placeis"];
+  selectedAboutPlace: FormState["aboutplace"];
   selectedNotes: FormState["notes"];
   handleUpdateFormAndLocalStorage: (
     key: keyof FormState,

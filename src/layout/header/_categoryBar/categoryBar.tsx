@@ -1,24 +1,24 @@
-import React, { Suspense, useEffect } from "react";
+import React from "react";
+import Image from "next/image";
+import { RootState, useSelector } from "@/store";
 import { motion } from "framer-motion";
 
-import styles from "./categoryBar.module.scss";
-import { useDispatch, useSelector } from "react-redux";
-
-import { RootState } from "@/store";
 import {
   Button,
   Modal,
   ModalContent,
   ScrollShadow,
+  Skeleton,
   useDisclosure,
 } from "@nextui-org/react";
-import Image from "next/image";
+
 import { FilterIcon } from "@/svgs/FilterIcon";
+import { skeletonData } from "@/information/data";
+
+import styles from "./categoryBar.module.scss";
 
 const Categories: React.FC = () => {
-  const { categories } = useSelector(
-    (state: RootState) => state.listingsInfo
-  );
+  const { categories, isLoading } = useSelector((state) => state.listingsInfo);
 
   const [selectedCategory, setSelectedCategory] = React.useState<number | null>(
     null
@@ -29,23 +29,36 @@ const Categories: React.FC = () => {
 
   return (
     <>
-      {categories?.map((category) => (
-        <button
-          key={category.id}
-          className={styles.category}
-          onClick={() => selectCategory(category.id)}
-          data-selected={selectedCategory === category.id}
-        >
-          <Image
-            src={category.category_icon as string}
-            alt={category.category_icon as string}
-            width={24}
-            height={24}
-            className={styles.category_img}
-          />
-          <span className={styles.category_text}>{category.category_name}</span>
-        </button>
-      ))}
+      {isLoading.categories || !categories.length
+        ? skeletonData?.map((item) => (
+            <div className={styles.skeleton_macket} key={item}>
+              <Skeleton className={styles.skeleton}>
+                <div className={styles.skeleton_img} />
+              </Skeleton>
+              <Skeleton className={styles.skeleton}>
+                <div className={styles.skeleton_text} />
+              </Skeleton>
+            </div>
+          ))
+        : categories?.map((category) => (
+            <button
+              key={category.id}
+              className={styles.category}
+              onClick={() => selectCategory(category.id)}
+              data-selected={selectedCategory === category.id}
+            >
+              <Image
+                src={category.category_icon as string}
+                alt={category.category_icon as string}
+                width={24}
+                height={24}
+                className={styles.category_img}
+              />
+              <span className={styles.category_text}>
+                {category.category_name}
+              </span>
+            </button>
+          ))}
     </>
   );
 };

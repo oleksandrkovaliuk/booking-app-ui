@@ -9,6 +9,8 @@ import { Button, Modal, ModalBody, ModalContent } from "@nextui-org/react";
 import { ModalProps } from "../type";
 import { RequestDeleteListing } from "@/store/thunks/listings/delete";
 import { deleteUserListingImages } from "@/sharing/firebaseImages/users/listings/uploadImg";
+import { EditIcon } from "@/svgs/EditIcon";
+import { CalendarIcon } from "@/svgs/CalendarIcon";
 
 export const ManageModal: React.FC<ModalProps> = ({
   id,
@@ -16,7 +18,8 @@ export const ManageModal: React.FC<ModalProps> = ({
   onClose,
   images,
   title,
-  location,
+  address,
+  isComplete,
   onOpenChange,
 }) => {
   const dispatch = useDispatch();
@@ -32,7 +35,7 @@ export const ManageModal: React.FC<ModalProps> = ({
       dispatch(RequestDeleteListing(id!) as any);
       await deleteUserListingImages({
         user_email: session?.user?.email!,
-        location: location?.formattedAddress!,
+        location: address?.formattedAddress!,
       });
       toast.info("Listing deleted successfully");
       onClose();
@@ -90,27 +93,45 @@ export const ManageModal: React.FC<ModalProps> = ({
               className="modal_manage_image"
             />
             <h3 className="modal_manage_title">{title}</h3>
-            <p className="modal_manage_location">{location?.shorterAddress}</p>
+            <p className="modal_manage_location">{address?.shorterAddress}</p>
           </div>
-          {isDeleteProcess ? (
-            <Button
-              variant="light"
-              className="modal_manage_button main"
-              onClick={handleDeleteListing}
-            >
-              Yes , delete
-            </Button>
-          ) : (
-            <Link
-              href={`/manage/listings/edit/${
-                session?.user.name ? session?.user.name : "user"
-              }/${id}/overview`}
-            >
-              <Button variant="light" className="modal_manage_button main">
-                Edit listing
+          <div className="modal_manage_button_container">
+            {isDeleteProcess ? (
+              <Button
+                variant="light"
+                className="modal_manage_button no_link"
+                onClick={handleDeleteListing}
+              >
+                Yes , delete
               </Button>
-            </Link>
-          )}
+            ) : (
+              <>
+                {isComplete && (
+                  <Link
+                    href={`/manage/listings/edit/${
+                      session?.user.name ? session?.user.name : "user"
+                    }/${id}/overview`}
+                    className="modal_manage_button main"
+                  >
+                    <Button variant="light">
+                      <EditIcon />
+                      Edit
+                    </Button>
+                  </Link>
+                )}
+
+                <Link
+                  href={`/manage/listings/calendar/${id}`}
+                  className="modal_manage_button main"
+                >
+                  <Button variant="light">
+                    <CalendarIcon />
+                    Avalability
+                  </Button>
+                </Link>
+              </>
+            )}
+          </div>
 
           <Button
             variant="light"

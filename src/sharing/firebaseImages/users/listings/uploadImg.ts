@@ -2,14 +2,11 @@ import {
   deleteObject,
   getDownloadURL,
   listAll,
-  ListResult,
   ref,
   uploadBytes,
 } from "firebase/storage";
 import { storage } from "@/configs/firebase";
 import { toast } from "sonner";
-import { ListingState } from "@/app/api/apiCalls";
-import { FormState } from "@/app/manage/_components/type";
 
 interface UploadImgProps {
   event: React.ChangeEvent<HTMLInputElement>;

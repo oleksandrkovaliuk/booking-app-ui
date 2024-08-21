@@ -39,7 +39,7 @@ export const Price: React.FC<ContentProps> = ({
       handleUpdateFormAndLocalStorage("price", "0");
       return;
     }
-    if (Number(price) >= PriceLimit.MAX) {
+    if (Number(price) > PriceLimit.MAX) {
       toast(
         <div className="toast ">
           🤔 Oppss . Price can not be higher then 30.000$/night. Contact our
@@ -48,15 +48,6 @@ export const Price: React.FC<ContentProps> = ({
       );
       setInvalidPrice(true);
       return;
-    }
-    if (Number(price) < PriceLimit.MIN) {
-      toast(
-        <div className="toast ">
-          🤔 Oppss . Price can not be lower then 14$/night. Contact our support
-          for more details.
-        </div>
-      );
-      setInvalidPrice(true);
     }
     setInputWidth(
       e.target.value.split("")[0] === "0"
@@ -107,7 +98,6 @@ export const Price: React.FC<ContentProps> = ({
             inputMode="numeric"
             id="price"
             className={styles.price_input}
-            min={PriceLimit.MIN}
             aria-label="price"
             style={{ maxWidth: `${inputWidth}ch` }}
             autoFocus

@@ -9,12 +9,12 @@ import {
 } from "@nextui-org/react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useForm, UseFormSetValue } from "react-hook-form";
 
-import { RootState } from "@/store";
+import { useSelector } from "@/store";
 
 import { Content } from "./content";
 import { clearAllStorage } from "./utils";
@@ -54,7 +54,7 @@ export const CreateForm: React.FC = () => {
   const router = useRouter();
   const { data: session } = useSession();
   const { categories, typeOfPlace } = useSelector(
-    (state: RootState) => state.listingsInfo
+    (state) => state.listingsInfo
   );
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -63,22 +63,20 @@ export const CreateForm: React.FC = () => {
     defaultValues: {
       step: CreateListingSteps.INTRODUCING as CreateListingSteps,
       category: null as Category | null,
-      typeOfPlace: null as TypeOfPlace | null,
+      type: null as TypeOfPlace | null,
       cordinates: { lat: 50, lng: 14 } as GoogleMapProps["cordinates"],
       address: {
         formattedAddress: "",
         shorterAddress: "",
       },
       guests: 1,
-      additionalDetails: {
-        pets: false,
-        accesable: false,
-      },
+      accesable: false,
+      pets_allowed: false,
       startingDate: "",
       images: [],
       title: "",
-      aboutPlace: "",
-      placeIs: "",
+      aboutplace: "",
+      placeis: "",
       notes: "",
       price: "14",
     } as FormState,
@@ -96,15 +94,16 @@ export const CreateForm: React.FC = () => {
   // WATCH VALUES
   const formStep = watch("step");
   const selectedAddress = watch("address");
-  const selectedTypeOfPlace = watch("typeOfPlace");
+  const selectedTypeOfPlace = watch("type");
   const selectedCategory = watch("category");
   const selectedCordinates = watch("cordinates");
-  const selectedAdditionalDetails = watch("additionalDetails");
+  const selectedAccesable = watch("accesable");
+  const selectedPetsAllowed = watch("pets_allowed");
   const selectedGuests = watch("guests");
   const selectedImages = watch("images");
   const selectedTitle = watch("title");
-  const selectedAboutPlace = watch("aboutPlace");
-  const selectedPlaceIs = watch("placeIs");
+  const selectedAboutPlace = watch("aboutplace");
+  const selectedPlaceIs = watch("placeis");
   const selectedNotes = watch("notes");
   const selectedPrice = watch("price");
 
@@ -142,7 +141,8 @@ export const CreateForm: React.FC = () => {
   const allowScroll =
     formStep === CreateListingSteps.CATEGORY ||
     formStep === CreateListingSteps.IMAGES ||
-    formStep === CreateListingSteps.ADDITIONAL_DETAILS;
+    formStep === CreateListingSteps.ADDITIONAL_DETAILS ||
+    formStep === CreateListingSteps.READY;
 
   // NAVIGATION
   const handleNextStep = () => {
@@ -211,15 +211,16 @@ export const CreateForm: React.FC = () => {
             : session?.user.email!,
           hostemail: session?.user.email!,
           category: selectedCategory,
-          typeOfPlace: selectedTypeOfPlace,
+          type: selectedTypeOfPlace,
           cordinates: selectedCordinates,
           address: selectedAddress,
           guests: selectedGuests,
-          additionalDetails: selectedAdditionalDetails,
+          accesable: selectedAccesable,
+          pets_allowed: selectedPetsAllowed,
           images: selectedImages,
           title: selectedTitle,
-          aboutPlace: selectedAboutPlace,
-          placeIs: selectedPlaceIs,
+          aboutplace: selectedAboutPlace,
+          placeis: selectedPlaceIs,
           notes: selectedNotes,
           price: selectedPrice,
         }) as any
@@ -256,16 +257,17 @@ export const CreateForm: React.FC = () => {
   useEffect(() => {
     if (typeof localStorage !== "undefined") {
       const step = localStorage.getItem("step");
-      const type = localStorage.getItem("typeOfPlace");
+      const type = localStorage.getItem("type");
       const category = localStorage.getItem("category");
       const address = localStorage.getItem("address");
       const cordinates = localStorage.getItem("cordinates");
       const guests = localStorage.getItem("guests");
-      const additionalDetails = localStorage.getItem("additionalDetails");
+      const accesable = localStorage.getItem("accesable");
+      const pets_allowed = localStorage.getItem("pets_allowed");
       const images = localStorage.getItem("images");
       const title = localStorage.getItem("title");
-      const aboutplace = localStorage.getItem("aboutPlace");
-      const placeis = localStorage.getItem("placeIs");
+      const aboutplace = localStorage.getItem("aboutplace");
+      const placeis = localStorage.getItem("placeis");
       const notes = localStorage.getItem("notes");
       const price = localStorage.getItem("price");
 
@@ -273,7 +275,7 @@ export const CreateForm: React.FC = () => {
 
       if (category) setValueRef?.current!("category", JSON.parse(category));
 
-      if (type) setValueRef?.current!("typeOfPlace", JSON.parse(type));
+      if (type) setValueRef?.current!("type", JSON.parse(type));
 
       if (address) setValueRef?.current!("address", JSON.parse(address));
 
@@ -282,20 +284,19 @@ export const CreateForm: React.FC = () => {
 
       if (guests) setValueRef?.current!("guests", Number(guests));
 
-      if (additionalDetails)
-        setValueRef?.current!(
-          "additionalDetails",
-          JSON.parse(additionalDetails)
-        );
+      if (accesable) setValueRef?.current!("accesable", JSON.parse(accesable));
+
+      if (pets_allowed)
+        setValueRef?.current!("pets_allowed", JSON.parse(pets_allowed));
 
       if (images) setValueRef?.current!("images", JSON.parse(images));
 
       if (title) setValueRef?.current!("title", JSON.parse(title));
 
-      if (placeis) setValueRef?.current!("placeIs", JSON.parse(placeis));
+      if (placeis) setValueRef?.current!("placeis", JSON.parse(placeis));
 
       if (aboutplace)
-        setValueRef?.current!("aboutPlace", JSON.parse(aboutplace));
+        setValueRef?.current!("aboutplace", JSON.parse(aboutplace));
 
       if (notes) setValueRef?.current!("notes", JSON.parse(notes));
 
@@ -325,7 +326,8 @@ export const CreateForm: React.FC = () => {
           selectedTypeOfPlace={selectedTypeOfPlace!}
           typeOfPlace={typeOfPlace as TypeOfPlace[]}
           handleCordinatesChange={handleCordinatesChange}
-          selectedAdditionalDetails={selectedAdditionalDetails!}
+          selectedAccesable={selectedAccesable!}
+          selectedPetsAllowed={selectedPetsAllowed!}
           selectedTitle={selectedTitle}
           selectedPlaceIs={selectedPlaceIs}
           selectedAboutPlace={selectedAboutPlace}

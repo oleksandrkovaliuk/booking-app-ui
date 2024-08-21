@@ -15,7 +15,8 @@ export const Basics: React.FC<ContentProps> = ({
   styles,
   register,
   selectedGuests,
-  selectedAdditionalDetails,
+  selectedAccesable,
+  selectedPetsAllowed,
   handleUpdateFormAndLocalStorage,
 }) => {
   return (
@@ -63,16 +64,16 @@ export const Basics: React.FC<ContentProps> = ({
         </span>
         <Switch
           aria-label={`pets-friedly-switch`}
-          {...(register("additionalDetails"),
+          {...(register("pets_allowed"),
           {
             onValueChange: (e) => {
-              handleUpdateFormAndLocalStorage("additionalDetails", {
-                pets: !selectedAdditionalDetails?.pets,
-                accesable: selectedAdditionalDetails?.accesable!,
-              });
+              handleUpdateFormAndLocalStorage(
+                "pets_allowed",
+                !selectedPetsAllowed
+              );
             },
           })}
-          isSelected={selectedAdditionalDetails?.pets}
+          isSelected={selectedPetsAllowed}
         />
       </motion.div>
       <motion.div
@@ -86,16 +87,13 @@ export const Basics: React.FC<ContentProps> = ({
         </span>
         <Switch
           aria-label={`pets-friedly-switch`}
-          {...(register("additionalDetails"),
+          {...(register("accesable"),
           {
             onValueChange: (e) => {
-              handleUpdateFormAndLocalStorage("additionalDetails", {
-                pets: selectedAdditionalDetails?.pets!,
-                accesable: !selectedAdditionalDetails?.accesable,
-              });
+              handleUpdateFormAndLocalStorage("accesable", !selectedAccesable);
             },
           })}
-          isSelected={selectedAdditionalDetails?.accesable}
+          isSelected={selectedAccesable}
         />
       </motion.div>
     </motion.div>

@@ -21,14 +21,15 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   id,
   images,
   title,
-  location,
-  description,
-  typeOfPlace,
-  allowPets,
-  accessible,
+  address,
+  aboutplace,
+  type,
+  pets_allowed,
+  accesable,
   guests,
   price,
   isPreview,
+  isComplete,
   isManagable,
   isPublic,
   isInProccess,
@@ -37,17 +38,17 @@ export const ListingCard: React.FC<ListingCardProps> = ({
 
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [currentSlide, setCurrentSlide] = useState<number>(0);
+  const [listingHasUnsavedChanges, setListingHasUnsavedChanges] =
+    useState(false);
 
   // CONDITIONS
   const isLastSlider = currentSlide === images.length - 1;
   const isFirstSlider = currentSlide === 0;
 
-  const isNotPreview = !isPreview || !isInProccess;
-  const isPublicView = !isPreview && !isManagable && isPublic;
-  const mainHref = isPublicView
-    ? isInProccess
+  const mainHref = !isPreview
+    ? !isPublic && isInProccess
       ? "/manage/listings/create"
-      : `/listing/${location?.shorterAddress}/${id}`
+      : `/listing/${address?.shorterAddress}/${id}`
     : "#";
 
   // OPTIONS
@@ -84,6 +85,14 @@ export const ListingCard: React.FC<ListingCardProps> = ({
     };
   }, []);
 
+  useEffect(() => {
+    const unsavedData = localStorage.getItem(`${id}`);
+
+    if (unsavedData && JSON.parse(unsavedData || "[]")?.length) {
+      setListingHasUnsavedChanges(true);
+    }
+  }, [id]);
+
   return (
     <>
       {isPreview && (
@@ -92,12 +101,12 @@ export const ListingCard: React.FC<ListingCardProps> = ({
           onClose={onClose}
           images={images}
           title={title}
-          typeOfPlace={typeOfPlace}
-          description={description}
-          location={location}
+          type={type}
+          aboutplace={aboutplace}
+          address={address}
           guests={guests}
-          allowPets={allowPets}
-          accessible={accessible}
+          pets_allowed={pets_allowed}
+          accesable={accesable}
         />
       )}
       {isManagable && (
@@ -107,21 +116,30 @@ export const ListingCard: React.FC<ListingCardProps> = ({
           onClose={onClose}
           images={images}
           title={title}
-          location={location}
+          address={address}
+          isComplete={isComplete}
           onOpenChange={onOpenChange}
         />
       )}
 
       <Link
-        href={mainHref}
+        href={isManagable ? "#" : mainHref}
         className={styles.listing_card}
-        data-isnotpreview={isNotPreview}
         data-ismanagable={isManagable}
         onClick={onOpen}
       >
         <div className={styles.slider_container} onWheel={handleWhellScroll}>
           {isInProccess && <StatusBadge status="In progress" color="#ffa836" />}
-          {isPreview && (
+          {!isComplete && !isInProccess && !isPublic && !isPreview && (
+            <StatusBadge
+              status="Required avalability approval"
+              color="#800000"
+            />
+          )}
+          {isComplete && listingHasUnsavedChanges && (
+            <StatusBadge status="Unsaved changes" color="#ffa836" />
+          )}
+          {isPreview && !isManagable && (
             <span className={styles.show_preview}>show preview</span>
           )}
 
@@ -159,9 +177,8 @@ export const ListingCard: React.FC<ListingCardProps> = ({
           </button>
         </div>
         <div className={styles.listing_info}>
-          {isNotPreview && (
-            <div className={styles.location}>{location?.shorterAddress}</div>
-          )}
+          <div className={styles.location}>{address?.shorterAddress}</div>
+
           <h5 className={styles.title}>{title}</h5>
           <span className={styles.price}>
             <b>

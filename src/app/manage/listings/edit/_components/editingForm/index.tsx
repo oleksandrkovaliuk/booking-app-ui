@@ -1,24 +1,41 @@
 "use client";
 import React from "react";
-import { useSelector } from "react-redux";
 
-import { RootState } from "@/store";
+import { useSelector } from "@/store";
 import { EditingFormProps } from "./type";
 import { ListingState } from "@/app/api/apiCalls";
+import { SkeletonListingCard } from "@/components/listingCard/components/skeleton";
+import { skeletonData } from "@/information/data";
+import { ListingCard } from "@/components/listingCard";
 
 export const EditingForm: React.FC<EditingFormProps> = ({ params }) => {
-  console.log(params);
-  const { listings } = useSelector((state: RootState) => state.listingsInfo);
-  const listing: ListingState[] = listings.filter(
+  const { listings, isLoading } = useSelector((state) => state.listingsInfo);
+  const listing: ListingState = listings.filter(
     (listing) => listing.id === Number(params.id)
-  );
-  console.log(listing);
+  )[0];
+  console.log(listing?.aboutplace);
 
   return (
-    <div style={{ height: "100000px" }}>
-      {listing.map((item) => {
-        return <div key={item.id}>{JSON.stringify(item)}</div>;
-      })}
-    </div>
+    <>
+      {isLoading && !listing ? (
+        <SkeletonListingCard item={skeletonData[0]} size="lg" />
+      ) : (
+        <ListingCard
+          isPreview
+          isManagable={false}
+          id={listing.id!}
+          type={listing.type}
+          price={listing.price}
+          title={listing.title}
+          images={listing.images}
+          guests={listing.guests}
+          address={listing.address}
+          accesable={listing.accesable}
+          aboutplace={listing.aboutplace}
+          isComplete={listing.iscomplete}
+          pets_allowed={listing.pets_allowed}
+        />
+      )}
+    </>
   );
 };

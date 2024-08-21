@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Button,
   Modal,
@@ -35,6 +35,11 @@ import {
   deleteUserListingImages,
   uploadUserListingImages,
 } from "@/sharing/firebaseImages/users/listings/uploadImg";
+import {
+  DeleteListingIndividualImage,
+  DeleteUserListingImages,
+  UploadListingImages,
+} from "@/app/api/apiCalls";
 
 export const Images: React.FC<ContentProps> = ({
   styles,
@@ -105,17 +110,23 @@ export const Images: React.FC<ContentProps> = ({
     try {
       onOpen();
       setIsLoading({ ...isLoading, uploadingImgs: true });
-      const res = await uploadUserListingImages({
-        event: e,
-        user_email: session?.user.email!,
-        location: selectedAdress.formattedAddress,
-      });
+
+      // conver data info formdata
+      const formData = new FormData();
+      for (let i = 0; i < e.target.files!.length; i++) {
+        formData.append("files", e.target.files![i]);
+      }
+      formData.append("user_email", session?.user.email!);
+      formData.append("location", selectedAdress.formattedAddress);
+
+      const res = await UploadListingImages(formData, "form");
+
       setIsLoading({ ...isLoading, uploadingImgs: false });
       setUploadedImages({
         ...uploadedImages,
-        images: res!,
+        images: res.data!,
       });
-      handleUpdateFormAndLocalStorage("images", res);
+      handleUpdateFormAndLocalStorage("images", res.data);
     } catch (error) {
       toast.error("Something went wrong");
       onClose();
@@ -130,7 +141,7 @@ export const Images: React.FC<ContentProps> = ({
           status: true,
         },
       });
-      await deleteUserListingImages({
+      await DeleteUserListingImages({
         user_email: session?.user.email!,
         location: selectedAdress.formattedAddress,
       });
@@ -139,13 +150,13 @@ export const Images: React.FC<ContentProps> = ({
         images: [],
       });
       handleUpdateFormAndLocalStorage("images", []);
-      onClose();
       setIsLoading({
         ...isLoading,
         deletingImages: {
           status: false,
         },
       });
+      onClose();
     } catch (error) {
       toast.error("Something went wrong");
     }
@@ -161,7 +172,7 @@ export const Images: React.FC<ContentProps> = ({
         },
       });
 
-      const res = await deleteIndividualListingImage({
+      const res = await DeleteListingIndividualImage({
         user_email: session?.user.email!,
         location: selectedAdress.formattedAddress,
         image,
@@ -174,7 +185,7 @@ export const Images: React.FC<ContentProps> = ({
         },
       });
 
-      if (res?.length! <= 1) {
+      if (res.data?.length! < 1) {
         onClose();
         setUploadedImages({
           images: [],
@@ -184,12 +195,9 @@ export const Images: React.FC<ContentProps> = ({
       } else {
         setUploadedImages({
           ...uploadedImages,
-          images: uploadedImages.images.filter((item) => item.url !== image),
+          images: res.data,
         });
-        handleUpdateFormAndLocalStorage(
-          "images",
-          uploadedImages.images.filter((item) => item.url !== image)
-        );
+        handleUpdateFormAndLocalStorage("images", res.data);
       }
       toast.info(
         <div className="toast success">
@@ -313,7 +321,7 @@ export const Images: React.FC<ContentProps> = ({
                 {isLoading.deletingImages.status &&
                 !isLoading.deletingImages.item ? (
                   <Spinner color="default" size="sm" />
-                ) : uploadedImages.images.length >= 0 ? (
+                ) : uploadedImages.isImagesReady ? (
                   "Done"
                 ) : (
                   "Cancel"

@@ -44,11 +44,12 @@ export const Content: FC<ContentProps> = ({
   selectedAdress,
   selectedPlaceIs,
   selectedCategory,
+  selectedAccesable,
+  selectedPetsAllowed,
   selectedAboutPlace,
   selectedCordinates,
   selectedTypeOfPlace,
   handleCordinatesChange,
-  selectedAdditionalDetails,
   handleUpdateFormAndLocalStorage,
 }) => {
   const Component = ComponentSelection[type as CreateListingSteps];
@@ -69,11 +70,12 @@ export const Content: FC<ContentProps> = ({
       selectedGuests={selectedGuests}
       selectedPlaceIs={selectedPlaceIs}
       selectedCategory={selectedCategory}
+      selectedAccesable={selectedAccesable}
       selectedAboutPlace={selectedAboutPlace}
       selectedCordinates={selectedCordinates}
       selectedTypeOfPlace={selectedTypeOfPlace}
+      selectedPetsAllowed={selectedPetsAllowed}
       handleCordinatesChange={handleCordinatesChange}
-      selectedAdditionalDetails={selectedAdditionalDetails}
       handleUpdateFormAndLocalStorage={handleUpdateFormAndLocalStorage}
     />
   );

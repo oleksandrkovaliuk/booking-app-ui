@@ -1,6 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
 import { CreateListing, ListingState } from "@/app/api/apiCalls";
+import { toast } from "sonner";
 
 export const RequestCreateListing = createAsyncThunk(
   "listings/createListing",
@@ -8,15 +9,16 @@ export const RequestCreateListing = createAsyncThunk(
     hostname,
     hostemail,
     category,
-    typeOfPlace,
+    type,
     cordinates,
     address,
     guests,
-    additionalDetails,
+    accesable,
+    pets_allowed,
     images,
     title,
-    aboutPlace,
-    placeIs,
+    aboutplace,
+    placeis,
     notes,
     price,
   }: ListingState) => {
@@ -25,20 +27,22 @@ export const RequestCreateListing = createAsyncThunk(
         hostname,
         hostemail,
         category,
-        typeOfPlace,
+        type,
         cordinates,
         address,
         guests,
-        additionalDetails,
+        accesable,
+        pets_allowed,
         images,
         title,
-        aboutPlace,
-        placeIs,
+        aboutplace,
+        placeis,
         notes,
         price,
       });
       return res.data;
     } catch (error) {
+      toast.error((error as Error).message);
       return error;
     }
   }

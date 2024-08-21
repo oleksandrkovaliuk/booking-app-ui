@@ -6,25 +6,22 @@ import { Category, TypeOfPlace } from "@/store/slices/listingsInfoSlice/type";
 export interface FormState {
   step?: CreateListingSteps;
   category?: Category | null;
-  typeOfPlace?: TypeOfPlace | null;
+  type?: TypeOfPlace | null;
   cordinates?: GoogleMapProps["cordinates"];
   address: {
     formattedAddress: string;
     shorterAddress: string;
   };
-
   guests: number;
-  additionalDetails?: {
-    pets: boolean;
-    accesable: boolean;
-  };
+  pets_allowed?: boolean;
+  accesable?: boolean;
   startingDate?: string;
   images: {
     url: string;
   }[];
   title: string;
-  placeIs: string;
-  aboutPlace: string;
+  placeis: string;
+  aboutplace: string;
   notes: string;
   price: string;
 }

@@ -10,12 +10,12 @@ export const PreviewModal: React.FC<ModalProps> = ({
   onClose,
   images,
   title,
-  typeOfPlace,
-  description,
-  location,
+  type,
+  aboutplace,
+  address,
   guests,
-  allowPets,
-  accessible,
+  pets_allowed,
+  accesable,
 }) => {
   const { data: session } = useSession();
   return (
@@ -37,7 +37,7 @@ export const PreviewModal: React.FC<ModalProps> = ({
             <li className="modal_info_item host">
               <div className="modal_hosted_by">
                 <div className="modal_info_title">
-                  {typeOfPlace} hosted by{" "}
+                  {type?.type_name} hosted by{" "}
                   <span>
                     {" "}
                     {session?.user.name
@@ -48,10 +48,10 @@ export const PreviewModal: React.FC<ModalProps> = ({
                 </div>
                 <div className="modal_hosted_additional_info">
                   <p className="modal_info_description">{guests} guests</p>
-                  {allowPets && (
+                  {pets_allowed && (
                     <p className="modal_info_description">Pets allowed</p>
                   )}
-                  {accessible && (
+                  {accesable && (
                     <p className="modal_info_description">Accessible</p>
                   )}
                 </div>
@@ -71,12 +71,12 @@ export const PreviewModal: React.FC<ModalProps> = ({
               )}
             </li>
             <li className="modal_info_item description">
-              <p className="modal_info_description">{description}</p>
+              <p className="modal_info_description">{aboutplace}</p>
             </li>
             <li className="modal_info_item location">
               <div className="modal_info_title">Location</div>
               <p className="modal_info_description">
-                {location?.formattedAddress}
+                {address?.formattedAddress}
               </p>
               <p className="modal_info_description">
                 We’ll only share your address with guests who are booked.

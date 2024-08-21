@@ -22,3 +22,7 @@ export const videos = {
   apartament_building3:
     "https://firebasestorage.googleapis.com/v0/b/booking-app-31ebf.appspot.com/o/videos%2FKeNKUpa01dRaT5g00SSBV95FqXYkqf01DJdzn01F1aT00vCI.mp4?alt=media&token=96fb1c28-bc67-4a10-b075-fa367063d597",
 };
+
+export const skeletonData = [
+  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+];

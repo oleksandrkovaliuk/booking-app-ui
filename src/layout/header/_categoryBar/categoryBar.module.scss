@@ -1,15 +1,19 @@
 .category_container {
-  overflow: visible;
   position: sticky;
+  padding-inline: 50px;
   top: 195px;
-  will-change: top;
-  z-index: 5;
+  min-height: 86px;
+
   display: flex;
   gap: 40px;
   align-items: center;
   justify-content: space-between;
-  padding-inline: 50px;
+
   background-color: var(--booking-app-white-color);
+
+  z-index: 5;
+  overflow: visible;
+  will-change: top;
   transition: top 0.3s ease-in-out, border 0.2s ease-in-out;
   &[data-scrolled="true"] {
     border-bottom: 1px solid var(--booking-app-lightgrey-color);
@@ -40,7 +44,8 @@
   max-height: 300px;
   background-color: var(--booking-app-white-color);
 }
-.category {
+.category,
+.skeleton_macket {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -85,6 +90,21 @@
     line-height: 100%;
     color: var(--booking-app-black-color);
     text-transform: capitalize;
+  }
+}
+
+.skeleton_macket {
+  .skeleton {
+    flex-shrink: 0;
+    border-radius: 5px;
+  }
+  .skeleton_img {
+    width: 24px;
+    height: 24px;
+  }
+  .skeleton_text {
+    width: 64px;
+    height: 12px;
   }
 }
 @media (width <= 1080px) {

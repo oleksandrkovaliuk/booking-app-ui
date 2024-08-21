@@ -49,10 +49,10 @@ export const TypeOfPlace: React.FC<ContentProps> = ({
               id={`typeOfPlace${type.id}`}
               aria-label={`typeOfPlace${type.id}`}
               className={styles.hidden_checkbox}
-              {...(register("typeOfPlace"),
+              {...(register("type"),
               {
                 onChange: (e) => {
-                  handleUpdateFormAndLocalStorage("typeOfPlace", type);
+                  handleUpdateFormAndLocalStorage("type", type);
                 },
               })}
             />

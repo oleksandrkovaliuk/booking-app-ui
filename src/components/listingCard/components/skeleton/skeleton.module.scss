@@ -1,0 +1,47 @@
+.skeleton_card {
+  &[data-size="sm"] {
+    .skeleton_img {
+      width: 280px;
+      height: 280px;
+    }
+    .skeleton_title {
+      max-width: 240px;
+    }
+    .skeleton_description {
+      width: 200px;
+    }
+    .skeleton_img,
+    .skeleton_title,
+    .skeleton_description {
+      border-radius: 5px;
+    }
+  }
+  &[data-size="lg"] {
+    .skeleton_img {
+      width: 400px;
+      height: 400px;
+    }
+    .skeleton_title {
+      width: 360px;
+    }
+    .skeleton_description {
+      width: 300px;
+    }
+    .skeleton_img,
+    .skeleton_title,
+    .skeleton_description {
+      border-radius: 10px;
+    }
+  }
+
+  .skeleton_title,
+  .skeleton_description {
+    height: 20px;
+  }
+
+  .skeleton_img,
+  .skeleton_title,
+  .skeleton_description {
+    margin-bottom: 10px;
+  }
+}

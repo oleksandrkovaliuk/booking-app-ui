@@ -1,0 +1,55 @@
+.rbc-toolbar {
+  padding: 10px 10px !important;
+  justify-content: space-between !important;
+  margin-bottom: 0 !important;
+}
+.rbc-btn-group {
+  button {
+    outline: none;
+    background-color: var(--booking-app-white-color) !important;
+    border: 1px solid var(--booking-app-lightgrey-color) !important;
+    color: var(--booking-app-black-color) !important;
+    font-family: var(--booking-app-Nunito-Sans-font) !important;
+    font-weight: 600 !important;
+    font-size: 16px !important;
+    transition: all 0.3s ease-in-out !important;
+    &:active {
+      scale: 0.99 !important;
+      box-shadow: unset !important;
+    }
+    &:hover {
+      background-color: var(--booking-app-focused-background-color) !important;
+    }
+    &:not(:last-child) {
+      border-top-left-radius: 5px !important;
+      border-bottom-left-radius: 5px !important;
+    }
+    &:last-child {
+      border-top-right-radius: 5px !important;
+      border-bottom-right-radius: 5px !important;
+    }
+    &:first-child {
+      display: none !important;
+    }
+  }
+  &:last-child {
+    display: none !important;
+  }
+}
+.rbc-date-cell {
+  display: none !important;
+}
+.rbc-toolbar-label {
+  flex-grow: 0 !important;
+  font-size: 25px;
+  font-family: var(--booking-app-Nunito-Sans-font);
+  color: var(--booking-app-black-color);
+  font-weight: 700;
+  text-align: left !important;
+}
+@media (width <= 768px) {
+  .rbc-toolbar {
+    gap: 5px;
+    align-items: flex-start;
+  }
+}

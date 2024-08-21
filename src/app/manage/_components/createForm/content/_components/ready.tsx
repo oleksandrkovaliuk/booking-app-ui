@@ -45,16 +45,18 @@ export const Ready: React.FC<ContentProps> = ({
           transition={sloverTransition}
         >
           <ListingCard
-            images={images}
             isPreview
+            isManagable={false}
+            images={images}
             title={selectedTitle}
             price={selectedPrice}
-            location={selectedAdress}
-            description={selectedAboutPlace}
+            address={selectedAdress}
+            aboutplace={selectedAboutPlace}
             guests={selectedGuests}
-            allowPets={selectedAdditionalDetails?.pets!}
-            accessible={selectedAdditionalDetails?.accesable!}
-            typeOfPlace={selectedTypeOfPlace.type_name}
+            pets_allowed={selectedAdditionalDetails?.pets!}
+            accesable={selectedAdditionalDetails?.accesable!}
+            type={selectedTypeOfPlace}
+            isComplete={false}
           />
         </motion.div>
         <motion.div

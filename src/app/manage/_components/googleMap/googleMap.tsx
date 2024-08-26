@@ -7,7 +7,7 @@ import {
   StandaloneSearchBox,
   GoogleMap as GoogleMapComponent,
 } from "@react-google-maps/api";
-import { GoogleMapProps } from "../type";
+
 import {
   appearAnimation,
   mapContainerStyle,
@@ -15,11 +15,16 @@ import {
   sloverTransition,
 } from "../consts";
 
+import { GoogleMapProps } from "../type";
+
 import styles from "./googleMap.module.scss";
+import "../createForm/additionalStyles.scss";
 export const GoogleMap: React.FC<GoogleMapProps> = ({
+  editPage,
   register,
   cordinates,
   setCordinates,
+  onConfirmation,
 }) => {
   const searchBar = useRef<google.maps.places.SearchBox | null>(null);
 
@@ -34,6 +39,7 @@ export const GoogleMap: React.FC<GoogleMapProps> = ({
         searchBar.current.getPlaces() as google.maps.places.PlaceResult[];
 
       if (places) {
+        editPage && onConfirmation!(true);
         setCordinates({
           lat: places[0].geometry?.location?.lat() as number,
           lng: places[0].geometry?.location?.lng() as number,
@@ -56,7 +62,7 @@ export const GoogleMap: React.FC<GoogleMapProps> = ({
           return results;
         }
       );
-
+      editPage && onConfirmation!(true);
       setCordinates({
         lat: e.latLng.lat() as number,
         lng: e.latLng.lng() as number,
@@ -92,7 +98,11 @@ export const GoogleMap: React.FC<GoogleMapProps> = ({
           initial={appearAnimation.initial}
           animate={appearAnimation.animate}
           transition={sloverTransition}
-          {...register("address.formattedAddress")}
+          {...register(
+            editPage
+              ? `edit_address.formattedAddress`
+              : `address.formattedAddress`
+          )}
         />
       </StandaloneSearchBox>
       <motion.div

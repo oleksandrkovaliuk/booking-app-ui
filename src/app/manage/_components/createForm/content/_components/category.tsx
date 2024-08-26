@@ -12,8 +12,11 @@ import {
 
 export const Category: React.FC<ContentProps> = ({
   styles,
-  categories,
+  editPage,
   register,
+  setValue,
+  categories,
+  onConfirmation,
   selectedCategory,
   handleUpdateFormAndLocalStorage,
 }) => {
@@ -24,14 +27,16 @@ export const Category: React.FC<ContentProps> = ({
       animate={appearAnimation.animate}
       transition={motion_transition}
     >
-      <motion.h1
-        className={`${styles.title} ${styles.title_selections}`}
-        initial={appearAnimation.initial}
-        animate={appearAnimation.animate}
-        transition={sloverTransition}
-      >
-        Which of these best describes your place?
-      </motion.h1>
+      {!editPage && (
+        <motion.h1
+          className={`${styles.title} ${styles.title_selections}`}
+          initial={appearAnimation.initial}
+          animate={appearAnimation.animate}
+          transition={sloverTransition}
+        >
+          Which of these best describes your place?
+        </motion.h1>
+      )}
 
       <div className={styles.selections_container}>
         {categories?.map((category, i) => {
@@ -50,10 +55,15 @@ export const Category: React.FC<ContentProps> = ({
                 type="checkbox"
                 id={`category${category.id}`}
                 className={styles.hidden_checkbox}
-                {...(register("category"),
+                {...(register(editPage ? "edit_category" : "category"),
                 {
                   onChange: () => {
-                    handleUpdateFormAndLocalStorage("category", category);
+                    editPage && onConfirmation!(true);
+                    handleUpdateFormAndLocalStorage(
+                      editPage ? "edit_category" : "category",
+                      category,
+                      setValue
+                    );
                   },
                 })}
               />

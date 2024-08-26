@@ -1,13 +1,11 @@
-"use client";
 import React from "react";
-import { usePathname } from "next/navigation";
+import { CategoryPageContent } from "./_content";
+import { ParamsProps } from "../type";
 
-export default function EditListingCategory() {
-  const pathname = usePathname();
-
-  return (
-    <div style={{ height: "100000px" }}>
-      <div>edit category</div>
-    </div>
-  );
+export default function EditListingCategory({
+  params,
+}: {
+  params: ParamsProps;
+}) {
+  return <CategoryPageContent params={params} />;
 }

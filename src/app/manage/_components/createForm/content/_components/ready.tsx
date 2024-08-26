@@ -47,9 +47,9 @@ export const Ready: React.FC<ContentProps> = ({
           <ListingCard
             isPreview
             isManagable={false}
-            images={images}
-            title={selectedTitle}
-            price={selectedPrice}
+            images={images!}
+            title={selectedTitle!}
+            price={selectedPrice!}
             address={selectedAdress}
             aboutplace={selectedAboutPlace}
             guests={selectedGuests}

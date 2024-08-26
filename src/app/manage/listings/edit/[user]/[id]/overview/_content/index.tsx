@@ -2,19 +2,18 @@
 import React from "react";
 
 import { useSelector } from "@/store";
-import { EditingFormProps } from "./type";
-import { ListingState } from "@/app/api/apiCalls";
-import { SkeletonListingCard } from "@/components/listingCard/components/skeleton";
+
+import { ContentProps } from "../../type";
+
+import { getCurrentListing } from "@/store/selector/getCurrentListing";
 import { skeletonData } from "@/information/data";
+
+import { SkeletonListingCard } from "@/components/listingCard/components/skeleton";
 import { ListingCard } from "@/components/listingCard";
 
-export const EditingForm: React.FC<EditingFormProps> = ({ params }) => {
-  const { listings, isLoading } = useSelector((state) => state.listingsInfo);
-  const listing: ListingState = listings.filter(
-    (listing) => listing.id === Number(params.id)
-  )[0];
-  console.log(listing?.aboutplace);
-
+export const OverviewContent: React.FC<ContentProps> = ({ params }) => {
+  const { isLoading } = useSelector((state) => state.listingsInfo);
+  const listing = useSelector((state) => getCurrentListing(state, params.id));
   return (
     <>
       {isLoading && !listing ? (

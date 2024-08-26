@@ -14,9 +14,7 @@ export default function EditListingLayout({
 }) {
   return (
     <div className={styles.manage_layout}>
-      <NavigationBar params={params} />
-
-      {children}
+      <NavigationBar params={params}>{children}</NavigationBar>
     </div>
   );
 }

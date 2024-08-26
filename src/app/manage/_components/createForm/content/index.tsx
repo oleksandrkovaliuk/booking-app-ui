@@ -37,6 +37,7 @@ export const Content: FC<ContentProps> = ({
   register,
   categories,
   typeOfPlace,
+  setValue,
   selectedNotes,
   selectedPrice,
   selectedTitle,
@@ -60,6 +61,7 @@ export const Content: FC<ContentProps> = ({
       type={type}
       images={images}
       styles={styles}
+      setValue={setValue}
       register={register}
       categories={categories}
       typeOfPlace={typeOfPlace}

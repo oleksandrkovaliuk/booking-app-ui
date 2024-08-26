@@ -1,16 +1,17 @@
 "use client";
-import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
+import React, { useLayoutEffect, useMemo, useState } from "react";
 import moment from "moment";
 import { toast } from "sonner";
 import { useSelector } from "@/store";
 import { useDispatch } from "react-redux";
+
 import { Calendar, momentLocalizer } from "react-big-calendar";
-import { getAllListings } from "@/store/thunks/listings/listings";
-import { Button, useDisclosure } from "@nextui-org/react";
+
 import { updateCalendar } from "@/store/thunks/listings/updateCalendar";
+import { getCurrentListing } from "@/store/selector/getCurrentListing";
 
 import { CustomDayComponent } from "../component/customDayComponent";
-import { InfoModal } from "../component/infoModal";
+import { ConfirmationButton } from "@/components/confirmationButton";
 
 import styles from "./calendar.module.scss";
 import "./additionalStyles.scss";
@@ -23,13 +24,8 @@ export const CalendarPageContent: React.FC<CalendarPageContentProps> = ({
 }) => {
   const dispatch = useDispatch();
   const localizer = momentLocalizer(moment);
-  const { isOpen, onClose, onOpen } = useDisclosure();
-  const { listings, isLoading } = useSelector((state) => state.listingsInfo);
 
-  const formatingIncomingDates = listings
-    .find((listing) => listing.id === Number(params.id))
-    ?.disabled_dates?.map((date: Date) => new Date(date))
-    .filter((date) => date.getTime() > new Date().getTime());
+  const listing = useSelector((state) => getCurrentListing(state, params.id));
 
   const [selectedDate, setSelectedDate] = useState<Date[]>([]);
 
@@ -41,11 +37,9 @@ export const CalendarPageContent: React.FC<CalendarPageContentProps> = ({
     isLessThenCurrentMonth: false,
   });
 
-  const [showConfirmationButton, setShowConfirmationButton] = useState(false);
+  const [showConfirmationButton, setShowConfirmationButton] = useState(true);
 
   // CONDITIONS
-  const isOnlyIncomingDatesAvailable =
-    !selectedDate?.length && formatingIncomingDates;
 
   // SETUP
   const { messages } = useMemo(
@@ -59,34 +53,22 @@ export const CalendarPageContent: React.FC<CalendarPageContentProps> = ({
   );
 
   const handleSelectDisableDate = (value: Date) => {
-    const isDateIncluded = isOnlyIncomingDatesAvailable
-      ? formatingIncomingDates.some(
-          (date) => date.getTime() === value.getTime()
-        )
-      : selectedDate.some((date) => date.getTime() === value.getTime());
+    const isDateIncluded = selectedDate.some(
+      (date) => date.getTime() === value.getTime()
+    );
+
     if (value <= new Date()) {
       return;
     }
 
-    if (!isDateIncluded) {
-      if (isOnlyIncomingDatesAvailable) {
-        setSelectedDate([...formatingIncomingDates, value]);
-      } else {
-        setSelectedDate((prev) => [...prev, value]);
-      }
+    if (isDateIncluded) {
+      setSelectedDate((prev) =>
+        prev.filter((date) => date.getTime() !== value.getTime())
+      );
     } else {
-      if (isOnlyIncomingDatesAvailable) {
-        setSelectedDate(
-          formatingIncomingDates.filter(
-            (date) => date.getTime() !== value.getTime()
-          )
-        );
-      } else {
-        setSelectedDate(
-          selectedDate.filter((date) => date.getTime() !== value.getTime())
-        );
-      }
+      setSelectedDate((prev) => [...prev, value]);
     }
+
     setShowConfirmationButton(true);
   };
 
@@ -99,7 +81,6 @@ export const CalendarPageContent: React.FC<CalendarPageContentProps> = ({
             id: Number(params.id),
           }) as any
         ),
-        dispatch(getAllListings() as any),
       ]);
       setShowConfirmationButton(false);
       localStorage.removeItem(`${params.id}`);
@@ -124,33 +105,32 @@ export const CalendarPageContent: React.FC<CalendarPageContentProps> = ({
     }
   };
 
-  useEffect(() => {
-    localStorage.setItem(`${params.id}`, JSON.stringify(selectedDate));
-  }, [params.id, selectedDate]);
+  useLayoutEffect(() => {
+    const storedDates = localStorage.getItem(`${params.id}`);
+    const formattedIncomingDates = listing?.disabled_dates
+      ?.map((date) => new Date(date))
+      .filter((date) => date.getTime() > new Date().getTime());
+    if (storedDates) {
+      const formattedStoredDates = JSON.parse(storedDates).map(
+        (date: string) => new Date(date)
+      );
+      if (formattedStoredDates.length) {
+        setShowConfirmationButton(true);
+        setSelectedDate(formattedStoredDates);
+      } else {
+        setSelectedDate(formattedIncomingDates || []);
+      }
+    }
+  }, [listing?.disabled_dates, params.id]);
 
   useLayoutEffect(() => {
-    if (localStorage.getItem(`${params.id}`)) {
-      const formmatedStoredDates = JSON.parse(
-        localStorage.getItem(`${params.id}`)!
-      ).map((date: Date) => new Date(date));
-      if (formmatedStoredDates?.length) {
-        setShowConfirmationButton(true);
-      }
-      setSelectedDate(formmatedStoredDates?.length ? formmatedStoredDates : []);
+    if (listing?.disabled_dates?.length !== selectedDate?.length) {
+      localStorage.setItem(`${params.id}`, JSON.stringify(selectedDate));
     }
-  }, [params.id]);
-  useEffect(() => {
-    const informationBeenShown = localStorage.getItem("informationBeenShown");
-    if (informationBeenShown && JSON.parse(informationBeenShown)) {
-      return;
-    }
-    onOpen();
-    localStorage.setItem("informationBeenShown", JSON.stringify(true));
-  }, [onOpen]);
+  }, [listing?.disabled_dates?.length, params.id, selectedDate]);
 
   return (
     <>
-      {isOpen && <InfoModal isOpen={isOpen} onClose={onClose} />}
       <div className={styles.calendar_container}>
         <Calendar
           localizer={localizer}
@@ -165,11 +145,7 @@ export const CalendarPageContent: React.FC<CalendarPageContentProps> = ({
                 <CustomDayComponent
                   value={props.value}
                   handleSelectDisableDate={handleSelectDisableDate}
-                  selectedDate={
-                    isOnlyIncomingDatesAvailable
-                      ? formatingIncomingDates
-                      : selectedDate
-                  }
+                  selectedDate={selectedDate}
                 >
                   {props.children}
                 </CustomDayComponent>
@@ -178,16 +154,13 @@ export const CalendarPageContent: React.FC<CalendarPageContentProps> = ({
           }}
           messages={messages}
         />
-        <Button
-          variant="solid"
-          className={styles.apply_btn}
-          data-changes-maden={
-            selectedDate && selectedDate.length > 0 && showConfirmationButton
-          }
-          onClick={onConfirm}
+        <ConfirmationButton
+          onConfirm={onConfirm}
+          trigger={showConfirmationButton}
+          position="bottom-right"
         >
           Confirm
-        </Button>
+        </ConfirmationButton>
       </div>
     </>
   );

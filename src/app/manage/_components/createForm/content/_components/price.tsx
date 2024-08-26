@@ -14,17 +14,21 @@ import { ContentProps } from "../type";
 
 export const Price: React.FC<ContentProps> = ({
   styles,
+  editPage,
   register,
+  setValue,
   selectedPrice,
+  onConfirmation,
   handleUpdateFormAndLocalStorage,
 }) => {
   const [inputWidth, setInputWidth] = useState<number>(
-    selectedPrice.split("").length
+    selectedPrice!.split("").length
   );
 
   const [invalidPrice, setInvalidPrice] = useState<boolean>(false);
 
   const [isValueChange, setIsValueChange] = useState<boolean>(false);
+
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     const price = e.target.value.split(",").join("");
@@ -36,7 +40,12 @@ export const Price: React.FC<ContentProps> = ({
         </div>
       );
       setInputWidth(1);
-      handleUpdateFormAndLocalStorage("price", "0");
+      editPage && onConfirmation!(false);
+      handleUpdateFormAndLocalStorage(
+        editPage ? "edit_price" : "price",
+        "0",
+        setValue
+      );
       return;
     }
     if (Number(price) > PriceLimit.MAX) {
@@ -46,45 +55,54 @@ export const Price: React.FC<ContentProps> = ({
           support for more details.
         </div>
       );
+      editPage && onConfirmation!(false);
       setInvalidPrice(true);
       return;
     }
+
+    if (Number(price) < 14) {
+      console.log("less than 14");
+      editPage && onConfirmation!(false);
+    } else {
+      editPage && onConfirmation!(true);
+    }
+
+    setInvalidPrice(false);
+    setIsValueChange(true);
+
     setInputWidth(
       e.target.value.split("")[0] === "0"
         ? 1
         : Number(price).toLocaleString().length
     );
-    setInvalidPrice(false);
-    handleUpdateFormAndLocalStorage("price", Number(price).toLocaleString());
-    setIsValueChange(true);
+
+    handleUpdateFormAndLocalStorage(
+      editPage ? "edit_price" : "price",
+      Number(price).toLocaleString(),
+      setValue
+    );
   };
 
-  useEffect(() => {
-    let timer: ReturnType<typeof setTimeout>;
-    if (isValueChange) {
-      timer = setTimeout(() => {
-        setIsValueChange(false);
-      }, 200);
-    }
-
-    return () => clearTimeout(timer);
-  }, [isValueChange]);
   return (
     <motion.div className={styles.price}>
-      <motion.h1
-        className={styles.title}
-        {...appearAnimation}
-        transition={sloverTransition}
-      >
-        Now, set your price
-      </motion.h1>
-      <motion.p
-        className={styles.description}
-        {...deepAppearAnimation}
-        transition={sloverTransition}
-      >
-        You can change it anytime.
-      </motion.p>
+      {!editPage && (
+        <>
+          <motion.h1
+            className={styles.title}
+            {...appearAnimation}
+            transition={sloverTransition}
+          >
+            Now, set your price
+          </motion.h1>
+          <motion.p
+            className={styles.description}
+            {...deepAppearAnimation}
+            transition={sloverTransition}
+          >
+            You can change it anytime.
+          </motion.p>
+        </>
+      )}
       <motion.div className={styles.price_container}>
         <motion.div
           className={styles.input_wrap}
@@ -102,7 +120,7 @@ export const Price: React.FC<ContentProps> = ({
             style={{ maxWidth: `${inputWidth}ch` }}
             autoFocus
             transition={motion_transition}
-            {...(register("price"),
+            {...(register(editPage ? "edit_price" : "price"),
             {
               onChange: handlePriceChange,
               value: selectedPrice,

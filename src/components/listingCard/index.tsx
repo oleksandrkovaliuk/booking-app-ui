@@ -38,11 +38,18 @@ export const ListingCard: React.FC<ListingCardProps> = ({
 
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [currentSlide, setCurrentSlide] = useState<number>(0);
-  const [listingHasUnsavedChanges, setListingHasUnsavedChanges] =
-    useState(false);
+  const [listingHasUnsavedChanges, setListingHasUnsavedChanges] = useState<{
+    is_edit: boolean;
+    is_availability: boolean;
+    unsaved_changes: boolean;
+  }>({
+    is_edit: false,
+    is_availability: false,
+    unsaved_changes: false,
+  });
 
   // CONDITIONS
-  const isLastSlider = currentSlide === images.length - 1;
+  const isLastSlider = currentSlide === images?.length - 1;
   const isFirstSlider = currentSlide === 0;
 
   const mainHref = !isPreview
@@ -87,9 +94,21 @@ export const ListingCard: React.FC<ListingCardProps> = ({
 
   useEffect(() => {
     const unsavedData = localStorage.getItem(`${id}`);
+    const unsavedEditData = localStorage.getItem(`${id}isAnyUnsavedChanges`);
 
     if (unsavedData && JSON.parse(unsavedData || "[]")?.length) {
-      setListingHasUnsavedChanges(true);
+      setListingHasUnsavedChanges((prev) => ({
+        ...prev,
+        is_availability: true,
+        unsaved_changes: true,
+      }));
+    }
+    if (unsavedEditData && JSON.parse(unsavedEditData)) {
+      setListingHasUnsavedChanges((prev) => ({
+        ...prev,
+        is_edit: true,
+        unsaved_changes: true,
+      }));
     }
   }, [id]);
 
@@ -118,6 +137,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
           title={title}
           address={address}
           isComplete={isComplete}
+          listingHasUnsavedChanges={listingHasUnsavedChanges}
           onOpenChange={onOpenChange}
         />
       )}
@@ -136,15 +156,17 @@ export const ListingCard: React.FC<ListingCardProps> = ({
               color="#800000"
             />
           )}
-          {isComplete && listingHasUnsavedChanges && (
-            <StatusBadge status="Unsaved changes" color="#ffa836" />
-          )}
+          {isComplete &&
+            isManagable &&
+            listingHasUnsavedChanges.unsaved_changes && (
+              <StatusBadge status="Unsaved changes" color="#ffa836" />
+            )}
           {isPreview && !isManagable && (
             <span className={styles.show_preview}>show preview</span>
           )}
 
           <Slider {...options} ref={sliderRef}>
-            {images.map((image) => (
+            {images?.map((image) => (
               <div key={image.url} className={styles.slider_content}>
                 <div
                   className={styles.slider_image}

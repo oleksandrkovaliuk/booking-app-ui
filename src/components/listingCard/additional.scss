@@ -238,6 +238,8 @@
 
 .modal_manage_button {
   flex-grow: 1;
+  position: relative;
+
   button,
   &.delete,
   &.no_link {
@@ -262,6 +264,19 @@
       color: var(--booking-app-white-color);
       background-color: var(--booking-app-black-color);
       border: 1px solid transparent;
+      &[data-has-unsave-changes="true"] {
+        &::before {
+          content: "";
+          position: absolute;
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          background-color: #ffa836;
+          right: 5px;
+          top: 5px;
+          z-index: 1;
+        }
+      }
       &:hover {
         scale: 0.99;
       }

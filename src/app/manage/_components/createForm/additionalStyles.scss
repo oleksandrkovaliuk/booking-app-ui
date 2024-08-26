@@ -101,12 +101,16 @@
     align-items: center;
     margin-bottom: 20px;
     .title {
+      color: var(--booking-app-black-color);
+      font-family: var(--booking-app-Nunito-Sans-font);
       font-size: 17px;
       font-weight: 600;
       line-height: 100%;
       margin-bottom: 3px;
     }
     .description {
+      color: var(--booking-app-grey-color);
+      font-family: var(--booking-app-Nunito-Sans-font);
       font-size: 13px;
       font-weight: 400;
       line-height: 100%;

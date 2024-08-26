@@ -14,6 +14,9 @@ import { Counter } from "@/components/counter";
 export const Basics: React.FC<ContentProps> = ({
   styles,
   register,
+  editPage,
+  setValue,
+  onConfirmation,
   selectedGuests,
   selectedAccesable,
   selectedPetsAllowed,
@@ -26,14 +29,16 @@ export const Basics: React.FC<ContentProps> = ({
       animate={appearAnimation.animate}
       transition={motion_transition}
     >
-      <motion.h1
-        className={styles.title}
-        initial={appearAnimation.initial}
-        animate={appearAnimation.animate}
-        transition={sloverTransition}
-      >
-        Share with us some basics about your place.
-      </motion.h1>
+      {!editPage && (
+        <motion.h1
+          className={styles.title}
+          initial={appearAnimation.initial}
+          animate={appearAnimation.animate}
+          transition={sloverTransition}
+        >
+          Share with us some basics about your place.
+        </motion.h1>
+      )}
       <motion.div
         className={styles.basic_selections}
         initial={deepAppearAnimation.initial}
@@ -45,10 +50,15 @@ export const Basics: React.FC<ContentProps> = ({
         </span>
         <Counter
           counter={Number(selectedGuests) || 1}
-          {...(register("guests"),
+          {...(register(editPage ? "edit_guests" : "guests"),
           {
             setCounter: (value) => {
-              handleUpdateFormAndLocalStorage("guests", value);
+              editPage && onConfirmation!(true);
+              handleUpdateFormAndLocalStorage(
+                editPage ? "edit_guests" : "guests",
+                value,
+                setValue
+              );
             },
           })}
         />
@@ -64,12 +74,14 @@ export const Basics: React.FC<ContentProps> = ({
         </span>
         <Switch
           aria-label={`pets-friedly-switch`}
-          {...(register("pets_allowed"),
+          {...(register(editPage ? "edit_pets_allowed" : "pets_allowed"),
           {
             onValueChange: (e) => {
+              editPage && onConfirmation!(true);
               handleUpdateFormAndLocalStorage(
-                "pets_allowed",
-                !selectedPetsAllowed
+                editPage ? "edit_pets_allowed" : "pets_allowed",
+                !selectedPetsAllowed,
+                setValue
               );
             },
           })}
@@ -87,10 +99,15 @@ export const Basics: React.FC<ContentProps> = ({
         </span>
         <Switch
           aria-label={`pets-friedly-switch`}
-          {...(register("accesable"),
+          {...(register(editPage ? "edit_accesable" : "accesable"),
           {
             onValueChange: (e) => {
-              handleUpdateFormAndLocalStorage("accesable", !selectedAccesable);
+              editPage && onConfirmation!(true);
+              handleUpdateFormAndLocalStorage(
+                editPage ? "edit_accesable" : "accesable",
+                !selectedAccesable,
+                setValue
+              );
             },
           })}
           isSelected={selectedAccesable}

@@ -1,0 +1,25 @@
+.basics {
+  max-width: 70%;
+  margin: auto;
+  padding-block: 60px;
+  .basic_selections {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-block: 20px;
+    .basic_selections_title {
+      font-size: 17px;
+      font-weight: 500;
+      font-family: var(--booking-app-Nunito-Sans-font);
+    }
+    &:not(:last-of-type) {
+      border-bottom: 1px solid var(--booking-app-background-hover-color);
+    }
+  }
+}
+
+@media (width <= 768px) {
+  .basics {
+    max-width: 90%;
+  }
+}

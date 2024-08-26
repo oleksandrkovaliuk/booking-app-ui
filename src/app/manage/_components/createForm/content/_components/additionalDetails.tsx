@@ -13,6 +13,9 @@ import { ContentProps } from "../type";
 export const AdditionalDetails: React.FC<ContentProps> = ({
   styles,
   register,
+  setValue,
+  editPage,
+  onConfirmation,
   handleUpdateFormAndLocalStorage,
 }) => {
   return (
@@ -21,21 +24,25 @@ export const AdditionalDetails: React.FC<ContentProps> = ({
       {...appearAnimation}
       transition={motion_transition}
     >
-      <motion.h1
-        className={styles.title}
-        {...appearAnimation}
-        transition={sloverTransition}
-      >
-        Now it is finnally time to describe your place in more details.
-      </motion.h1>
-      <motion.p
-        className={styles.description}
-        {...deepAppearAnimation}
-        transition={sloverTransition}
-      >
-        Turn on you insparation and give your place a more detailed description
-        💡
-      </motion.p>
+      {!editPage && (
+        <>
+          <motion.h1
+            className={styles.title}
+            {...appearAnimation}
+            transition={sloverTransition}
+          >
+            Now it is finnally time to describe your place in more details.
+          </motion.h1>
+          <motion.p
+            className={styles.description}
+            {...deepAppearAnimation}
+            transition={sloverTransition}
+          >
+            Turn on you insparation and give your place a more detailed
+            description 💡
+          </motion.p>
+        </>
+      )}
 
       <motion.div
         className={styles.fields}
@@ -54,22 +61,29 @@ export const AdditionalDetails: React.FC<ContentProps> = ({
           className="additional_details"
           placeholder="..."
           description="Provide a clear and catchy title for your listing. This will be the first thing potential customers see, so make it engaging and descriptive."
-          onValueChange={(value) =>
-            handleUpdateFormAndLocalStorage("title", value)
-          }
+          onValueChange={(value) => {
+            editPage && onConfirmation!(true);
+            handleUpdateFormAndLocalStorage(
+              editPage ? "edit_title" : "title",
+              value,
+              setValue
+            );
+          }}
           validate={(value) => {
             if (value === "") return;
             if (value?.length > 10 && value?.length < 33) {
               return true;
             }
             if (value?.length >= 33) {
+              editPage && onConfirmation!(false);
               return "Please enter less than 33 characters";
             }
             if (value?.length <= 10) {
+              editPage && onConfirmation!(false);
               return "Please enter at least 10 characters";
             }
           }}
-          {...register("title")}
+          {...register(editPage ? "edit_title" : "title")}
         />
       </motion.div>
       <motion.div
@@ -89,17 +103,27 @@ export const AdditionalDetails: React.FC<ContentProps> = ({
           className="additional_details"
           placeholder="..."
           description="Describe the key features and unique aspects of your listing. Highlight what makes it special and why guests would love to stay here."
-          onValueChange={(value) =>
-            handleUpdateFormAndLocalStorage("aboutplace", value)
-          }
-          validate={(value) =>
-            value !== ""
-              ? value?.length > 10
-                ? true
-                : "Please enter at least 10 characters"
-              : true
-          }
-          {...register("aboutplace")}
+          onValueChange={(value) => {
+            editPage && onConfirmation!(true);
+            handleUpdateFormAndLocalStorage(
+              editPage ? "edit_aboutplace" : "aboutplace",
+              value,
+              setValue
+            );
+          }}
+          validate={(value) => {
+            if (value !== "") {
+              if (value?.length > 10) {
+                return true;
+              } else {
+                editPage && onConfirmation!(false);
+                return "Please enter at least 10 characters";
+              }
+            } else {
+              return true;
+            }
+          }}
+          {...register(editPage ? "edit_aboutplace" : "aboutplace")}
         />
       </motion.div>
       <motion.div
@@ -119,17 +143,27 @@ export const AdditionalDetails: React.FC<ContentProps> = ({
           className="additional_details"
           placeholder="..."
           description="Provide a brief overview of the location and setting of your listing. Mention key attributes that make it appealing."
-          onValueChange={(value) =>
-            handleUpdateFormAndLocalStorage("placeis", value)
-          }
-          validate={(value) =>
-            value !== ""
-              ? value?.length > 10
-                ? true
-                : "Please enter at least 10 characters"
-              : true
-          }
-          {...register("placeis")}
+          onValueChange={(value) => {
+            editPage && onConfirmation!(true);
+            handleUpdateFormAndLocalStorage(
+              editPage ? "edit_placeis" : "placeis",
+              value,
+              setValue
+            );
+          }}
+          validate={(value) => {
+            if (value !== "") {
+              if (value?.length > 10) {
+                return true;
+              } else {
+                editPage && onConfirmation!(false);
+                return "Please enter at least 10 characters";
+              }
+            } else {
+              return true;
+            }
+          }}
+          {...register(editPage ? "edit_placeis" : "placeis")}
         />
       </motion.div>
       <motion.div
@@ -149,17 +183,27 @@ export const AdditionalDetails: React.FC<ContentProps> = ({
           className="additional_details"
           placeholder="..."
           description="Mention any additional details or important information guests should know about your listing. This can include house rules, special instructions, or unique features."
-          onValueChange={(value) =>
-            handleUpdateFormAndLocalStorage("notes", value)
-          }
-          validate={(value) =>
-            value !== ""
-              ? value?.length > 10
-                ? true
-                : "Please enter at least 10 characters"
-              : true
-          }
-          {...register("notes")}
+          onValueChange={(value) => {
+            editPage && onConfirmation!(true);
+            handleUpdateFormAndLocalStorage(
+              editPage ? "edit_notes" : "notes",
+              value,
+              setValue
+            );
+          }}
+          validate={(value) => {
+            if (value !== "") {
+              if (value?.length > 10) {
+                return true;
+              } else {
+                editPage && onConfirmation!(false);
+                return "Please enter at least 10 characters";
+              }
+            } else {
+              return true;
+            }
+          }}
+          {...register(editPage ? "edit_notes" : "notes")}
         />
       </motion.div>
     </motion.div>

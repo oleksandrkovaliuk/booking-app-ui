@@ -1,0 +1,102 @@
+.images_container {
+  max-width: 70%;
+  padding-block: 60px;
+  text-align: center;
+  margin: auto;
+
+  .title {
+    margin-bottom: 50px;
+    &[data-isimagesready="true"] {
+      margin-bottom: 0px;
+      text-align: left;
+    }
+  }
+  .description {
+    font-size: 14px;
+    text-align: left;
+    font-family: var(--booking-app-Nunito-Sans-font);
+    color: var(--booking-app-grey-color);
+    &[data-isimagesready="true"] {
+      margin-bottom: 50px;
+      font-size: 17px;
+    }
+  }
+  .images_files_container {
+    margin-bottom: 20px;
+    ul {
+      display: flex;
+      align-items: center;
+      column-gap: 20px;
+      row-gap: 20px;
+      justify-content: space-between;
+      flex-wrap: wrap;
+
+      .image_wrapper {
+        max-width: 480px;
+        width: 100%;
+
+        &:first-child {
+          max-width: unset;
+        }
+      }
+    }
+    &[data-isloading="true"] {
+      .uploading_images_button {
+        cursor: not-allowed;
+      }
+      .hidden_input {
+        pointer-events: none;
+      }
+    }
+    &[data-isready="true"] {
+      .uploading_images_button {
+        width: 100%;
+        max-width: 480px;
+        height: 450px;
+      }
+    }
+    .uploading_images_button {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 50dvh;
+
+      padding: 20px;
+      border-radius: 20px;
+      border: 2px dotted var(--booking-app-lightgrey-color);
+      will-change: scale;
+      transition: scale 0.2s ease-in-out, border 0.2s ease-in-out;
+
+      &:hover {
+        border: 2px dotted var(--booking-app-black-color);
+        .camera_icon {
+          scale: 0.95;
+        }
+      }
+      &:active {
+        scale: 0.98;
+      }
+
+      .camera_icon {
+        width: 100px;
+        height: 100px;
+        flex-shrink: 0;
+        transition: scale 0.2s ease-in-out;
+        pointer-events: none;
+      }
+      .add_icon {
+        width: 50px;
+        height: 50px;
+        rotate: -45deg;
+      }
+    }
+  }
+}
+
+@media (width <= 768px) {
+  .images_container {
+    max-width: 90%;
+  }
+}

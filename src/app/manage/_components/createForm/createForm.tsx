@@ -31,6 +31,7 @@ import {
 
 import { RequestCreateListing } from "@/store/thunks/listings/create";
 import { Category, TypeOfPlace } from "@/store/slices/listingsInfoSlice/type";
+import { handleUpdateFormAndLocalStorage } from "@/sharing/updateFormAndStorageStates";
 
 // FORMAT DATE TO DD/MM/HH/MM
 
@@ -59,7 +60,7 @@ export const CreateForm: React.FC = () => {
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-  const { register, watch, setValue, handleSubmit } = useForm({
+  const { register, watch, setValue } = useForm({
     defaultValues: {
       step: CreateListingSteps.INTRODUCING as CreateListingSteps,
       category: null as Category | null,
@@ -81,15 +82,6 @@ export const CreateForm: React.FC = () => {
       price: "14",
     } as FormState,
   });
-
-  // UPDATE FORM AND LOCAL STORAGE
-  const handleUpdateFormAndLocalStorage = (
-    name: keyof FormState,
-    value: FormState[keyof FormState]
-  ) => {
-    setValue(name, value);
-    localStorage.setItem(name, JSON.stringify(value));
-  };
 
   // WATCH VALUES
   const formStep = watch("step");
@@ -191,14 +183,22 @@ export const CreateForm: React.FC = () => {
         .map(({ short_name }) => short_name)
         .join(", ") || "";
 
-    handleUpdateFormAndLocalStorage("address", {
-      formattedAddress: cordinates.address?.formatted_address || "",
-      shorterAddress,
-    });
-    handleUpdateFormAndLocalStorage("cordinates", {
-      lat: cordinates.lat,
-      lng: cordinates.lng,
-    });
+    handleUpdateFormAndLocalStorage(
+      "address",
+      {
+        formattedAddress: cordinates.address?.formatted_address || "",
+        shorterAddress,
+      },
+      setValue
+    );
+    handleUpdateFormAndLocalStorage(
+      "cordinates",
+      {
+        lat: cordinates.lat,
+        lng: cordinates.lng,
+      },
+      setValue
+    );
   };
 
   // SUBMIT
@@ -314,6 +314,7 @@ export const CreateForm: React.FC = () => {
       <form className={styles.create_form}>
         <Content
           register={register}
+          setValue={setValue}
           images={selectedImages!}
           selectedPrice={selectedPrice!}
           selectedGuests={selectedGuests!}

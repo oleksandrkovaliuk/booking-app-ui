@@ -30,11 +30,7 @@ import {
   ContentProps,
   ImagesStoreType,
 } from "@/app/manage/_components/createForm/content/type";
-import {
-  deleteIndividualListingImage,
-  deleteUserListingImages,
-  uploadUserListingImages,
-} from "@/sharing/firebaseImages/users/listings/uploadImg";
+
 import {
   DeleteListingIndividualImage,
   DeleteUserListingImages,
@@ -45,6 +41,9 @@ export const Images: React.FC<ContentProps> = ({
   styles,
   images,
   register,
+  setValue,
+  editPage,
+  onConfirmation,
   selectedAdress,
   handleUpdateFormAndLocalStorage,
 }) => {
@@ -61,8 +60,8 @@ export const Images: React.FC<ContentProps> = ({
   const [isDragged, setIsDragged] = useState(false);
 
   const [uploadedImages, setUploadedImages] = useState<ImagesStoreType>({
-    images: images,
-    isImagesReady: images?.length >= 1 ? true : false,
+    images: images!,
+    isImagesReady: images?.length! >= 1 ? true : false,
   });
 
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -82,7 +81,12 @@ export const Images: React.FC<ContentProps> = ({
       ...uploadedImages,
       images: copyOfImages,
     });
-    handleUpdateFormAndLocalStorage("images", copyOfImages);
+    editPage && uploadedImages.images.length > 5 && onConfirmation!(true);
+    handleUpdateFormAndLocalStorage(
+      editPage ? "edit_images" : "images",
+      copyOfImages,
+      setValue
+    );
   };
 
   const handleSetHeadImageDown = (image: string, i: number) => {
@@ -102,7 +106,12 @@ export const Images: React.FC<ContentProps> = ({
         ...uploadedImages,
         images: copyOfImages,
       });
-      handleUpdateFormAndLocalStorage("images", copyOfImages);
+      editPage && uploadedImages.images.length > 5 && onConfirmation!(true);
+      handleUpdateFormAndLocalStorage(
+        editPage ? "edit_images" : "images",
+        copyOfImages,
+        setValue
+      );
     }
   };
 
@@ -117,7 +126,7 @@ export const Images: React.FC<ContentProps> = ({
         formData.append("files", e.target.files![i]);
       }
       formData.append("user_email", session?.user.email!);
-      formData.append("location", selectedAdress.formattedAddress);
+      formData.append("location", selectedAdress!.formattedAddress);
 
       const res = await UploadListingImages(formData, "form");
 
@@ -126,7 +135,12 @@ export const Images: React.FC<ContentProps> = ({
         ...uploadedImages,
         images: res.data!,
       });
-      handleUpdateFormAndLocalStorage("images", res.data);
+      handleUpdateFormAndLocalStorage(
+        editPage ? "edit_images" : "images",
+        res.data,
+        setValue
+      );
+      editPage && uploadedImages.images.length > 5 && onConfirmation!(true);
     } catch (error) {
       toast.error("Something went wrong");
       onClose();
@@ -143,13 +157,17 @@ export const Images: React.FC<ContentProps> = ({
       });
       await DeleteUserListingImages({
         user_email: session?.user.email!,
-        location: selectedAdress.formattedAddress,
+        location: selectedAdress!.formattedAddress,
       });
       setUploadedImages({
         ...uploadedImages,
         images: [],
       });
-      handleUpdateFormAndLocalStorage("images", []);
+      handleUpdateFormAndLocalStorage(
+        editPage ? "edit_images" : "images",
+        [],
+        setValue
+      );
       setIsLoading({
         ...isLoading,
         deletingImages: {
@@ -174,7 +192,7 @@ export const Images: React.FC<ContentProps> = ({
 
       const res = await DeleteListingIndividualImage({
         user_email: session?.user.email!,
-        location: selectedAdress.formattedAddress,
+        location: selectedAdress!.formattedAddress,
         image,
       });
       setIsLoading({
@@ -191,14 +209,24 @@ export const Images: React.FC<ContentProps> = ({
           images: [],
           isImagesReady: false,
         });
-        handleUpdateFormAndLocalStorage("images", []);
+        handleUpdateFormAndLocalStorage(
+          editPage ? "edit_images" : "images",
+          [],
+          setValue
+        );
       } else {
         setUploadedImages({
           ...uploadedImages,
           images: res.data,
         });
-        handleUpdateFormAndLocalStorage("images", res.data);
+        handleUpdateFormAndLocalStorage(
+          editPage ? "edit_images" : "images",
+          res.data,
+          setValue
+        );
       }
+      editPage && uploadedImages.images.length > 5 && onConfirmation!(true);
+      editPage && uploadedImages.images.length < 5 && onConfirmation!(false);
       toast.info(
         <div className="toast success">
           📂 The image has been successfully deleted.
@@ -216,6 +244,7 @@ export const Images: React.FC<ContentProps> = ({
         isImagesReady: true,
       });
       onClose();
+      editPage && onConfirmation!(true);
       if (uploadedImages.images.length < 5) {
         toast.info(
           <div className="toast">
@@ -259,7 +288,7 @@ export const Images: React.FC<ContentProps> = ({
                 type="file"
                 multiple
                 accept={imageTypes.join(",")}
-                className={styles.hidden_input}
+                className={`${styles.hidden_input} hidden_input`}
                 disabled={isLoading.uploadingImgs}
                 onChange={(e) => handleImagesUpload(e)}
               />
@@ -345,18 +374,21 @@ export const Images: React.FC<ContentProps> = ({
         animate={appearAnimation.animate}
         transition={motion_transition}
       >
-        <motion.h1
-          className={styles.title}
-          initial={appearAnimation.initial}
-          animate={appearAnimation.animate}
-          transition={sloverTransition}
-          data-isimagesready={uploadedImages.isImagesReady}
-        >
-          {!uploadedImages.isImagesReady
-            ? "Please provide at least 5 creative images of your place."
-            : "Hey, take a look at your images !"}
-        </motion.h1>
-        {uploadedImages.isImagesReady && (
+        {!editPage && (
+          <motion.h1
+            className={styles.title}
+            initial={appearAnimation.initial}
+            animate={appearAnimation.animate}
+            transition={sloverTransition}
+            data-isimagesready={uploadedImages.isImagesReady}
+          >
+            {!uploadedImages.isImagesReady
+              ? "Please provide at least 5 creative images of your place."
+              : "Hey, take a look at your images !"}
+          </motion.h1>
+        )}
+
+        {uploadedImages.isImagesReady && !editPage && (
           <motion.p
             className={styles.description}
             initial={appearAnimation.initial}
@@ -423,8 +455,8 @@ export const Images: React.FC<ContentProps> = ({
                   type="file"
                   multiple
                   accept={imageTypes.join(",")}
-                  className={styles.hidden_input}
-                  {...(register("images"),
+                  className={`${styles.hidden_input} hidden_input`}
+                  {...(register(editPage ? "edit_images" : "images"),
                   { onChange: (e) => handleImagesUpload(e) })}
                 />
 
@@ -440,7 +472,7 @@ export const Images: React.FC<ContentProps> = ({
           </Reorder.Group>
         </motion.div>
 
-        <motion.p className={styles.description}>
+        <motion.p className={`${styles.description} description`}>
           Please ensure that all provided photo has good lighting and are of
           good quality.
         </motion.p>

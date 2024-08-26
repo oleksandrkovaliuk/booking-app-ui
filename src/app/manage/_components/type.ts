@@ -1,7 +1,9 @@
 import { UseFormRegister } from "react-hook-form";
 
 import { CreateListingSteps } from "./enums";
+import { EditFormValues } from "../listings/edit/[user]/[id]/type";
 import { Category, TypeOfPlace } from "@/store/slices/listingsInfoSlice/type";
+import { Dispatch, SetStateAction } from "react";
 
 export interface FormState {
   step?: CreateListingSteps;
@@ -40,5 +42,7 @@ export interface GoogleMapProps {
     lng: number;
     address?: google.maps.places.PlaceResult;
   }) => void;
-  register: UseFormRegister<FormState>;
+  editPage?: boolean;
+  onConfirmation?: Dispatch<SetStateAction<boolean>>;
+  register: UseFormRegister<FormState | EditFormValues>;
 }

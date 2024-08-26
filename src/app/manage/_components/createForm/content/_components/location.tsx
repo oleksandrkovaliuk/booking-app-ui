@@ -12,6 +12,8 @@ import { GoogleMap } from "../../../googleMap/googleMap";
 export const Location: React.FC<ContentProps> = ({
   styles,
   register,
+  editPage,
+  onConfirmation,
   selectedCordinates,
   handleCordinatesChange,
 }) => {
@@ -22,19 +24,23 @@ export const Location: React.FC<ContentProps> = ({
       animate={appearAnimation.animate}
       transition={motion_transition}
     >
-      <motion.h1
-        className={styles.title}
-        initial={appearAnimation.initial}
-        animate={appearAnimation.animate}
-        transition={sloverTransition}
-      >
-        Where is your place located?
-      </motion.h1>
+      {!editPage && (
+        <motion.h1
+          className={styles.title}
+          initial={appearAnimation.initial}
+          animate={appearAnimation.animate}
+          transition={sloverTransition}
+        >
+          Where is your place located?
+        </motion.h1>
+      )}
 
       <GoogleMap
+        editPage={editPage}
         register={register}
+        onConfirmation={onConfirmation}
         cordinates={selectedCordinates!}
-        setCordinates={handleCordinatesChange}
+        setCordinates={handleCordinatesChange!}
       />
       <motion.p className={styles.description}>
         Please ensure the pin is accurately placed on your address. If not, you

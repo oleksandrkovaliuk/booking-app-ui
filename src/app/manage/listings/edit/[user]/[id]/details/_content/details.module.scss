@@ -1,0 +1,33 @@
+.additional_details {
+  padding-block: 60px;
+  max-width: 70%;
+  margin: auto;
+  .description {
+    margin-bottom: 50px;
+  }
+
+  .fields {
+    &:not(:last-child) {
+      margin-bottom: 30px;
+    }
+    .fields_title,
+    .additional {
+      font-size: 25px;
+      font-weight: 600;
+      font-family: var(--booking-app-Nunito-Sans-font);
+      color: var(--booking-app-black-color);
+      margin-bottom: 5px;
+    }
+    .additional {
+      font-size: 20px;
+      font-weight: 500;
+      margin-bottom: 0px;
+    }
+  }
+}
+
+@media (width <= 768px) {
+  .additional_details {
+    max-width: 90%;
+  }
+}

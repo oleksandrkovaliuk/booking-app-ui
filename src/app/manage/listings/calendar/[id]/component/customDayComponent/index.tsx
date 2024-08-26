@@ -38,8 +38,8 @@ export const CustomDayComponent: React.FC<CustomDayComponentProps> = ({
       className={styles.custom_day_block}
       data-is-disabled={value <= new Date() ? true : false}
       data-selected={
-        selectedDate.length &&
-        selectedDate.some((date: Date) => date.getTime() === value.getTime())
+        selectedDate?.length &&
+        selectedDate?.some((date: Date) => date.getTime() === value.getTime())
       }
       onClick={() => handleSelectDisableDate(value)}
     >

@@ -21,6 +21,7 @@ export const ManageModal: React.FC<ModalProps> = ({
   address,
   isComplete,
   onOpenChange,
+  listingHasUnsavedChanges,
 }) => {
   const dispatch = useDispatch();
 
@@ -113,7 +114,12 @@ export const ManageModal: React.FC<ModalProps> = ({
                     }/${id}/overview`}
                     className="modal_manage_button main"
                   >
-                    <Button variant="light">
+                    <Button
+                      variant="light"
+                      data-has-unsave-changes={
+                        listingHasUnsavedChanges?.is_edit
+                      }
+                    >
                       <EditIcon />
                       Edit
                     </Button>
@@ -124,7 +130,12 @@ export const ManageModal: React.FC<ModalProps> = ({
                   href={`/manage/listings/calendar/${id}`}
                   className="modal_manage_button main"
                 >
-                  <Button variant="light">
+                  <Button
+                    variant="light"
+                    data-has-unsave-changes={
+                      listingHasUnsavedChanges?.is_availability
+                    }
+                  >
                     <CalendarIcon />
                     Avalability
                   </Button>

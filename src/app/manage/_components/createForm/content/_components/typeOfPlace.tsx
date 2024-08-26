@@ -12,8 +12,11 @@ import {
 
 export const TypeOfPlace: React.FC<ContentProps> = ({
   styles,
-  typeOfPlace,
   register,
+  setValue,
+  editPage,
+  typeOfPlace,
+  onConfirmation,
   selectedTypeOfPlace,
   handleUpdateFormAndLocalStorage,
 }) => {
@@ -24,14 +27,17 @@ export const TypeOfPlace: React.FC<ContentProps> = ({
       animate={appearAnimation.animate}
       transition={motion_transition}
     >
-      <motion.h1
-        className={`${styles.title} ${styles.title_selections}`}
-        initial={appearAnimation.initial}
-        animate={appearAnimation.animate}
-        transition={sloverTransition}
-      >
-        What type of place will guests have?
-      </motion.h1>
+      {!editPage && (
+        <motion.h1
+          className={`${styles.title} ${styles.title_selections}`}
+          initial={appearAnimation.initial}
+          animate={appearAnimation.animate}
+          transition={sloverTransition}
+        >
+          What type of place will guests have?
+        </motion.h1>
+      )}
+
       <div className={styles.selections_container}>
         {typeOfPlace?.map((type, i) => (
           <motion.div
@@ -49,10 +55,15 @@ export const TypeOfPlace: React.FC<ContentProps> = ({
               id={`typeOfPlace${type.id}`}
               aria-label={`typeOfPlace${type.id}`}
               className={styles.hidden_checkbox}
-              {...(register("type"),
+              {...(register(editPage ? "edit_type" : "type"),
               {
                 onChange: (e) => {
-                  handleUpdateFormAndLocalStorage("type", type);
+                  editPage && onConfirmation!(true);
+                  handleUpdateFormAndLocalStorage(
+                    editPage ? "edit_type" : "type",
+                    type,
+                    setValue
+                  );
                 },
               })}
             />

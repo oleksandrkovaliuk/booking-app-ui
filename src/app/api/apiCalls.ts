@@ -5,6 +5,7 @@ import {
 } from "@/utilities/interfaces";
 import { GET, POST } from "./config";
 import { FormState } from "../manage/_components/type";
+import { EditFormValues } from "../manage/listings/edit/[user]/[id]/type";
 
 // AUTH
 export const AccessUser = ({ email, password }: UserTypes) =>
@@ -107,3 +108,15 @@ export const SetDisabledDates = ({
   disabledDates: Date[];
   id: number;
 }) => POST("listings/calendar/confirm", { disabledDates, id });
+
+export const updateListing = ({
+  column,
+  data,
+  id,
+}: {
+  column: string;
+  data: FormState[keyof FormState];
+  id: number;
+}) => {
+  return POST(`listings/update`, { column, data, id });
+};

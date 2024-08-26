@@ -24,7 +24,7 @@ export const PreviewModal: React.FC<ModalProps> = ({
         <ModalHeader className="modal_header">Full preview</ModalHeader>
         <ModalBody className="modal_body">
           <Image
-            src={images[0].url}
+            src={images ? images[0].url : ""}
             alt="preview"
             width={1000}
             height={600}

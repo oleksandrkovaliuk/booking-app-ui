@@ -1,23 +1,24 @@
 .navigationBar_container {
-  position: sticky;
-  top: 81px;
-  padding-block: 30px;
-
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
   width: 100%;
   flex-shrink: 0;
-  background-color: var(--booking-app-white-color);
-  border-right: 1px solid var(--booking-app-lightgrey-color);
+  z-index: 11;
 }
 .navigationBar_wrap {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
-  height: 100dvh;
   overflow: hidden;
-  .navigation_tabs_wrap,
-  .edit_title {
-    min-width: 140px;
-  }
+  padding-block: 10px;
+  background-color: var(--booking-app-white-color);
+  border: 1px solid var(--booking-app-lightgrey-color);
+  border-top-right-radius: 7px;
+  border-bottom-right-radius: 7px;
+  border-left: unset;
+  width: 100%;
 
   .edit_title {
     color: var(--booking-app-grey-color);
@@ -28,23 +29,44 @@
   }
 
   .navigation_tabs_wrap {
+    position: relative;
     display: flex;
     flex-direction: column;
-    text-align: left;
     gap: 5px;
+    text-align: left;
+    flex-shrink: 0;
 
     .navigation_tab {
+      display: flex;
+      gap: 5px;
+      align-items: center;
       padding: 5px 7px;
       font-size: 15px;
       font-family: var(--booking-app-Nunito-Sans-font);
       font-weight: 600;
       color: var(--booking-app-black-color);
       border-radius: 5px;
-
       transition: all 0.2s ease;
       cursor: pointer;
+      .tab_icon {
+        position: relative;
+        svg {
+          width: 20px;
+          height: 20px;
+          flex-shrink: 0;
+          path {
+            fill: var(--booking-app-black-color);
+          }
+        }
+      }
+
       &:hover {
         background-color: var(--booking-app-background-hover-color);
+        .tab_icon {
+          svg {
+            animation: rotateForwardBackward 0.4s linear;
+          }
+        }
       }
       &[data-active="true"] {
         background-color: var(--booking-app-background-hover-color);
@@ -52,13 +74,15 @@
     }
   }
 }
+
 .close_button {
   position: absolute;
   padding-left: 15px;
-  right: -40px;
+  right: -35px;
   top: 0;
   height: 100dvh;
   cursor: pointer;
+  transition: right 0.5s ease-in-out;
 
   .close_icon {
     position: relative;
@@ -104,5 +128,81 @@
         transform: rotate(-130deg);
       }
     }
+  }
+}
+
+.content_wrap {
+  padding-left: 0;
+  width: 100%;
+}
+
+@keyframes rotateForwardBackward {
+  0% {
+    rotate: 0deg;
+  }
+  50% {
+    rotate: -5deg;
+  }
+  100% {
+    rotate: 0deg;
+  }
+}
+
+@media (width <= 768px) {
+  .mobile_navigation_background {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(1px);
+    opacity: 0;
+    z-index: 11;
+    pointer-events: none;
+    transition: opacity 0.4s ease-in-out;
+    &[data-active="true"] {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+
+  .mobile_navigation_trigger {
+    position: absolute;
+    top: 90px;
+    left: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    z-index: 12;
+    .menu_icon {
+      width: 25px;
+      height: 25px;
+      path {
+        fill: var(--booking-app-black-color);
+        transition: fill 0.4s ease-in-out;
+      }
+    }
+  }
+
+  .navigationBar_container {
+    max-width: unset !important;
+    padding-inline: 0 !important;
+    .navigationBar_wrap {
+      height: 100dvh;
+      width: unset;
+      z-index: 11;
+
+      .navigation_tabs_wrap {
+        justify-content: center;
+      }
+    }
+  }
+  .content_wrap {
+    padding-left: 0 !important;
+  }
+  .close_button {
+    display: none;
   }
 }

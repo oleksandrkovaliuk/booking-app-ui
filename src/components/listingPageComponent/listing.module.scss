@@ -1,0 +1,232 @@
+.listing_container {
+  padding-block: 50px;
+  max-width: 70dvw;
+  margin: auto;
+}
+
+.title_text_content {
+  margin-bottom: 5px;
+  .title {
+    font-size: 35px;
+    font-family: var(--booking-app-Nunito-Sans-font);
+    font-weight: 600;
+    color: var(--booking-app-black-color);
+    .host_name {
+      text-transform: capitalize;
+    }
+  }
+}
+
+.sub_title_text_content {
+  margin-bottom: 30px;
+  .sub_title_text {
+    font-size: 30px;
+    font-family: var(--booking-app-Nunito-Sans-font);
+    font-weight: 600;
+    color: var(--booking-app-black-color);
+  }
+  .sub_title_additional_info {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    .sub_title_additional_info_item {
+      position: relative;
+      font-size: 15px;
+      font-family: var(--booking-app-Nunito-Sans-font);
+      font-weight: 400;
+      color: var(--booking-app-black-color);
+      text-transform: capitalize;
+      &:not(:last-child) {
+        &::after {
+          content: "";
+          position: absolute;
+          width: 2px;
+          height: 2px;
+          background-color: var(--booking-app-black-color);
+          border-radius: 50%;
+          right: -10px;
+          top: 50%;
+          transform: translate(0, -50%);
+        }
+      }
+    }
+  }
+}
+
+.information_grid_wrap {
+  display: flex;
+  align-items: flex-start;
+  gap: 50px;
+  margin-bottom: 30px;
+  .left_side_grid {
+    max-width: 45dvw;
+    width: 100%;
+  }
+  .right_side_grid {
+    position: sticky;
+    top: 100px;
+    flex-grow: 1;
+  }
+}
+
+.host_card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid var(--booking-app-lightgrey-color);
+  margin-bottom: 30px;
+  .host_img_container {
+    position: relative;
+    .host_img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      &.no_host_img {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        font-weight: 500;
+        font-family: var(--booking-app-Nunito-Sans-font);
+        color: var(--booking-app-white-color);
+        text-transform: capitalize;
+        background-color: var(--booking-app-black-color);
+      }
+    }
+    .host_badge {
+      position: absolute;
+      bottom: -10%;
+      right: -10%;
+      width: 25px;
+      height: 25px;
+    }
+  }
+  .host_info {
+    .host_title {
+      font-size: 14px;
+      font-family: var(--booking-app-Nunito-Sans-font);
+      font-weight: 500;
+      color: var(--booking-app-grey-color);
+      line-height: 100%;
+    }
+    .host_name {
+      font-size: 20px;
+      font-family: var(--booking-app-Nunito-Sans-font);
+      font-weight: 700;
+      color: var(--booking-app-black-color);
+      line-height: 100%;
+      margin-bottom: 5px;
+      span {
+        text-transform: capitalize;
+      }
+    }
+  }
+}
+
+.host_trusted_for {
+  padding-bottom: 30px;
+  border-bottom: 1px solid var(--booking-app-lightgrey-color);
+  margin-bottom: 30px;
+  .host_trusted_for_wrap {
+    display: flex;
+    justify-content: flex-start;
+    gap: 20px;
+    align-items: flex-start;
+    max-width: 42dvw;
+    margin-right: auto;
+  }
+
+  .host_trusted_img {
+    width: 70px;
+    height: 70px;
+    flex-shrink: 0;
+  }
+
+  .host_trusted_text {
+    .host_trusted_title {
+      font-size: 20px;
+      font-family: var(--booking-app-Nunito-Sans-font);
+      font-weight: 600;
+      color: var(--booking-app-black-color);
+      line-height: 100%;
+      margin-bottom: 5px;
+      span {
+        text-transform: capitalize;
+      }
+    }
+    .host_trusted_description {
+      font-size: 14px;
+      font-family: var(--booking-app-Nunito-Sans-font);
+      font-weight: 500;
+      color: var(--booking-app-grey-color);
+      line-height: 130%;
+      margin-bottom: 10px;
+    }
+  }
+}
+
+.more_details {
+  display: flex;
+  align-items: flex-start;
+  gap: 20%;
+  justify-content: flex-start;
+  padding-bottom: 25px;
+  border-bottom: 1px solid var(--booking-app-lightgrey-color);
+  margin-bottom: 25px;
+  .more_details_wrap {
+    max-width: 40%;
+    text-align: left;
+    .more_details_img {
+      max-width: 100px;
+      padding: 20px;
+      background-color: var(--booking-app-white-color);
+      border: 1px solid var(--booking-app-lightgrey-color);
+      border-radius: 20px;
+      margin-bottom: 10px;
+    }
+    .more_details_title {
+      font-size: 17px;
+      font-family: var(--booking-app-Nunito-Sans-font);
+      font-weight: 600;
+      color: var(--booking-app-black-color);
+      line-height: 100%;
+      text-transform: capitalize;
+      margin-bottom: 5px;
+    }
+    .more_details_description {
+      font-size: 15px;
+      font-family: var(--booking-app-Nunito-Sans-font);
+      font-weight: 400;
+      color: var(--booking-app-grey-color);
+      line-height: 130%;
+    }
+  }
+}
+
+.location {
+  padding-top: 30px;
+  border-block: 1px solid var(--booking-app-lightgrey-color);
+}
+
+.section_title {
+  font-size: 20px;
+  font-weight: 600;
+  font-family: var(--booking-app-Nunito-Sans-font);
+  color: var(--booking-app-black-color);
+  line-height: 100%;
+  margin-bottom: 20px;
+}
+
+.spinner {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@media (width <= 1280px) {
+  .listing_container {
+    padding-inline: 20px;
+  }
+}

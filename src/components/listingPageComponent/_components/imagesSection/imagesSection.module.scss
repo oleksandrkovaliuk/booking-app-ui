@@ -1,0 +1,128 @@
+.images_section {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  position: relative;
+  max-width: 70dvw;
+  margin: auto;
+  margin-bottom: 20px;
+}
+.images {
+  display: flex;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+  gap: 10px;
+  max-width: 36dvw;
+  width: 100%;
+  height: 52dvh;
+  .image {
+    max-width: 17dvw;
+    width: 100%;
+
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    &.right_top {
+      border-top-right-radius: 15px;
+    }
+    &.right_bottom {
+      border-bottom-right-radius: 15px;
+    }
+  }
+}
+.head_image {
+  max-width: 36dvw;
+  width: 100%;
+  height: 52dvh;
+  flex-shrink: 0;
+  .image {
+    width: 100%;
+    height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+  }
+}
+
+.show_all_btn {
+  position: absolute;
+  right: -10px;
+  bottom: 10px;
+
+  padding: 5px 10px;
+
+  border-radius: 10px;
+  background-color: var(--booking-app-white-color);
+  box-shadow: 0px 0px 3px rgba(97, 97, 97, 0.4);
+  border: 1px solid var(--booking-app-black-color);
+
+  color: var(--booking-app-black-color);
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  font-family: var(--booking-app-Nunito-Sans-font) !important;
+  transition: all 0.2s ease-in-out;
+  will-change: scale;
+
+  .show_all_icon {
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+    transition: rotate 0.2s ease-in-out;
+    path {
+      fill: var(--booking-app-black-color);
+    }
+  }
+  &:hover {
+    opacity: 1;
+    scale: 0.99;
+    .show_all_icon {
+      rotate: 5deg;
+    }
+  }
+  &:active {
+    scale: 0.98;
+  }
+}
+
+.show_case_modal {
+  .close_btn {
+    padding: 5px;
+    background-color: transparent;
+    border-radius: 50%;
+    transition: background-color 0.2s ease-in-out;
+    .close_icon {
+      width: 25px;
+      height: 25px;
+    }
+    &:hover {
+      background-color: var(--booking-app-background-hover-color);
+    }
+  }
+}
+.show_case_container {
+  padding-block: 60px;
+  padding-inline: 50px;
+  overflow-y: scroll;
+  display: flex;
+}
+.show_case_wrap {
+  max-width: 60dvw;
+  margin: auto;
+  padding: 0px;
+
+  .show_case_images_wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    .show_case_image {
+      width: 49%;
+
+      object-fit: cover;
+      &.everythird {
+        width: 100%;
+      }
+    }
+  }
+}

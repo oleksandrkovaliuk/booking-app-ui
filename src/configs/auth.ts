@@ -4,8 +4,8 @@ import Google from "next-auth/providers/google";
 import Facebook from "next-auth/providers/facebook";
 import { AccessUser, InsertOAuthUser } from "@/app/api/apiCalls";
 import { toast } from "sonner";
-import { FacebookProfile, GoogleProfile } from "@/utilities/type";
-import { Roles } from "@/utilities/enums";
+import { FacebookProfile, GoogleProfile } from "@/_utilities/type";
+import { Roles } from "@/_utilities/enums";
 
 export const authConfig: AuthOptions = {
   providers: [

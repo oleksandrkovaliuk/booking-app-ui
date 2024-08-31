@@ -1,5 +1,5 @@
 import React from "react";
-import { SvgProps } from "@/utilities/interfaces";
+import { SvgProps } from "@/_utilities/interfaces";
 
 export const EditOverviewIcon: React.FC<SvgProps> = (props) => {
   return (

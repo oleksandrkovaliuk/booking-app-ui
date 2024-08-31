@@ -3,8 +3,7 @@ import Link from "next/link";
 import Slider from "react-slick";
 import { useDisclosure } from "@nextui-org/react";
 
-import { LeftArrow } from "@/svgs/LeftArrow";
-import { RightArrow } from "@/svgs/RightArrow";
+import { Arrow } from "@/svgs/RightArrow";
 
 import { StatusBadge } from "../statusBadge";
 import { ManageModal } from "./components/modals/manage";
@@ -16,6 +15,7 @@ import "./additional.scss";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import styles from "./listingCard.module.scss";
+import { formattedAddressComponent } from "@/sharing/address/formattedAddressVariants";
 
 export const ListingCard: React.FC<ListingCardProps> = ({
   id,
@@ -37,6 +37,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   const sliderRef = useRef<Slider | null>(null);
 
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
+
   const [currentSlide, setCurrentSlide] = useState<number>(0);
   const [listingHasUnsavedChanges, setListingHasUnsavedChanges] = useState<{
     is_edit: boolean;
@@ -146,6 +147,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
         href={isManagable ? "#" : mainHref}
         className={styles.listing_card}
         data-ismanagable={isManagable}
+        target={isPublic ? "_blank" : "_self"}
         onClick={onOpen}
       >
         <div className={styles.slider_container} onWheel={handleWhellScroll}>
@@ -184,7 +186,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
             }}
             disabled={isFirstSlider}
           >
-            <LeftArrow />
+            <Arrow />
           </button>
           <button
             className={`${styles.slider_arrows} ${styles.next}`}
@@ -195,19 +197,23 @@ export const ListingCard: React.FC<ListingCardProps> = ({
             }}
             disabled={isLastSlider}
           >
-            <RightArrow />
+            <Arrow />
           </button>
         </div>
         <div className={styles.listing_info}>
-          <div className={styles.location}>{address?.shorterAddress}</div>
+          <div className={styles.location}>
+            {formattedAddressComponent({
+              address: address?.detailedAddressComponent,
+              variant: "neighboorhoodStateCountry",
+            })}
+          </div>
 
           <h5 className={styles.title}>{title}</h5>
-          <span className={styles.price}>
-            <b>
-              ${isNaN(Number(price)) ? price : Number(price).toLocaleString()}
-            </b>{" "}
-            night
-          </span>
+          {!isManagable && (
+            <span className={styles.price}>
+              <b>${Number(price).toLocaleString()}</b> night
+            </span>
+          )}
         </div>
       </Link>
     </>

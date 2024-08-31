@@ -7,7 +7,7 @@ import {
   motion_transition,
 } from "../../../consts";
 import { ContentProps } from "../type";
-import { GoogleMap } from "../../../googleMap/googleMap";
+import { GoogleMapComponent } from "@/components/googleMap/googleMap";
 
 export const Location: React.FC<ContentProps> = ({
   styles,
@@ -35,7 +35,7 @@ export const Location: React.FC<ContentProps> = ({
         </motion.h1>
       )}
 
-      <GoogleMap
+      <GoogleMapComponent
         editPage={editPage}
         register={register}
         onConfirmation={onConfirmation}

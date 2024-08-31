@@ -19,9 +19,11 @@ import { useSelector } from "@/store";
 import { Content } from "./content";
 import { clearAllStorage } from "./utils";
 import { CreateListingSteps } from "../enums";
-import { FormState, GoogleMapProps } from "../type";
+import { FormState } from "../type";
 
+import { GoogleMapProps } from "@/components/googleMap/type";
 import { deleteUserListingImages } from "../../../../sharing/firebaseImages/users/listings/uploadImg";
+import { requirmentForAddressComponent } from "@/sharing/address/formattedAddressVariants";
 
 import {
   motion_transition,
@@ -69,6 +71,7 @@ export const CreateForm: React.FC = () => {
       address: {
         formattedAddress: "",
         shorterAddress: "",
+        detailedAddressComponent: [],
       },
       guests: 1,
       accesable: false,
@@ -170,6 +173,16 @@ export const CreateForm: React.FC = () => {
 
   // CORDINATES
   const handleCordinatesChange = (cordinates: GoogleMapProps["cordinates"]) => {
+    const detailedAddressComponent =
+      cordinates.address?.address_components?.reduce<
+        google.maps.places.PlaceResult["address_components"]
+      >((acc, current) => {
+        if (acc && requirmentForAddressComponent.includes(current.types[0])) {
+          acc.push(current);
+        }
+        return acc;
+      }, []);
+
     const shorterAddress =
       cordinates.address?.address_components
         ?.filter((parts_of_adress) =>
@@ -187,6 +200,7 @@ export const CreateForm: React.FC = () => {
       "address",
       {
         formattedAddress: cordinates.address?.formatted_address || "",
+        detailedAddressComponent: detailedAddressComponent,
         shorterAddress,
       },
       setValue
@@ -206,10 +220,8 @@ export const CreateForm: React.FC = () => {
     try {
       await dispath(
         RequestCreateListing({
-          hostname: session?.user.name
-            ? session?.user.name!
-            : session?.user.email!,
-          hostemail: session?.user.email!,
+          host_email: session?.user.email!,
+          host_name: session?.user.name || "",
           category: selectedCategory,
           type: selectedTypeOfPlace,
           cordinates: selectedCordinates,

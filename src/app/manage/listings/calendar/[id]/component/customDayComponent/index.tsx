@@ -30,9 +30,11 @@ export const CustomDayComponent: React.FC<CustomDayComponentProps> = ({
             ? styles.rbc_off_range_bg
             : ""
         }`,
+        disabled: children.props.className.includes("rbc-off-range-bg")
+          ? true
+          : false,
       })
     : null;
-
   return (
     <div
       className={styles.custom_day_block}
@@ -41,7 +43,11 @@ export const CustomDayComponent: React.FC<CustomDayComponentProps> = ({
         selectedDate?.length &&
         selectedDate?.some((date: Date) => date.getTime() === value.getTime())
       }
-      onClick={() => handleSelectDisableDate(value)}
+      onClick={
+        children.props.className.includes("rbc-off-range-bg")
+          ? () => {}
+          : () => handleSelectDisableDate(value)
+      }
     >
       {customizedChildren}
       <span className={styles.day}>{moment(value).format("DD")}</span>

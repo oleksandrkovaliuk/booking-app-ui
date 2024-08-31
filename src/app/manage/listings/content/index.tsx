@@ -9,15 +9,17 @@ import { Button, Skeleton, Tooltip } from "@nextui-org/react";
 
 import { useSelector } from "@/store";
 import { NotFoundIcon } from "@/svgs/NotFoundIcon";
+import { getAllListings } from "@/store/thunks/listings/listings";
+
 import { FormState } from "../../_components/type";
 import { ListingCard } from "@/components/listingCard";
 import { StatusBadge } from "@/components/statusBadge";
-import { getAllListings } from "@/store/thunks/listings/listings";
 import { appearAnimation, motion_transition } from "../../_components/consts";
+import { SkeletonListingCard } from "@/components/listingCard/components/skeleton";
+
+import { skeletonData } from "@/information/data";
 
 import styles from "./listings.module.scss";
-import { SkeletonListingCard } from "@/components/listingCard/components/skeleton";
-import { skeletonData } from "@/information/data";
 
 export const ListingsPage: React.FC = () => {
   const dispath = useDispatch();
@@ -29,8 +31,8 @@ export const ListingsPage: React.FC = () => {
   const userListings = listings.length
     ? listings.filter(
         (item) =>
-          item.hostemail === session?.user?.email ||
-          item.hostname === session?.user?.name
+          item.host_email === session?.user?.email ||
+          item.host_name === session?.user?.name
       )
     : [];
 

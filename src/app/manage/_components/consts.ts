@@ -25,7 +25,6 @@ export const options = {
   draggable: true,
   fullscreenControl: false,
   mapTypeControl: false,
-  zoomControl: false,
   streetViewControl: true,
 };
 

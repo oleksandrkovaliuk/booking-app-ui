@@ -8,6 +8,10 @@ export interface FullUserTypes {
   provider?: string;
   role?: string;
 }
+
+export interface ShowCaseUser
+  extends Omit<FullUserTypes, "user_lastname" & "provider" & "role"> {}
+
 export interface UserTypes
   extends Omit<
     FullUserTypes,

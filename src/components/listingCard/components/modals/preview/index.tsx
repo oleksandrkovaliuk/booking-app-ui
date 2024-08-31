@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 
 import { ModalProps } from "../type";
 import { Modal, ModalBody, ModalContent, ModalHeader } from "@nextui-org/react";
+import { formattedAddressComponent } from "@/sharing/address/formattedAddressVariants";
 
 export const PreviewModal: React.FC<ModalProps> = ({
   isOpen,
@@ -76,7 +77,10 @@ export const PreviewModal: React.FC<ModalProps> = ({
             <li className="modal_info_item location">
               <div className="modal_info_title">Location</div>
               <p className="modal_info_description">
-                {address?.formattedAddress}
+                {formattedAddressComponent({
+                  address: address?.detailedAddressComponent,
+                  variant: "neighboorhoodStateCountry",
+                })}
               </p>
               <p className="modal_info_description">
                 We’ll only share your address with guests who are booked.

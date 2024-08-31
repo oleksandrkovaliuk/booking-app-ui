@@ -53,6 +53,9 @@ export const ImagesContent: React.FC<ContentProps> = ({ params }) => {
       console.log(error);
     }
   };
+
+  console.log(selectedImages?.length);
+
   useEffect(() => {
     setValueRef.current = setValue;
   }, [setValue]);
@@ -69,7 +72,7 @@ export const ImagesContent: React.FC<ContentProps> = ({ params }) => {
 
   return (
     <>
-      {selectedImages && (
+      {selectedImages && selectedImages.length > 0 && (
         <Images
           editPage
           styles={styles}

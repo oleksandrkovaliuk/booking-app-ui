@@ -9,7 +9,6 @@ import {
   ModalHeader,
   useDisclosure,
 } from "@nextui-org/react";
-import { Arrow } from "@/svgs/RightArrow";
 
 export const DescriptionSection: React.FC<{
   aboutplace: ListingState["aboutplace"];

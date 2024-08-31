@@ -60,15 +60,8 @@ export const AdditionalDetails: React.FC<ContentProps> = ({
           variant="bordered"
           className="additional_details"
           placeholder="..."
-          description="Provide a clear and catchy title for your listing. This will be the first thing potential customers see, so make it engaging and descriptive."
-          onValueChange={(value) => {
-            editPage && onConfirmation!(true);
-            handleUpdateFormAndLocalStorage(
-              editPage ? "edit_title" : "title",
-              value,
-              setValue
-            );
-          }}
+          description="Provide a clear and catchy title for your listing.
+          This will be the first thing potential customers see, so make it engaging and descriptive."
           validate={(value) => {
             if (value === "") return;
             if (value?.length > 10 && value?.length < 33) {
@@ -83,7 +76,16 @@ export const AdditionalDetails: React.FC<ContentProps> = ({
               return "Please enter at least 10 characters";
             }
           }}
-          {...register(editPage ? "edit_title" : "title")}
+          {...register(editPage ? "edit_title" : "title", {
+            onChange: (event) => {
+              editPage && onConfirmation!(true);
+              handleUpdateFormAndLocalStorage(
+                editPage ? "edit_title" : "title",
+                event.target.value,
+                setValue
+              );
+            },
+          })}
         />
       </motion.div>
       <motion.div
@@ -103,14 +105,6 @@ export const AdditionalDetails: React.FC<ContentProps> = ({
           className="additional_details"
           placeholder="..."
           description="Describe the key features and unique aspects of your listing. Highlight what makes it special and why guests would love to stay here."
-          onValueChange={(value) => {
-            editPage && onConfirmation!(true);
-            handleUpdateFormAndLocalStorage(
-              editPage ? "edit_aboutplace" : "aboutplace",
-              value,
-              setValue
-            );
-          }}
           validate={(value) => {
             if (value !== "") {
               if (value?.length > 10) {
@@ -123,7 +117,16 @@ export const AdditionalDetails: React.FC<ContentProps> = ({
               return true;
             }
           }}
-          {...register(editPage ? "edit_aboutplace" : "aboutplace")}
+          {...register(editPage ? "edit_aboutplace" : "aboutplace", {
+            onChange: (event) => {
+              editPage && onConfirmation!(true);
+              handleUpdateFormAndLocalStorage(
+                editPage ? "edit_aboutplace" : "aboutplace",
+                event.target.value,
+                setValue
+              );
+            },
+          })}
         />
       </motion.div>
       <motion.div
@@ -143,14 +146,6 @@ export const AdditionalDetails: React.FC<ContentProps> = ({
           className="additional_details"
           placeholder="..."
           description="Provide a brief overview of the location and setting of your listing. Mention key attributes that make it appealing."
-          onValueChange={(value) => {
-            editPage && onConfirmation!(true);
-            handleUpdateFormAndLocalStorage(
-              editPage ? "edit_placeis" : "placeis",
-              value,
-              setValue
-            );
-          }}
           validate={(value) => {
             if (value !== "") {
               if (value?.length > 10) {
@@ -163,7 +158,16 @@ export const AdditionalDetails: React.FC<ContentProps> = ({
               return true;
             }
           }}
-          {...register(editPage ? "edit_placeis" : "placeis")}
+          {...register(editPage ? "edit_placeis" : "placeis", {
+            onChange: (event) => {
+              editPage && onConfirmation!(true);
+              handleUpdateFormAndLocalStorage(
+                editPage ? "edit_placeis" : "placeis",
+                event.target.value,
+                setValue
+              );
+            },
+          })}
         />
       </motion.div>
       <motion.div
@@ -183,14 +187,6 @@ export const AdditionalDetails: React.FC<ContentProps> = ({
           className="additional_details"
           placeholder="..."
           description="Mention any additional details or important information guests should know about your listing. This can include house rules, special instructions, or unique features."
-          onValueChange={(value) => {
-            editPage && onConfirmation!(true);
-            handleUpdateFormAndLocalStorage(
-              editPage ? "edit_notes" : "notes",
-              value,
-              setValue
-            );
-          }}
           validate={(value) => {
             if (value !== "") {
               if (value?.length > 10) {
@@ -203,7 +199,16 @@ export const AdditionalDetails: React.FC<ContentProps> = ({
               return true;
             }
           }}
-          {...register(editPage ? "edit_notes" : "notes")}
+          {...register(editPage ? "edit_notes" : "notes", {
+            onChange: (event) => {
+              editPage && onConfirmation!(true);
+              handleUpdateFormAndLocalStorage(
+                editPage ? "edit_notes" : "notes",
+                event.target.value,
+                setValue
+              );
+            },
+          })}
         />
       </motion.div>
     </motion.div>

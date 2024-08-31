@@ -1,14 +1,9 @@
-import React, { Suspense } from "react";
+import React from "react";
 
-import { OverviewContent } from "./_content";
 import { ParamsProps } from "../type";
 
-import styles from "./overview.module.scss";
+import { ListingPageComponent } from "@/components/listingPageComponent";
 
 export default function EditListing({ params }: { params: ParamsProps }) {
-  return (
-    <div className={styles.manage_layout}>
-      <OverviewContent params={params} />
-    </div>
-  );
+  return <ListingPageComponent id={params.id} />;
 }

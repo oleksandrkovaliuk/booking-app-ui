@@ -1,4 +1,4 @@
-import { SvgProps } from "@/utilities/interfaces";
+import { SvgProps } from "@/_utilities/interfaces";
 
 export const EyesIcon = (props: SvgProps) => {
   return (

@@ -10,3 +10,9 @@ export enum Roles {
   USER = "user",
   ADMIN = "admin",
 }
+
+export enum Procantages {
+  CLEANING_FEE = 0.2,
+  SPACER_FEE = 0.3,
+  TAXES = 0.5,
+}

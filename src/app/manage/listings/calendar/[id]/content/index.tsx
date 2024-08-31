@@ -15,6 +15,9 @@ import { ConfirmationButton } from "@/components/confirmationButton";
 
 import styles from "./calendar.module.scss";
 import "./additionalStyles.scss";
+import { ConverIntoDaveValueFormat } from "@/sharing/dateManagment";
+import { DateValue } from "@nextui-org/calendar";
+import { today, getLocalTimeZone } from "@internationalized/date";
 
 interface CalendarPageContentProps {
   params: { id: string };
@@ -27,7 +30,7 @@ export const CalendarPageContent: React.FC<CalendarPageContentProps> = ({
 
   const listing = useSelector((state) => getCurrentListing(state, params.id));
 
-  const [selectedDate, setSelectedDate] = useState<Date[]>([]);
+  const [selectedDate, setSelectedDate] = useState<DateValue[]>([]);
 
   const [currentDate, setCurrentDate] = useState<{
     date: Date;
@@ -53,20 +56,31 @@ export const CalendarPageContent: React.FC<CalendarPageContentProps> = ({
   );
 
   const handleSelectDisableDate = (value: Date) => {
-    const isDateIncluded = selectedDate.some(
-      (date) => date.getTime() === value.getTime()
-    );
+    const convertedValue = ConverIntoDaveValueFormat(value);
+    const isDateIncluded = selectedDate.some((date) => {
+      return (
+        date.day === convertedValue.day && date.month === convertedValue.month
+      );
+    });
 
-    if (value <= new Date()) {
+    if (
+      convertedValue.day <= today(getLocalTimeZone()).day &&
+      convertedValue.month === today(getLocalTimeZone()).month
+    ) {
+      toast.error("You can't select past date");
       return;
     }
 
     if (isDateIncluded) {
       setSelectedDate((prev) =>
-        prev.filter((date) => date.getTime() !== value.getTime())
+        prev.filter(
+          (date) =>
+            date.day !== convertedValue.day &&
+            date.month === convertedValue.month
+        )
       );
     } else {
-      setSelectedDate((prev) => [...prev, value]);
+      setSelectedDate((prev) => [...prev, convertedValue] as DateValue[]);
     }
 
     setShowConfirmationButton(true);
@@ -74,6 +88,7 @@ export const CalendarPageContent: React.FC<CalendarPageContentProps> = ({
 
   const onConfirm = async () => {
     try {
+      console.log(selectedDate, "selected");
       await Promise.all([
         dispatch(
           updateCalendar({
@@ -107,13 +122,23 @@ export const CalendarPageContent: React.FC<CalendarPageContentProps> = ({
 
   useLayoutEffect(() => {
     const storedDates = localStorage.getItem(`${params.id}`);
-    const formattedIncomingDates = listing?.disabled_dates
-      ?.map((date) => new Date(date))
-      .filter((date) => date.getTime() > new Date().getTime());
+    console.log(
+      listing?.disabled_dates?.filter((date) => {
+        return (
+          date.day >= today(getLocalTimeZone()).day &&
+          date.month >= today(getLocalTimeZone()).month
+        );
+      }),
+      "ss"
+    );
+    const formattedIncomingDates = listing?.disabled_dates?.filter(
+      (date) =>
+        date.day >= today(getLocalTimeZone()).day ||
+        date.month >= today(getLocalTimeZone()).month
+    );
+    console.log(formattedIncomingDates, "formattedIncomingDates");
     if (storedDates) {
-      const formattedStoredDates = JSON.parse(storedDates).map(
-        (date: string) => new Date(date)
-      );
+      const formattedStoredDates = JSON.parse(storedDates);
       if (formattedStoredDates.length) {
         setShowConfirmationButton(true);
         setSelectedDate(formattedStoredDates);
@@ -145,7 +170,10 @@ export const CalendarPageContent: React.FC<CalendarPageContentProps> = ({
                 <CustomDayComponent
                   value={props.value}
                   handleSelectDisableDate={handleSelectDisableDate}
-                  selectedDate={selectedDate}
+                  selectedDate={selectedDate.map(
+                    (date: DateValue) =>
+                      new Date(date.year, date.month - 1, date.day)
+                  )}
                 >
                   {props.children}
                 </CustomDayComponent>

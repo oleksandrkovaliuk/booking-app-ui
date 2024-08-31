@@ -10,14 +10,17 @@
     }
   }
 }
-.show_case {
+.show_case_modal {
+  background-color: transparent;
+  box-shadow: unset;
+  width: 40vw;
+  pointer-events: none;
+}
+
+.show_case_image {
   padding: 0;
-  .show_case_image {
-    width: 100%;
-    height: 80dvh;
-    border-radius: 10px;
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-  }
+  height: 80dvh;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
 }

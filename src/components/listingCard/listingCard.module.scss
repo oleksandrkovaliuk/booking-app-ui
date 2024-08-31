@@ -123,6 +123,9 @@
   }
   &.next {
     right: 10px;
+    svg {
+      rotate: 180deg;
+    }
   }
 }
 

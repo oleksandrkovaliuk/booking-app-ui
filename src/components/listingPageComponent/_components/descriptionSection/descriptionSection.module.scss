@@ -1,0 +1,70 @@
+.description_section {
+  padding-bottom: 30px;
+  margin-bottom: 30px;
+  border-bottom: 1px solid var(--booking-app-lightgrey-color);
+
+  .description {
+    max-width: 45vw;
+    font-size: 15px;
+    font-family: var(--booking-app-Nunito-Sans-font);
+    font-weight: 500;
+    line-height: 130%;
+    color: var(--booking-app-black-color);
+    margin-bottom: 5px;
+    &[data-content-to-long="true"] {
+      display: -webkit-box;
+      line-clamp: 3;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  }
+  .show_more_btn {
+    border-radius: 7px;
+
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--booking-app-black-color);
+    font-family: var(--booking-app-Nunito-Sans-font);
+    text-decoration: underline;
+    line-height: 100%;
+
+    transition: all 0.2s ease-in-out;
+    &:hover {
+      scale: 0.98;
+    }
+    &:active {
+      scale: 0.96;
+    }
+  }
+}
+
+.full_information_modal {
+  max-height: 60dvh;
+  border-radius: 15px;
+  .modal_body {
+    padding-block: 50px;
+    overflow-y: scroll;
+  }
+
+  .modal_info {
+    .modal_info_item {
+      &:not(:last-child) {
+        margin-bottom: 40px;
+      }
+      .modal_info_title {
+        font-size: 26px;
+        font-weight: 700;
+        font-family: var(--booking-app-Nunito-Sans-font);
+        color: var(--booking-app-black-color);
+        margin-bottom: 20px;
+      }
+      .modal_info_description {
+        font-size: 15px;
+        font-weight: 400;
+        font-family: var(--booking-app-Nunito-Sans-font);
+        color: var(--booking-app-grey-color);
+      }
+    }
+  }
+}

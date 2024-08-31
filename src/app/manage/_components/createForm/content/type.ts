@@ -1,10 +1,12 @@
 import { Dispatch, SetStateAction } from "react";
 import { UseFormRegister, UseFormSetValue } from "react-hook-form";
 
-import { CreateListingSteps } from "../../enums";
-import { FormState, GoogleMapProps } from "../../type";
 import { Category, TypeOfPlace } from "@/store/slices/listingsInfoSlice/type";
 import { EditFormValues } from "@/app/manage/listings/edit/[user]/[id]/type";
+import { GoogleMapProps } from "@/components/googleMap/type";
+
+import { CreateListingSteps } from "../../enums";
+import { FormState } from "../../type";
 
 export interface ContentProps {
   props?: any;

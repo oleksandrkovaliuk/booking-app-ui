@@ -20,7 +20,7 @@ import peopleAuthPng from "@/assets/topPeekI.png";
 import { GoogleIcon } from "@/svgs/GoogleIcon";
 import { FaceBookIcon } from "@/svgs/FacebookIcon";
 import { EmailValidation } from "@/validation/emailValidation";
-import { ReactEvent } from "@/utilities/type";
+import { ReactEvent } from "@/_utilities/type";
 import { CheckAuthType } from "../api/apiCalls";
 
 import styles from "./authorization.module.scss";

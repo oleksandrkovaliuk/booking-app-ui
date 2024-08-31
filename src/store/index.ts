@@ -3,10 +3,13 @@ import {
   TypedUseSelectorHook,
   useSelector as useReduxSelector,
 } from "react-redux";
+
 import { reducer as listingsInfoReducer } from "./slices/listingsInfoSlice";
+import userDateSelectionReducer from "./slices/userDateSelectionSlice";
 
 const rootReducers = combineReducers({
   listingsInfo: listingsInfoReducer,
+  userDateSelection: userDateSelectionReducer,
 });
 
 export const store = configureStore({

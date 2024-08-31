@@ -51,9 +51,15 @@ export const ImagesCard: React.FC<ImagesCardProps> = ({
 
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose} size="5xl" hideCloseButton>
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        size="5xl"
+        hideCloseButton
+        className="show_case_modal"
+      >
         <ModalContent>
-          <ModalBody className="show_case">
+          <ModalBody>
             <div
               style={{ backgroundImage: `url(${item})` }}
               className="show_case_image"

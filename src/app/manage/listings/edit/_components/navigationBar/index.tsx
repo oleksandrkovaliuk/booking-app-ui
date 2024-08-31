@@ -109,6 +109,11 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
 
     return () => {
       isAnyUnsavedChanges();
+
+      localStorage.removeItem("edit_title");
+      localStorage.removeItem("edit_placeis");
+      localStorage.removeItem("edit_aboutplace");
+      localStorage.removeItem("edit_notes");
     };
   }, []);
 
@@ -140,7 +145,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
         </Tooltip>
       )}
 
-      <motion.div
+      <motion.header
         className={styles.navigationBar_container}
         initial={
           isMobile
@@ -225,7 +230,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
             <div className={styles.close_icon} />
           </Tooltip>
         </motion.button>
-      </motion.div>
+      </motion.header>
       <motion.div
         className={styles.content_wrap}
         initial={{

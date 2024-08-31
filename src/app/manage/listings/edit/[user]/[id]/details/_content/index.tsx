@@ -119,12 +119,6 @@ export const DetailsContent: React.FC<ContentProps> = ({ params }) => {
     } else {
       setValueRef.current!("edit_notes", listing?.notes);
     }
-    return () => {
-      localStorage.removeItem("edit_title");
-      localStorage.removeItem("edit_placeis");
-      localStorage.removeItem("edit_aboutplace");
-      localStorage.removeItem("edit_notes");
-    };
   }, [listing?.title, listing?.placeis, listing?.aboutplace, listing?.notes]);
 
   return (

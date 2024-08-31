@@ -5,7 +5,7 @@ import {
   MarkerF,
   useLoadScript,
   StandaloneSearchBox,
-  GoogleMap as GoogleMapComponent,
+  GoogleMap,
 } from "@react-google-maps/api";
 
 import {
@@ -13,15 +13,17 @@ import {
   mapContainerStyle,
   options,
   sloverTransition,
-} from "../consts";
+} from "@/app/manage/_components/consts";
 
-import { GoogleMapProps } from "../type";
+import { GoogleMapProps } from "./type";
 
 import styles from "./googleMap.module.scss";
-import "../createForm/additionalStyles.scss";
-export const GoogleMap: React.FC<GoogleMapProps> = ({
+import "@/app/manage/_components/createForm/additionalStyles.scss";
+
+export const GoogleMapComponent: React.FC<GoogleMapProps> = ({
   editPage,
   register,
+  isOnlyMap,
   cordinates,
   setCordinates,
   onConfirmation,
@@ -40,7 +42,7 @@ export const GoogleMap: React.FC<GoogleMapProps> = ({
 
       if (places) {
         editPage && onConfirmation!(true);
-        setCordinates({
+        setCordinates!({
           lat: places[0].geometry?.location?.lat() as number,
           lng: places[0].geometry?.location?.lng() as number,
           address: places[0] as google.maps.places.PlaceResult,
@@ -63,7 +65,7 @@ export const GoogleMap: React.FC<GoogleMapProps> = ({
         }
       );
       editPage && onConfirmation!(true);
-      setCordinates({
+      setCordinates!({
         lat: e.latLng.lat() as number,
         lng: e.latLng.lng() as number,
         address: street.results[0] as google.maps.places.PlaceResult,
@@ -86,47 +88,49 @@ export const GoogleMap: React.FC<GoogleMapProps> = ({
 
   return (
     <motion.div className={styles.location_map}>
-      <StandaloneSearchBox
-        onLoad={(searchBox) => (searchBar.current = searchBox)}
-        onPlacesChanged={handleCordinatesChange}
-      >
-        <motion.input
-          type="text"
-          placeholder="Type your house address..."
-          id="location"
-          className="input"
-          initial={appearAnimation.initial}
-          animate={appearAnimation.animate}
-          transition={sloverTransition}
-          {...register(
-            editPage
-              ? `edit_address.formattedAddress`
-              : `address.formattedAddress`
-          )}
-        />
-      </StandaloneSearchBox>
+      {!isOnlyMap && (
+        <StandaloneSearchBox
+          onLoad={(searchBox) => (searchBar.current = searchBox)}
+          onPlacesChanged={handleCordinatesChange}
+        >
+          <motion.input
+            type="text"
+            placeholder="Type your house address..."
+            id="location"
+            className="input"
+            initial={appearAnimation.initial}
+            animate={appearAnimation.animate}
+            transition={sloverTransition}
+            {...register!(
+              editPage
+                ? `edit_address.formattedAddress`
+                : `address.formattedAddress`
+            )}
+          />
+        </StandaloneSearchBox>
+      )}
       <motion.div
         className={styles.map_container}
         initial={appearAnimation.initial}
         animate={appearAnimation.animate}
         transition={sloverTransition}
       >
-        <GoogleMapComponent
+        <GoogleMap
           mapContainerStyle={mapContainerStyle}
           center={cordinates}
-          zoom={17}
+          zoom={isOnlyMap ? 14 : 17}
           options={options}
         >
           <MarkerF
             position={cordinates}
-            draggable={true}
+            draggable={isOnlyMap ? false : true}
             onDragEnd={handleMarkerDragEnd}
             icon={{
-              url: "https://firebasestorage.googleapis.com/v0/b/booking-app-31ebf.appspot.com/o/home.png?alt=media&token=5117ac6d-3d52-478b-a971-67f20e72bb40",
+              url: "https://firebasestorage.googleapis.com/v0/b/booking-app-31ebf.appspot.com/o/home_ned.png?alt=media&token=417db10b-fab7-49b0-aed0-41fba0c65f32",
               scaledSize: new google.maps.Size(50, 50),
             }}
           />
-        </GoogleMapComponent>
+        </GoogleMap>
       </motion.div>
     </motion.div>
   );

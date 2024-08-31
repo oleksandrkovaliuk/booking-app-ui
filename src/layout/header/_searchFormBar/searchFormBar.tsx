@@ -1,24 +1,33 @@
 import React, { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { toast } from "sonner";
 import Image from "next/image";
+import { motion } from "framer-motion";
+import { useDispatch } from "react-redux";
 import { Checkbox } from "@nextui-org/react";
-import { RangeCalendar, RangeValue } from "@nextui-org/calendar";
+import { DateValue, RangeCalendar, RangeValue } from "@nextui-org/calendar";
 
+import { useSelector } from "@/store";
+import {
+  setCheckIn,
+  setCheckOut,
+  setResetDate,
+} from "@/store/slices/userDateSelectionSlice";
+import { globalCalendarState } from "@/store/slices/userDateSelectionSlice/type";
+
+import { Location } from "@/svgs/Location";
 import { Search } from "@/svgs/Search";
 import spinner from "@/assets/spinner.gif";
+
 import { ModalPanel } from "@/components/modalPanel";
 import { Counter } from "@/components/counter";
-import { TypesOfSelections } from "@/utilities/enums";
 import { getCountriesByRequest } from "./getCountriesByRequest";
-import { Location } from "@/svgs/Location";
 import { useDebounce } from "@/hooks/useDebounce";
 import { regions } from "@/information/data";
-import { parseDate } from "@internationalized/date";
-import {
-  DateFormatingMonthDay,
-  DateFormatingProps,
-} from "@/sharing/dateFormating";
+import { DateFormatingMonthDay } from "@/sharing/dateManagment";
+
 import { regionResponceType, regionsType, SearchFormBarProps } from "../types";
+import { TypesOfSelections } from "@/_utilities/enums";
+import { today, getLocalTimeZone } from "@internationalized/date";
 
 import styles from "./search_form_bar.module.scss";
 
@@ -30,16 +39,15 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
   isMobile,
   onCloseCallBack,
 }) => {
-  const searchBarRef = useRef<HTMLFormElement>(null);
+  const dispatch = useDispatch();
+  const searchBarRef = useRef<HTMLFormElement | null>(null);
+  const userDateSelection = useSelector((state) => state.userDateSelection);
 
   const [triggeredSelection, setTriggeredSelection] =
     useState<TypesOfSelections>(TypesOfSelections.UNSELECTED);
 
   const [regionSelection, setRegionSelection] = useState<string>("");
   const [responseForRegion, setResponseForRegion] = useState<[]>([]);
-
-  const [checkInInputValue, setCheckInInputValue] = useState<string>("");
-  const [checkOutInputValue, setCheckOutInputValue] = useState<string>("");
 
   const [amoutOfGuests, setAmoutOfGuests] = useState<number>(1);
   const [includePets, setIncludePets] = useState<boolean>(false);
@@ -55,8 +63,8 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
   const isRegions = regions.some((region) => region.region === regionSelection);
   const isSearchSettedUp =
     regionSelection.length ||
-    checkInInputValue ||
-    checkOutInputValue ||
+    userDateSelection.start ||
+    userDateSelection.end ||
     amoutOfGuests ||
     includePets;
 
@@ -92,53 +100,29 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
     }
   };
 
-  const triggerCheckOutSelection = (date: DateFormatingProps, type: string) => {
-    const value = DateFormatingMonthDay({
-      year: date.year,
-      day: date.day,
-      month: date.month,
-    });
+  const handleSelectCheckIn = (date: DateValue, type: string) => {
     if (
       type === TypesOfSelections.DATE_EXPERIENCES_CHECKIN ||
       type === TypesOfSelections.DATE
     ) {
-      setCheckInInputValue((prev: string) =>
-        !prev || prev !== value ? value : prev
-      );
+      dispatch(setCheckIn(date));
       setTriggeredSelection(TypesOfSelections.DATE_EXPERIENCES_CHECKOUT);
     }
   };
 
-  const handleBookingCalendarSelections = (
-    value: RangeValue<DateFormatingProps>
-  ) => {
+  const handleBookingCalendarSelections = (value: globalCalendarState) => {
     if (isDateSelection) {
-      setCheckInInputValue(
-        DateFormatingMonthDay({
-          year: value.start.year,
-          day: value.start.day,
-          month: value.start.month,
-        })
-      );
-      setCheckOutInputValue(
-        DateFormatingMonthDay({
-          year: value.end.year,
-          day: value.end.day,
-          month: value.end.month,
-        })
-      );
+      dispatch(setCheckIn(value.start));
     } else if (value.start.toString() !== value.end.toString()) {
-      setCheckOutInputValue(
-        DateFormatingMonthDay({
-          year: value.end.year,
-          day: value.end.day,
-          month: value.end.month,
-        })
-      );
-
+      dispatch(setCheckOut(value.end));
       setTriggeredSelection(TypesOfSelections.GUEST);
     } else {
-      setCheckOutInputValue("");
+      toast(
+        <div className="toast ">
+          🫣 Selected dates cannot be the same. The minimum stay is one night.
+        </div>
+      );
+      dispatch(setResetDate());
     }
     return null;
   };
@@ -150,8 +134,8 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
       onCloseCallBack && onCloseCallBack();
       console.log({
         regionSelection: regionSelection,
-        checkInInputValue: checkInInputValue,
-        checkOutInputValue: checkOutInputValue,
+        checkInInputValue: userDateSelection.start,
+        checkOutInputValue: userDateSelection.end,
         amoutOfGuests: amoutOfGuests,
         includePets: includePets,
       });
@@ -349,14 +333,18 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                 <RangeCalendar
                   aria-label="Booking dates"
                   visibleMonths={isMobile ? 1 : 2}
-                  onChange={(value: RangeValue<DateFormatingProps>) =>
+                  onChange={(value: RangeValue<DateValue>) =>
                     handleBookingCalendarSelections(value)
                   }
-                  onFocusChange={(date: DateFormatingProps) =>
-                    triggerCheckOutSelection(date, triggeredSelection)
+                  onFocusChange={(date: DateValue) =>
+                    handleSelectCheckIn(date, triggeredSelection)
                   }
                   color="primary"
-                  minValue={parseDate(new Date().toISOString().split("T")[0])}
+                  minValue={today(getLocalTimeZone())}
+                  value={
+                    userDateSelection &&
+                    (userDateSelection as RangeValue<DateValue>)
+                  }
                 />
               </ModalPanel>
             )}
@@ -379,7 +367,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                   id="dateInput"
                   className={styles.search_bar_input}
                   placeholder="Add dates"
-                  value={checkInInputValue}
+                  value={DateFormatingMonthDay(userDateSelection.start)}
                   readOnly
                 />
                 <label htmlFor="dateInput" className={styles.search_bar_label}>
@@ -403,7 +391,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                   id="dateInput"
                   className={styles.search_bar_input}
                   placeholder="Add dates"
-                  value={checkOutInputValue}
+                  value={DateFormatingMonthDay(userDateSelection.end)}
                   readOnly
                 />
                 <label htmlFor="dateInput" className={styles.search_bar_label}>
@@ -425,10 +413,12 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                 className={styles.search_bar_input}
                 placeholder="Add dates"
                 value={
-                  checkInInputValue || checkOutInputValue
-                    ? `${checkInInputValue} ${
-                        checkInInputValue && checkOutInputValue && " - "
-                      } ${checkOutInputValue}`
+                  userDateSelection.start || userDateSelection.end
+                    ? `${DateFormatingMonthDay(userDateSelection.start)} ${
+                        userDateSelection.start &&
+                        userDateSelection.end &&
+                        " - "
+                      } ${DateFormatingMonthDay(userDateSelection.end)}`
                     : ""
                 }
                 readOnly

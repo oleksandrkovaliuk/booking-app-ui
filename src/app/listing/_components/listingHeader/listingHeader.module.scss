@@ -1,0 +1,33 @@
+.listing_header {
+  position: sticky;
+  z-index: 13;
+  top: 0;
+
+  padding-block: 15px;
+  background-color: var(--booking-app-white-color);
+}
+.listing_header_nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  max-width: 70dvw;
+  margin: auto;
+
+  .logo_link {
+    flex-grow: 1;
+    display: flex;
+    .logo {
+      width: 40px;
+      height: 40px;
+      path {
+        fill: var(--booking-app-black-color);
+      }
+    }
+  }
+}
+
+@media (width <= 1280px) {
+  .listing_header {
+    padding-inline: 20px;
+  }
+}

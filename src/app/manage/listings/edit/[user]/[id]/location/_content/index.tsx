@@ -9,22 +9,18 @@ import { useSelector } from "@/store";
 import { getCurrentListing } from "@/store/selector/getCurrentListing";
 
 import { updateListing } from "@/app/api/apiCalls";
+import { GoogleMapProps } from "@/components/googleMap/type";
 import { getAllListings } from "@/store/thunks/listings/listings";
 import { handleUpdateFormAndLocalStorage } from "@/sharing/updateFormAndStorageStates";
+import { requirmentForAddressComponent } from "@/sharing/address/formattedAddressVariants";
+import { Location } from "@/app/manage/_components/createForm/content/_components/location";
 
-import {
-  appearAnimation,
-  motion_transition,
-} from "@/app/manage/_components/consts";
-import { GoogleMap } from "@/app/manage/_components/googleMap/googleMap";
 import { ConfirmationButton } from "@/components/confirmationButton";
 
 import { ContentProps, EditFormValues } from "../../type";
-import { GoogleMapProps } from "@/app/manage/_components/type";
 
 import styles from "./location.module.scss";
 import "../../shared/sharedStyles.scss";
-import { Location } from "@/app/manage/_components/createForm/content/_components/location";
 
 export const LocationContent: React.FC<ContentProps> = ({ params }) => {
   const dispatch = useDispatch();
@@ -46,6 +42,15 @@ export const LocationContent: React.FC<ContentProps> = ({ params }) => {
   const selectedAddress = watch("edit_address");
 
   const handleCordinatesChange = (cordinates: GoogleMapProps["cordinates"]) => {
+    const detailedAddressComponent =
+      cordinates.address?.address_components?.reduce<
+        google.maps.places.PlaceResult["address_components"]
+      >((acc, current) => {
+        if (acc && requirmentForAddressComponent.includes(current.types[0])) {
+          acc.push(current);
+        }
+        return acc;
+      }, []);
     const shorterAddress =
       cordinates.address?.address_components
         ?.filter((parts_of_adress) =>
@@ -64,6 +69,7 @@ export const LocationContent: React.FC<ContentProps> = ({ params }) => {
       {
         formattedAddress: cordinates.address?.formatted_address || "",
         shorterAddress,
+        detailedAddressComponent: detailedAddressComponent,
       },
       setValue
     );

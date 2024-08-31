@@ -410,9 +410,15 @@ export const Images: React.FC<ContentProps> = ({
         >
           <Reorder.Group
             values={uploadedImages.images}
-            onReorder={(newOrder) =>
-              setUploadedImages({ ...uploadedImages, images: newOrder })
-            }
+            onReorder={(newOrder) => {
+              setUploadedImages({ ...uploadedImages, images: newOrder });
+              handleUpdateFormAndLocalStorage(
+                editPage ? "edit_images" : "images",
+                newOrder,
+                setValue
+              );
+              editPage && onConfirmation!(true);
+            }}
             className={styles.reorder_group}
             axis="y"
           >

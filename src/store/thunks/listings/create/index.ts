@@ -6,8 +6,8 @@ import { toast } from "sonner";
 export const RequestCreateListing = createAsyncThunk(
   "listings/createListing",
   async ({
-    hostname,
-    hostemail,
+    host_name,
+    host_email,
     category,
     type,
     cordinates,
@@ -24,8 +24,8 @@ export const RequestCreateListing = createAsyncThunk(
   }: ListingState) => {
     try {
       const res = await CreateListing({
-        hostname,
-        hostemail,
+        host_name,
+        host_email,
         category,
         type,
         cordinates,

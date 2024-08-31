@@ -15,7 +15,7 @@ import { signOut, useSession } from "next-auth/react";
 import { AdminFlag } from "@/svgs/AdminFlag";
 import { UserIcon } from "@/svgs/UserIcon";
 import { LogOutIcon } from "@/svgs/LogOutIcon";
-import { Roles } from "@/utilities/enums";
+import { Roles } from "@/_utilities/enums";
 import { FormState } from "@/app/manage/_components/type";
 
 import styles from "./userMenu.module.scss";
@@ -77,7 +77,9 @@ export const UserMenu: React.FC = () => {
               ) : (
                 <div className={`${styles.user_img} ${styles.no_user_image}`}>
                   {" "}
-                  {session?.user.email?.split("")[0]!}
+                  {session?.user.name
+                    ? session?.user.name?.split("")[0]!
+                    : session?.user.email?.split("")[0]!}
                 </div>
               )}
             </button>

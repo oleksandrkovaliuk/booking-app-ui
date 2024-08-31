@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { Roles } from "./utilities/enums";
+import { Roles } from "./_utilities/enums";
 import { getToken } from "next-auth/jwt";
 
 export async function middleware(req: any) {

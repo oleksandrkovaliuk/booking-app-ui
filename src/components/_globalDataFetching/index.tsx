@@ -10,7 +10,7 @@ export const GlobalDataOnLoad = () => {
   const dispath = useDispatch();
   useEffect(() => {
     Promise.all([
-      dispath(getAllCategories() as any),
+      // dispath(getAllCategories() as any),
       dispath(getTypeOfPlace() as any),
       dispath(getAllListings() as any),
     ]);

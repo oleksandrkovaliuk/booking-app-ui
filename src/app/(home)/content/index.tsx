@@ -3,26 +3,30 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Skeleton } from "@nextui-org/react";
-
-import { useSelector } from "@/store";
 import { skeletonData } from "@/information/data";
 
 import { ListingCard } from "@/components/listingCard";
 import { appearAnimation } from "@/app/manage/_components/consts";
 import { SkeletonListingCard } from "@/components/listingCard/components/skeleton";
+import { useGetListingsQuery } from "@/store/api/endpoints/getListings";
 
 import styles from "./homeContent.module.scss";
 
 export const HomeContent: React.FC = () => {
-  const { listings, isLoading } = useSelector((state) => state.listingsInfo);
-  const verifiedListings = listings.length
-    ? listings?.filter((item) => item.iscomplete)
-    : [];
+  const {
+    isFetching,
+    isLoading,
+    data: listings,
+  } = useGetListingsQuery(undefined);
 
+  // const { listings, isLoading } = useSelector((state) => state.listingsInfo);
+  const verifiedListings = listings?.data?.length
+    ? listings.data?.filter((item) => item.iscomplete)
+    : [];
   return (
     <div className={styles.home_container}>
       <div className={styles.listings_container}>
-        {isLoading.listings || !verifiedListings.length
+        {isFetching || isLoading || !verifiedListings.length
           ? skeletonData.map((item) => (
               <SkeletonListingCard key={item} item={item} size="sm" />
             ))

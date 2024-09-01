@@ -1,4 +1,4 @@
-import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import { configureStore } from "@reduxjs/toolkit";
 import {
   TypedUseSelectorHook,
   useSelector as useReduxSelector,
@@ -6,18 +6,22 @@ import {
 
 import { reducer as listingsInfoReducer } from "./slices/listingsInfoSlice";
 import userDateSelectionReducer from "./slices/userDateSelectionSlice";
-
-const rootReducers = combineReducers({
-  listingsInfo: listingsInfoReducer,
-  userDateSelection: userDateSelectionReducer,
-});
+import { api } from "./api/reducer";
 
 export const store = configureStore({
-  reducer: rootReducers,
+  reducer: {
+    [api.reducerPath]: api.reducer,
+    // [authSlice.name]: authSlice.reducer,
+    listingsInfo: listingsInfoReducer,
+    userDateSelection: userDateSelectionReducer,
+  },
+  middleware: (getDefaultMiddleware) =>
+    // adding the api middleware enables caching, invalidation, polling and other features of `rtk-query`
+    getDefaultMiddleware().concat(api.middleware),
   devTools: true,
 });
 
-export type RootState = ReturnType<typeof rootReducers>;
+export type RootState = ReturnType<typeof store.getState>;
 export type AppStore = typeof store;
 export type AppDispatch = typeof store.dispatch;
 

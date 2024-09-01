@@ -1,20 +1,20 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { motion } from "framer-motion";
 import { useDispatch } from "react-redux";
 import { useForm, UseFormSetValue } from "react-hook-form";
 
 import { useSelector } from "@/store";
-import { getCurrentListing } from "@/store/selector/getCurrentListing";
+import { getAllListings } from "@/store/thunks/listings/listings";
+import { getCurrentUserListings } from "@/store/thunks/listings/getCurrentUserListing";
 
 import { updateListing } from "@/app/api/apiCalls";
-import { GoogleMapProps } from "@/components/googleMap/type";
-import { getAllListings } from "@/store/thunks/listings/listings";
-import { handleUpdateFormAndLocalStorage } from "@/sharing/updateFormAndStorageStates";
-import { requirmentForAddressComponent } from "@/sharing/address/formattedAddressVariants";
 import { Location } from "@/app/manage/_components/createForm/content/_components/location";
 
+import { handleUpdateFormAndLocalStorage } from "@/sharing/updateFormAndStorageStates";
+import { requirmentForAddressComponent } from "@/sharing/address/formattedAddressVariants";
+
+import { GoogleMapProps } from "@/components/googleMap/type";
 import { ConfirmationButton } from "@/components/confirmationButton";
 
 import { ContentProps, EditFormValues } from "../../type";
@@ -26,9 +26,9 @@ export const LocationContent: React.FC<ContentProps> = ({ params }) => {
   const dispatch = useDispatch();
   const setValueRef = useRef<UseFormSetValue<EditFormValues> | null>(null);
 
-  const listing = useSelector((state) => getCurrentListing(state, params.id));
+  const listing = useSelector((state) => state.listingsInfo.listings[0]);
 
-  const [showConfirmationButton, setShowConfirmationButton] =
+  const [enableConfirmationButton, setEnableConfirmationButton] =
     useState<boolean>(false);
 
   const { register, watch, setValue } = useForm({
@@ -83,7 +83,7 @@ export const LocationContent: React.FC<ContentProps> = ({ params }) => {
       setValue
     );
 
-    setShowConfirmationButton(true);
+    setEnableConfirmationButton(true);
   };
   const onConfirmation = async () => {
     try {
@@ -100,8 +100,13 @@ export const LocationContent: React.FC<ContentProps> = ({ params }) => {
         }),
         dispatch(getAllListings() as any),
       ]);
-      toast.success("Listing location has been updated successfully.");
-      setShowConfirmationButton(false);
+      toast.success("Successfully updated.", {
+        action: {
+          label: "Close",
+          onClick: () => {},
+        },
+      });
+      setEnableConfirmationButton(false);
       localStorage.removeItem("edit_cordinates");
       localStorage.removeItem("edit_address");
     } catch (error) {
@@ -112,6 +117,15 @@ export const LocationContent: React.FC<ContentProps> = ({ params }) => {
   };
 
   useEffect(() => {
+    dispatch(
+      getCurrentUserListings({
+        id: Number(params.id),
+        user_name: params.user,
+      }) as any
+    );
+  }, []);
+
+  useEffect(() => {
     setValueRef.current = setValue;
   }, [setValue]);
 
@@ -119,7 +133,7 @@ export const LocationContent: React.FC<ContentProps> = ({ params }) => {
     const edit_cordinates = localStorage.getItem("edit_cordinates");
     const edit_address = localStorage.getItem("edit_address");
     if (edit_cordinates && edit_address) {
-      setShowConfirmationButton(true);
+      setEnableConfirmationButton(true);
       setValueRef.current!("edit_address", JSON.parse(edit_address));
       setValueRef.current!("edit_cordinates", JSON.parse(edit_cordinates));
     } else {
@@ -136,14 +150,14 @@ export const LocationContent: React.FC<ContentProps> = ({ params }) => {
         setValue={setValueRef.current!}
         register={register}
         selectedCordinates={selectedCordinates}
-        onConfirmation={setShowConfirmationButton}
+        onConfirmation={setEnableConfirmationButton}
         handleCordinatesChange={handleCordinatesChange}
         handleUpdateFormAndLocalStorage={handleUpdateFormAndLocalStorage}
       />
 
       <ConfirmationButton
         onConfirm={onConfirmation}
-        trigger={showConfirmationButton}
+        enable={enableConfirmationButton}
         position="bottom-right"
       >
         Confirm

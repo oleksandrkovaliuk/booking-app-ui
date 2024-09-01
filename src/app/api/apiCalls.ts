@@ -49,7 +49,23 @@ export interface ListingState extends FormState {
 }
 export const GetListingsCategories = () => GET("listings/categories");
 export const GetTypeOfPlace = () => GET("listings/typeofplace");
-export const GetListings = () => GET("listings/listings");
+export const GetListings = () => GET(`listings/listings`);
+
+export const GetUserListings = ({
+  user_name,
+  user_email,
+}: {
+  user_name: string;
+  user_email: string;
+}) => GET(`listings/listings/${user_name}/${user_email}`);
+
+export const GetCurrentUserListings = ({
+  id,
+  user_name,
+}: {
+  id: number;
+  user_name: string;
+}) => GET(`listings/get/current/${id}/${user_name}`);
 
 export const CreateListing = ({
   host_name,

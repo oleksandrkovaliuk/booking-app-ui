@@ -1,15 +1,12 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import { toast } from "sonner";
-import { motion } from "framer-motion";
 import { useDispatch } from "react-redux";
 import { useForm, UseFormSetValue } from "react-hook-form";
 
 import { ContentProps, EditFormValues } from "../../type";
 
 import { useSelector } from "@/store";
-import { getCurrentListing } from "@/store/selector/getCurrentListing";
 import { getAllListings } from "@/store/thunks/listings/listings";
 
 import { ConfirmationButton } from "@/components/confirmationButton";
@@ -20,15 +17,16 @@ import { updateListing } from "@/app/api/apiCalls";
 
 import styles from "./category.module.scss";
 import "../../shared/sharedStyles.scss";
+import { getCurrentUserListings } from "@/store/thunks/listings/getCurrentUserListing";
 
 export const CategoryPageContent: React.FC<ContentProps> = ({ params }) => {
   const dispatch = useDispatch();
   const setValueRef = useRef<UseFormSetValue<EditFormValues> | null>(null);
 
   const { categories } = useSelector((state) => state.listingsInfo);
-  const listing = useSelector((state) => getCurrentListing(state, params.id));
+  const listing = useSelector((state) => state.listingsInfo.listings[0]);
 
-  const [showConfirmationButton, setShowConfirmationButton] =
+  const [enableConfirmationButton, setEnableConfirmationButton] =
     useState<boolean>(false);
 
   const { register, watch, setValue } = useForm({
@@ -49,8 +47,13 @@ export const CategoryPageContent: React.FC<ContentProps> = ({ params }) => {
         }),
         dispatch(getAllListings() as any),
       ]);
-      toast.success(" Category has been updated successfully.");
-      setShowConfirmationButton(false);
+      toast.success("Successfully updated.", {
+        action: {
+          label: "Close",
+          onClick: () => {},
+        },
+      });
+      setEnableConfirmationButton(false);
       localStorage.removeItem("edit_category");
     } catch (error) {
       return toast.error(
@@ -60,13 +63,22 @@ export const CategoryPageContent: React.FC<ContentProps> = ({ params }) => {
   };
 
   useEffect(() => {
+    dispatch(
+      getCurrentUserListings({
+        id: Number(params.id),
+        user_name: params.user,
+      }) as any
+    );
+  }, []);
+
+  useEffect(() => {
     setValueRef.current = setValue;
   }, [setValue]);
 
   useEffect(() => {
     const edit_category = localStorage.getItem("edit_category");
     if (edit_category) {
-      setShowConfirmationButton(true);
+      setEnableConfirmationButton(true);
       setValueRef.current!("edit_category", JSON.parse(edit_category));
     } else {
       setValueRef.current!("edit_category", listing?.category);
@@ -82,13 +94,13 @@ export const CategoryPageContent: React.FC<ContentProps> = ({ params }) => {
         categories={categories}
         setValue={setValueRef.current!}
         selectedCategory={selectedCategory!}
-        onConfirmation={setShowConfirmationButton}
+        onConfirmation={setEnableConfirmationButton}
         handleUpdateFormAndLocalStorage={handleUpdateFormAndLocalStorage}
       />
 
       <ConfirmationButton
         onConfirm={onConfirmation}
-        trigger={showConfirmationButton}
+        enable={enableConfirmationButton}
         position="bottom-right"
       >
         Confirm

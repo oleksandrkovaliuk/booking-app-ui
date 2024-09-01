@@ -1,15 +1,8 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { useDispatch } from "react-redux";
-import {
-  DateValue,
-  RangeCalendar,
-  RangeValue,
-  Spinner,
-  Tooltip,
-} from "@nextui-org/react";
+import { Tooltip } from "@nextui-org/react";
 
 import { useSelector } from "@/store";
 import { getCurrentListing } from "@/store/selector/getCurrentListing";
@@ -23,6 +16,7 @@ import { CalendarSection } from "./_components/calendarSection";
 import { ReserveListingBlock } from "./_components/reserveListingBlock";
 import { formattedAddressComponent } from "@/sharing/address/formattedAddressVariants";
 
+import { Logo } from "@/svgs/Logo";
 import super_host from "@/assets/medal-of-honor.png";
 import super_host_black from "@/assets/medal-of-honor-black.png";
 import regular_host from "@/assets/renter.png";
@@ -31,12 +25,20 @@ import { ShowCaseUser } from "@/_utilities/interfaces";
 import { ListingPageComponentProps } from "./type";
 
 import styles from "./listing.module.scss";
+import { useSearchParams } from "next/navigation";
+import { useDispatch } from "react-redux";
+import {
+  setCheckIn,
+  setCheckOut,
+  setResetDate,
+} from "@/store/slices/userDateSelectionSlice";
 
 export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
   id,
   isPublic,
 }) => {
   const dispatch = useDispatch();
+  const params = useSearchParams().get("date_selection");
   const listing = useSelector((state) => getCurrentListing(state, id));
 
   const [host, setHost] = useState<ShowCaseUser>({
@@ -47,7 +49,7 @@ export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
   });
 
   useEffect(() => {
-    const getHost = async () => {
+    const setUpPage = async () => {
       const user = await GetUser({
         user_name: listing?.host_name!,
         user_email: listing?.host_email!,
@@ -61,226 +63,218 @@ export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
           role: user.data.role,
         };
       });
+      // dispatch(setCheckIn(JSON.parse(params!).start));
+      // dispatch(setCheckOut(JSON.parse(params!).end));
     };
 
-    try {
-      if (!listing?.host_email && !listing?.host_name) return;
-      getHost();
-    } catch (error) {
-      return;
-    }
-  }, [listing?.host_email, listing?.host_name]);
+    if (!listing?.host_email && !listing?.host_name) return;
+    setUpPage();
+  }, [dispatch, listing?.host_email, listing?.host_name, params]);
 
   return (
-    <>
-      <div className={styles.listing_container}>
-        {!listing || !host ? (
-          <Spinner size="lg" color="default" className={styles.spinner} />
-        ) : (
-          <div className={styles.listing_content}>
-            <section className={styles.title_text_content}>
-              <h1 className={styles.title}>{listing.title}</h1>
-            </section>
+    <div className={styles.listing_container}>
+      {!listing || !host ? (
+        <Logo className={styles.loader} />
+      ) : (
+        <div className={styles.listing_content}>
+          <section className={styles.title_text_content}>
+            <h1 className={styles.title}>{listing.title}</h1>
+          </section>
 
-            <ImagesSection
-              images={listing.images}
-              aboutplace={listing.aboutplace}
-              placeis={listing.placeis}
-            />
+          <ImagesSection
+            images={listing.images}
+            aboutplace={listing.aboutplace}
+            placeis={listing.placeis}
+          />
 
-            <section className={styles.sub_title_text_content}>
-              <h2 className={styles.sub_title_text}>
-                {listing.type?.type_name} in{" "}
-                {formattedAddressComponent({
-                  address: listing?.address?.detailedAddressComponent,
-                  variant: "cityStateCountry",
-                })}
-              </h2>
-              <div className={styles.sub_title_additional_info}>
+          <section className={styles.sub_title_text_content}>
+            <h2 className={styles.sub_title_text}>
+              {listing.type?.type_name} in{" "}
+              {formattedAddressComponent({
+                address: listing?.address?.detailedAddressComponent,
+                variant: "cityStateCountry",
+              })}
+            </h2>
+            <div className={styles.sub_title_additional_info}>
+              <span className={styles.sub_title_additional_info_item}>
+                {listing.guests} guests
+              </span>
+              {listing?.pets_allowed && (
                 <span className={styles.sub_title_additional_info_item}>
-                  {listing.guests} guests
+                  allowed pets
                 </span>
-                {listing?.pets_allowed && (
-                  <span className={styles.sub_title_additional_info_item}>
-                    allowed pets
-                  </span>
-                )}
+              )}
 
-                {listing?.accesable && (
-                  <span className={styles.sub_title_additional_info_item}>
-                    accesable
-                  </span>
-                )}
-              </div>
-            </section>
-
-            <div className={styles.information_grid_wrap}>
-              <div className={styles.left_side_grid}>
-                <section className={styles.host_card}>
-                  <div className={styles.host_img_container}>
-                    {host.img_url ? (
-                      <Image
-                        src={host.img_url}
-                        alt="host_avatar"
-                        width={100}
-                        height={100}
-                        className={styles.host_img}
-                      />
-                    ) : (
-                      <div className={`${styles.host_img} ${styles.host_img}`}>
-                        {" "}
-                        {host.user_name
-                          ? host.user_name.split("")[0]!
-                          : host.email?.split("")[0]!}
-                      </div>
-                    )}
-                    {host.role === "super_host" && (
-                      <Tooltip
-                        placement="right"
-                        content={"Super host badge"}
-                        color="default"
-                        size="sm"
-                        delay={1000}
-                        classNames={{
-                          content: ["text-#2f2f2f font-medium rounded-lg"],
-                        }}
-                      >
-                        <div>
-                          <Image
-                            alt="super_host_badge"
-                            src={super_host}
-                            className={styles.host_badge}
-                            width={100}
-                            height={100}
-                          />
-                        </div>
-                      </Tooltip>
-                    )}
-                  </div>
-                  <div className={styles.host_info}>
-                    <h3 className={styles.host_name}>
-                      Hosted by <span>{host.user_name?.split(" ")[0]}</span>
-                    </h3>
-                    <p className={styles.host_title}>
-                      {host.role === "super_host" ? "Super Host" : "Host"}
-                    </p>
-                  </div>
-                </section>
-                <section className={styles.host_trusted_for}>
-                  <div className={styles.host_trusted_for_wrap}>
-                    {host.role === "super_host" ? (
-                      <Image
-                        src={super_host_black}
-                        alt="super_host_badge"
-                        width={100}
-                        height={100}
-                        className={styles.host_trusted_img}
-                      />
-                    ) : (
-                      <Image
-                        alt="host_badge"
-                        src={regular_host}
-                        className={styles.host_trusted_img}
-                        width={100}
-                        height={100}
-                      />
-                    )}
-
-                    <motion.div className={styles.host_trusted_text}>
-                      {host.role === "super_host" ? (
-                        <>
-                          <div className={styles.host_trusted_title}>
-                            <span>{host.user_name?.split(" ")[0]}</span> is a
-                            super host
-                          </div>
-                          <p className={styles.host_trusted_description}>
-                            Super hosts are seasoned professionals dedicated to
-                            providing exceptional service. Their commitment to
-                            excellence ensures a welcoming and comfortable
-                            experience, where every detail is crafted with care.
-                          </p>
-                        </>
-                      ) : (
-                        <>
-                          <span className={styles.host_trusted_title}>
-                            {host.user_name?.split(" ")[0]} is a trusted host
-                          </span>
-                          <p className={styles.host_trusted_description}>
-                            Hosts are dedicated professionals focused on
-                            providing excellent service. Their commitment to
-                            quality ensures a welcoming and comfortable
-                            experience, with every detail thoughtfully attended
-                            to.
-                          </p>
-                        </>
-                      )}
-                    </motion.div>
-                  </div>
-                </section>
-                <DescriptionSection
-                  aboutplace={listing.aboutplace}
-                  placeis={listing.placeis}
-                  notes={listing.notes}
-                />
-                <section className={styles.more_details}>
-                  <div className={styles.more_details_wrap}>
-                    <div className={styles.more_details_img}>
-                      <Image
-                        src={listing?.type?.type_img!}
-                        alt="type_img"
-                        width={100}
-                        height={100}
-                      />
-                    </div>
-
-                    <h4 className={styles.more_details_title}>
-                      {listing.type?.type_name}
-                    </h4>
-                    <p className={styles.more_details_description}>
-                      {listing.type?.type_description}
-                    </p>
-                  </div>
-                  <div className={styles.more_details_wrap}>
-                    <div className={styles.more_details_img}>
-                      <Image
-                        src={listing?.category?.category_icon!}
-                        alt="type_img"
-                        width={100}
-                        height={100}
-                      />
-                    </div>
-
-                    <h5 className={styles.more_details_title}>
-                      {listing.category?.category_name}
-                    </h5>
-                  </div>
-                </section>
-
-                <CalendarSection
-                  title={listing?.title}
-                  disabledDates={listing?.disabled_dates!}
-                />
-              </div>
-              <div className={styles.right_side_grid}>
-                <ReserveListingBlock
-                  price={listing?.price!}
-                  disabledDates={listing?.disabled_dates!}
-                  guests_limit={listing?.guests!}
-                />
-              </div>
+              {listing?.accesable && (
+                <span className={styles.sub_title_additional_info_item}>
+                  accesable
+                </span>
+              )}
             </div>
-            <div className={styles.bottom_sections_container}>
-              <section className={styles.location}>
-                <h6 className={styles.section_title}>Where you’ll be</h6>
-                <GoogleMapComponent
-                  isOnlyMap
-                  cordinates={listing?.cordinates!}
-                />
+          </section>
+
+          <div className={styles.information_grid_wrap}>
+            <div className={styles.left_side_grid}>
+              <section className={styles.host_card}>
+                <div className={styles.host_img_container}>
+                  {host.img_url ? (
+                    <Image
+                      src={host.img_url}
+                      alt="host_avatar"
+                      width={100}
+                      height={100}
+                      className={styles.host_img}
+                    />
+                  ) : (
+                    <div className={`${styles.host_img} ${styles.host_img}`}>
+                      {" "}
+                      {host.user_name
+                        ? host.user_name.split("")[0]
+                        : host.email?.split("")[0]}
+                    </div>
+                  )}
+                  {host.role === "super_host" && (
+                    <Tooltip
+                      placement="right"
+                      content={"Super host badge"}
+                      color="default"
+                      size="sm"
+                      delay={1000}
+                      classNames={{
+                        content: ["text-#2f2f2f font-medium rounded-lg"],
+                      }}
+                    >
+                      <div>
+                        <Image
+                          alt="super_host_badge"
+                          src={super_host}
+                          className={styles.host_badge}
+                          width={100}
+                          height={100}
+                        />
+                      </div>
+                    </Tooltip>
+                  )}
+                </div>
+                <div className={styles.host_info}>
+                  <h3 className={styles.host_name}>
+                    Hosted by <span>{host.user_name?.split(" ")[0]}</span>
+                  </h3>
+                  <p className={styles.host_title}>
+                    {host.role === "super_host" ? "Super Host" : "Host"}
+                  </p>
+                </div>
               </section>
+              <section className={styles.host_trusted_for}>
+                <div className={styles.host_trusted_for_wrap}>
+                  {host.role === "super_host" ? (
+                    <Image
+                      src={super_host_black}
+                      alt="super_host_badge"
+                      width={100}
+                      height={100}
+                      className={styles.host_trusted_img}
+                    />
+                  ) : (
+                    <Image
+                      alt="host_badge"
+                      src={regular_host}
+                      className={styles.host_trusted_img}
+                      width={100}
+                      height={100}
+                    />
+                  )}
+
+                  <motion.div className={styles.host_trusted_text}>
+                    {host.role === "super_host" ? (
+                      <>
+                        <div className={styles.host_trusted_title}>
+                          <span>{host.user_name?.split(" ")[0]}</span> is a
+                          super host
+                        </div>
+                        <p className={styles.host_trusted_description}>
+                          Super hosts are seasoned professionals dedicated to
+                          providing exceptional service. Their commitment to
+                          excellence ensures a welcoming and comfortable
+                          experience, where every detail is crafted with care.
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <span className={styles.host_trusted_title}>
+                          {host.user_name?.split(" ")[0]} is a trusted host
+                        </span>
+                        <p className={styles.host_trusted_description}>
+                          Hosts are dedicated professionals focused on providing
+                          excellent service. Their commitment to quality ensures
+                          a welcoming and comfortable experience, with every
+                          detail thoughtfully attended to.
+                        </p>
+                      </>
+                    )}
+                  </motion.div>
+                </div>
+              </section>
+              <DescriptionSection
+                aboutplace={listing.aboutplace}
+                placeis={listing.placeis}
+                notes={listing.notes}
+              />
+              <section className={styles.more_details}>
+                <div className={styles.more_details_wrap}>
+                  <div className={styles.more_details_img}>
+                    <Image
+                      src={listing?.type?.type_img!}
+                      alt="type_img"
+                      width={100}
+                      height={100}
+                    />
+                  </div>
+
+                  <h4 className={styles.more_details_title}>
+                    {listing.type?.type_name}
+                  </h4>
+                  <p className={styles.more_details_description}>
+                    {listing.type?.type_description}
+                  </p>
+                </div>
+                <div className={styles.more_details_wrap}>
+                  <div className={styles.more_details_img}>
+                    <Image
+                      src={listing?.category?.category_icon!}
+                      alt="type_img"
+                      width={100}
+                      height={100}
+                    />
+                  </div>
+
+                  <h5 className={styles.more_details_title}>
+                    {listing.category?.category_name}
+                  </h5>
+                </div>
+              </section>
+
+              <CalendarSection
+                title={listing?.title}
+                disabledDates={listing?.disabled_dates!}
+              />
+            </div>
+            <div className={styles.right_side_grid}>
+              <ReserveListingBlock
+                price={listing?.price}
+                disabledDates={listing?.disabled_dates!}
+                guests_limit={listing?.guests}
+              />
             </div>
           </div>
-        )}
-      </div>
-    </>
+          <div className={styles.bottom_sections_container}>
+            <section className={styles.location}>
+              <h6 className={styles.section_title}>Where you’ll be</h6>
+              <GoogleMapComponent isOnlyMap cordinates={listing?.cordinates!} />
+            </section>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };

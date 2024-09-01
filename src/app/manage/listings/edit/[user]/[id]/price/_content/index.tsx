@@ -1,12 +1,12 @@
 "use client";
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useDispatch } from "react-redux";
 import { useForm, UseFormSetValue } from "react-hook-form";
 
 import { useSelector } from "@/store";
 import { getAllListings } from "@/store/thunks/listings/listings";
-import { getCurrentListing } from "@/store/selector/getCurrentListing";
+import { getCurrentUserListings } from "@/store/thunks/listings/getCurrentUserListing";
 
 import { Price } from "@/app/manage/_components/createForm/content/_components/price";
 import { updateListing } from "@/app/api/apiCalls";
@@ -22,9 +22,9 @@ export const PriceContent: React.FC<ContentProps> = ({ params }) => {
   const dispatch = useDispatch();
   const setValueRef = useRef<UseFormSetValue<EditFormValues> | null>(null);
 
-  const listing = useSelector((state) => getCurrentListing(state, params.id));
+  const listing = useSelector((state) => state.listingsInfo.listings[0]);
 
-  const [showConfirmationButton, setShowConfirmationButton] =
+  const [enableConfirmationButton, setEnableConfirmationButton] =
     useState<boolean>(false);
 
   const { register, watch, setValue } = useForm({
@@ -45,8 +45,13 @@ export const PriceContent: React.FC<ContentProps> = ({ params }) => {
         }),
         dispatch(getAllListings() as any),
       ]);
-      toast.success("Price has been updated successfully.");
-      setShowConfirmationButton(false);
+      toast.success("Successfully updated.", {
+        action: {
+          label: "Close",
+          onClick: () => {},
+        },
+      });
+      setEnableConfirmationButton(false);
       localStorage.removeItem("edit_price");
     } catch (error) {
       return toast.error(
@@ -56,6 +61,15 @@ export const PriceContent: React.FC<ContentProps> = ({ params }) => {
   };
 
   useEffect(() => {
+    dispatch(
+      getCurrentUserListings({
+        id: Number(params.id),
+        user_name: params.user,
+      }) as any
+    );
+  }, []);
+
+  useEffect(() => {
     setValueRef.current = setValue;
   }, [setValue]);
 
@@ -63,7 +77,7 @@ export const PriceContent: React.FC<ContentProps> = ({ params }) => {
     const edit_price = localStorage.getItem("edit_price");
     if (edit_price) {
       if (Number(JSON.parse(edit_price)?.split(",").join("")) >= 14) {
-        setShowConfirmationButton(true);
+        setEnableConfirmationButton(true);
       }
       setValueRef.current!("edit_price", JSON.parse(edit_price));
     } else {
@@ -86,14 +100,14 @@ export const PriceContent: React.FC<ContentProps> = ({ params }) => {
             register={register}
             setValue={setValue}
             selectedPrice={selectedPrice!}
-            onConfirmation={setShowConfirmationButton}
+            onConfirmation={setEnableConfirmationButton}
             handleUpdateFormAndLocalStorage={handleUpdateFormAndLocalStorage}
           />
         )}
 
       <ConfirmationButton
         onConfirm={onConfirmation}
-        trigger={showConfirmationButton}
+        enable={enableConfirmationButton}
         position="bottom-right"
       >
         Confirm

@@ -29,7 +29,7 @@ export const CountNights = (start: DateValue, end: DateValue): number => {
   return Math.round(diffInDays);
 };
 
-export const ConverIntoDaveValueFormat = (
+export const ConverIntoDateValueFormat = (
   incomingDate: Date
 ): DateFormatingProps => {
   const date = new Date(incomingDate);

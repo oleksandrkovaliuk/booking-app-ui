@@ -1,6 +1,6 @@
 import { DateValue } from "@nextui-org/calendar";
 
-export interface globalCalendarState {
+export interface GlobalCalendarState {
   start: DateValue;
   end: DateValue;
 }

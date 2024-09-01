@@ -16,6 +16,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import styles from "./listingCard.module.scss";
 import { formattedAddressComponent } from "@/sharing/address/formattedAddressVariants";
+import { useSelector } from "@/store";
 
 export const ListingCard: React.FC<ListingCardProps> = ({
   id,
@@ -36,6 +37,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
 }) => {
   const sliderRef = useRef<Slider | null>(null);
 
+  const date = useSelector((state) => state.userDateSelection);
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
 
   const [currentSlide, setCurrentSlide] = useState<number>(0);
@@ -56,7 +58,9 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   const mainHref = !isPreview
     ? !isPublic && isInProccess
       ? "/manage/listings/create"
-      : `/listing/${address?.shorterAddress}/${id}`
+      : `/listing/${
+          address?.shorterAddress
+        }/${id}?date_selection=${JSON.stringify(date)}`
     : "#";
 
   // OPTIONS

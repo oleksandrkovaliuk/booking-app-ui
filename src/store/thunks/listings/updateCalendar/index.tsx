@@ -1,4 +1,3 @@
-import { toast } from "sonner";
 import { DateValue } from "@nextui-org/calendar";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
@@ -12,7 +11,6 @@ export const updateCalendar = createAsyncThunk(
         disabledDates,
         id,
       });
-      return toast.success("Disabled dates updated");
     } catch (error) {
       return error;
     }

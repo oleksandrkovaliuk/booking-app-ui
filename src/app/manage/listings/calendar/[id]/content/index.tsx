@@ -4,20 +4,20 @@ import moment from "moment";
 import { toast } from "sonner";
 import { useSelector } from "@/store";
 import { useDispatch } from "react-redux";
+import { DateValue } from "@nextui-org/calendar";
+import { today, getLocalTimeZone } from "@internationalized/date";
 
 import { Calendar, momentLocalizer } from "react-big-calendar";
 
 import { updateCalendar } from "@/store/thunks/listings/updateCalendar";
 import { getCurrentListing } from "@/store/selector/getCurrentListing";
+import { ConverIntoDateValueFormat } from "@/sharing/dateManagment";
 
 import { CustomDayComponent } from "../component/customDayComponent";
 import { ConfirmationButton } from "@/components/confirmationButton";
 
 import styles from "./calendar.module.scss";
 import "./additionalStyles.scss";
-import { ConverIntoDaveValueFormat } from "@/sharing/dateManagment";
-import { DateValue } from "@nextui-org/calendar";
-import { today, getLocalTimeZone } from "@internationalized/date";
 
 interface CalendarPageContentProps {
   params: { id: string };
@@ -40,7 +40,8 @@ export const CalendarPageContent: React.FC<CalendarPageContentProps> = ({
     isLessThenCurrentMonth: false,
   });
 
-  const [showConfirmationButton, setShowConfirmationButton] = useState(true);
+  const [enableConfirmationButton, setEnableConfirmationButton] =
+    useState(true);
 
   // CONDITIONS
 
@@ -56,7 +57,7 @@ export const CalendarPageContent: React.FC<CalendarPageContentProps> = ({
   );
 
   const handleSelectDisableDate = (value: Date) => {
-    const convertedValue = ConverIntoDaveValueFormat(value);
+    const convertedValue = ConverIntoDateValueFormat(value);
     const isDateIncluded = selectedDate.some((date) => {
       return (
         date.day === convertedValue.day && date.month === convertedValue.month
@@ -83,12 +84,11 @@ export const CalendarPageContent: React.FC<CalendarPageContentProps> = ({
       setSelectedDate((prev) => [...prev, convertedValue] as DateValue[]);
     }
 
-    setShowConfirmationButton(true);
+    setEnableConfirmationButton(true);
   };
 
   const onConfirm = async () => {
     try {
-      console.log(selectedDate, "selected");
       await Promise.all([
         dispatch(
           updateCalendar({
@@ -97,7 +97,13 @@ export const CalendarPageContent: React.FC<CalendarPageContentProps> = ({
           }) as any
         ),
       ]);
-      setShowConfirmationButton(false);
+      toast.success("Successfully updated.", {
+        action: {
+          label: "Close",
+          onClick: () => {},
+        },
+      });
+      setEnableConfirmationButton(false);
       localStorage.removeItem(`${params.id}`);
     } catch (error) {
       toast.error("Something went wrong");
@@ -122,25 +128,16 @@ export const CalendarPageContent: React.FC<CalendarPageContentProps> = ({
 
   useLayoutEffect(() => {
     const storedDates = localStorage.getItem(`${params.id}`);
-    console.log(
-      listing?.disabled_dates?.filter((date) => {
-        return (
-          date.day >= today(getLocalTimeZone()).day &&
-          date.month >= today(getLocalTimeZone()).month
-        );
-      }),
-      "ss"
-    );
     const formattedIncomingDates = listing?.disabled_dates?.filter(
       (date) =>
         date.day >= today(getLocalTimeZone()).day ||
         date.month >= today(getLocalTimeZone()).month
     );
-    console.log(formattedIncomingDates, "formattedIncomingDates");
+
     if (storedDates) {
       const formattedStoredDates = JSON.parse(storedDates);
       if (formattedStoredDates.length) {
-        setShowConfirmationButton(true);
+        setEnableConfirmationButton(true);
         setSelectedDate(formattedStoredDates);
       } else {
         setSelectedDate(formattedIncomingDates || []);
@@ -184,7 +181,7 @@ export const CalendarPageContent: React.FC<CalendarPageContentProps> = ({
         />
         <ConfirmationButton
           onConfirm={onConfirm}
-          trigger={showConfirmationButton}
+          enable={enableConfirmationButton}
           position="bottom-right"
         >
           Confirm

@@ -5,8 +5,8 @@ import { useDispatch } from "react-redux";
 import { useForm, UseFormSetValue } from "react-hook-form";
 
 import { useSelector } from "@/store";
-import { getCurrentListing } from "@/store/selector/getCurrentListing";
 import { getAllListings } from "@/store/thunks/listings/listings";
+import { getCurrentUserListings } from "@/store/thunks/listings/getCurrentUserListing";
 
 import { ConfirmationButton } from "@/components/confirmationButton";
 import { AdditionalDetails } from "@/app/manage/_components/createForm/content/_components/additionalDetails";
@@ -23,9 +23,9 @@ export const DetailsContent: React.FC<ContentProps> = ({ params }) => {
   const dispatch = useDispatch();
   const setValueRef = useRef<UseFormSetValue<EditFormValues> | null>(null);
 
-  const listing = useSelector((state) => getCurrentListing(state, params.id));
+  const listing = useSelector((state) => state.listingsInfo.listings[0]);
 
-  const [showConfirmationButton, setShowConfirmationButton] =
+  const [enableConfirmationButton, setEnableConfirmationButton] =
     useState<boolean>(false);
 
   const { register, watch, setValue } = useForm({
@@ -69,8 +69,13 @@ export const DetailsContent: React.FC<ContentProps> = ({ params }) => {
         }),
         dispatch(getAllListings() as any),
       ]);
-      toast.success("All the details has been updated successfully.");
-      setShowConfirmationButton(false);
+      toast.success("Successfully updated.", {
+        action: {
+          label: "Close",
+          onClick: () => {},
+        },
+      });
+      setEnableConfirmationButton(false);
       localStorage.removeItem("edit_title");
       localStorage.removeItem("edit_placeis");
       localStorage.removeItem("edit_aboutplace");
@@ -83,6 +88,15 @@ export const DetailsContent: React.FC<ContentProps> = ({ params }) => {
   };
 
   useEffect(() => {
+    dispatch(
+      getCurrentUserListings({
+        id: Number(params.id),
+        user_name: params.user,
+      }) as any
+    );
+  }, []);
+
+  useEffect(() => {
     setValueRef.current = setValue;
   }, [setValue]);
 
@@ -93,28 +107,28 @@ export const DetailsContent: React.FC<ContentProps> = ({ params }) => {
     const edit_notes = localStorage.getItem("edit_notes");
 
     if (edit_title) {
-      setShowConfirmationButton(true);
+      setEnableConfirmationButton(true);
       setValueRef.current!("edit_title", JSON.parse(edit_title));
     } else {
       setValueRef.current!("edit_title", listing?.title);
     }
 
     if (edit_placeis) {
-      setShowConfirmationButton(true);
+      setEnableConfirmationButton(true);
       setValueRef.current!("edit_placeis", JSON.parse(edit_placeis));
     } else {
       setValueRef.current!("edit_placeis", listing?.placeis);
     }
 
     if (edit_aboutplace) {
-      setShowConfirmationButton(true);
+      setEnableConfirmationButton(true);
       setValueRef.current!("edit_aboutplace", JSON.parse(edit_aboutplace));
     } else {
       setValueRef.current!("edit_aboutplace", listing?.aboutplace);
     }
 
     if (edit_notes) {
-      setShowConfirmationButton(true);
+      setEnableConfirmationButton(true);
       setValueRef.current!("edit_notes", JSON.parse(edit_notes));
     } else {
       setValueRef.current!("edit_notes", listing?.notes);
@@ -129,13 +143,13 @@ export const DetailsContent: React.FC<ContentProps> = ({ params }) => {
           styles={styles}
           register={register}
           setValue={setValue}
-          onConfirmation={setShowConfirmationButton}
+          onConfirmation={setEnableConfirmationButton}
           handleUpdateFormAndLocalStorage={handleUpdateFormAndLocalStorage}
         />
       )}
       <ConfirmationButton
         onConfirm={onConfirmation}
-        trigger={showConfirmationButton}
+        enable={enableConfirmationButton}
         position="bottom-right"
       >
         Confirm

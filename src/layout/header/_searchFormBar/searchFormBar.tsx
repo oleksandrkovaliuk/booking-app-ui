@@ -12,7 +12,7 @@ import {
   setCheckOut,
   setResetDate,
 } from "@/store/slices/userDateSelectionSlice";
-import { globalCalendarState } from "@/store/slices/userDateSelectionSlice/type";
+import { GlobalCalendarState } from "@/store/slices/userDateSelectionSlice/type";
 
 import { Location } from "@/svgs/Location";
 import { Search } from "@/svgs/Search";
@@ -110,7 +110,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
     }
   };
 
-  const handleBookingCalendarSelections = (value: globalCalendarState) => {
+  const handleBookingCalendarSelections = (value: GlobalCalendarState) => {
     if (isDateSelection) {
       dispatch(setCheckIn(value.start));
     } else if (value.start.toString() !== value.end.toString()) {
@@ -161,7 +161,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
   return (
     <>
       {triggeredSelection !== TypesOfSelections.UNSELECTED && (
-        <div
+        <button
           className={styles.header_active_background}
           onClick={handleClearAllTriggeredSelections}
         />
@@ -336,9 +336,9 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                   onChange={(value: RangeValue<DateValue>) =>
                     handleBookingCalendarSelections(value)
                   }
-                  onFocusChange={(date: DateValue) =>
-                    handleSelectCheckIn(date, triggeredSelection)
-                  }
+                  onFocusChange={(value: DateValue) => {
+                    handleSelectCheckIn(value, triggeredSelection);
+                  }}
                   color="primary"
                   minValue={today(getLocalTimeZone())}
                   value={

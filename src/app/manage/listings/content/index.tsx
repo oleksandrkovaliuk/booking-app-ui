@@ -20,21 +20,13 @@ import { SkeletonListingCard } from "@/components/listingCard/components/skeleto
 import { skeletonData } from "@/information/data";
 
 import styles from "./listings.module.scss";
+import { getUserListings } from "@/store/thunks/listings/getUserListings";
 
 export const ListingsPage: React.FC = () => {
   const dispath = useDispatch();
   const { data: session } = useSession();
 
-  const { listings, categories, typeOfPlace, isLoading } = useSelector(
-    (state) => state.listingsInfo
-  );
-  const userListings = listings.length
-    ? listings.filter(
-        (item) =>
-          item.host_email === session?.user?.email ||
-          item.host_name === session?.user?.name
-      )
-    : [];
+  const { listings, isLoading } = useSelector((state) => state.listingsInfo);
 
   const [listingInProccess, setListingInProgress] = useState<FormState | null>(
     null
@@ -46,10 +38,15 @@ export const ListingsPage: React.FC = () => {
     !listingInProccess?.price;
 
   useEffect(() => {
-    dispath(getAllListings() as any);
-  }, [dispath]);
+    dispath(
+      getUserListings({
+        user_email: session?.user?.email!,
+        user_name: session?.user?.name!,
+      }) as any
+    );
+  }, [dispath, session?.user]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (typeof localStorage !== "undefined") {
       const date = localStorage.getItem("startingDate");
       const address = localStorage.getItem("address");
@@ -83,7 +80,7 @@ export const ListingsPage: React.FC = () => {
         </Link>
       </section>
       <section className={styles.listings_container}>
-        {!userListings?.length && !isLoading.listings && !listingInProccess && (
+        {!listings?.length && !isLoading.listings && !listingInProccess && (
           <Link
             href={!isLoading.listings ? "/manage/listings/create" : "#"}
             className={styles.empty_page}
@@ -138,7 +135,7 @@ export const ListingsPage: React.FC = () => {
           ? skeletonData.map((item) => (
               <SkeletonListingCard key={item} item={item} size="lg" />
             ))
-          : userListings?.map((item) => (
+          : listings?.map((item) => (
               <ListingCard
                 key={item.id}
                 id={item.id!}

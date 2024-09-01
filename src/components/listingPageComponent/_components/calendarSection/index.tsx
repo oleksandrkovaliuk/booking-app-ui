@@ -4,7 +4,6 @@ import { useDispatch } from "react-redux";
 import { getLocalTimeZone, today } from "@internationalized/date";
 import { DateValue, RangeCalendar, RangeValue } from "@nextui-org/calendar";
 
-import { useSelector } from "@/store";
 import {
   setCheckIn,
   setCheckOut,
@@ -14,6 +13,7 @@ import {
 import { CountNights, DateFormatingMonthDay } from "@/sharing/dateManagment";
 
 import styles from "./calendarSection.module.scss";
+import { useSelector } from "@/store";
 
 export const CalendarSection: React.FC<{
   title: string;
@@ -21,14 +21,36 @@ export const CalendarSection: React.FC<{
 }> = ({ title, disabledDates }) => {
   const dispatch = useDispatch();
   const userDateSelection = useSelector((state) => state.userDateSelection);
+
   const [triggeredSelection, setTriggeredSelection] = React.useState<
     "checkIn" | "checkOut" | "both"
   >("checkIn");
 
+  // CONDITIONS
+  const checkInOrOutText =
+    triggeredSelection === "checkIn"
+      ? "Select check-in date"
+      : "Select check-out date";
+
+  const textContentBasedOnSelection =
+    triggeredSelection !== "both"
+      ? checkInOrOutText
+      : `${CountNights(
+          userDateSelection.start,
+          userDateSelection.end
+        )} nights in ${title}`;
+
   const handleSetDateSelection = (value: RangeValue<DateValue>) => {
+    console.log(
+      value.start === value.end,
+      value.start.toString() === value.end.toString(),
+      value.start,
+      value.end,
+      "log"
+    );
     if (value.start.toString() !== value.end.toString()) {
-      dispatch(setCheckOut(value.end));
       dispatch(setCheckIn(value.start));
+      dispatch(setCheckOut(value.end));
       setTriggeredSelection("both");
     } else {
       toast(
@@ -42,14 +64,7 @@ export const CalendarSection: React.FC<{
   return (
     <section className={styles.select_date}>
       <span className={styles.section_title}>
-        {triggeredSelection !== "both"
-          ? triggeredSelection === "checkIn"
-            ? "Select check-in date"
-            : "Select check-out date"
-          : `${CountNights(
-              userDateSelection.start,
-              userDateSelection.end
-            )} nights in ${title}`}
+        {textContentBasedOnSelection}
       </span>
       <div className={styles.section_subtitle}>
         {triggeredSelection !== "both"
@@ -65,12 +80,12 @@ export const CalendarSection: React.FC<{
           onChange={(value: RangeValue<DateValue>) =>
             handleSetDateSelection(value)
           }
-          onFocusChange={() => setTriggeredSelection("checkOut")}
+          onFocusChange={() => {
+            setTriggeredSelection("checkOut");
+          }}
           color="primary"
           minValue={today(getLocalTimeZone())}
-          value={
-            userDateSelection && (userDateSelection as RangeValue<DateValue>)
-          }
+          value={userDateSelection}
           isDateUnavailable={(date: DateValue) => {
             if (!date) return false;
             return disabledDates?.some(

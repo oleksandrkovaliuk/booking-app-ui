@@ -1,23 +1,16 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { motion } from "framer-motion";
 import { useDispatch } from "react-redux";
-import { Switch } from "@nextui-org/react";
 import { useForm, UseFormSetValue } from "react-hook-form";
 
-import {
-  appearAnimation,
-  deepAppearAnimation,
-  motion_transition,
-  sloverTransition,
-} from "@/app/manage/_components/consts";
-import { Counter } from "@/components/counter";
-import { ConfirmationButton } from "@/components/confirmationButton";
-
-import { getCurrentListing } from "@/store/selector/getCurrentListing";
-import { useSelector } from "@/store";
 import { updateListing } from "@/app/api/apiCalls";
+
+import { ConfirmationButton } from "@/components/confirmationButton";
+import { Basics } from "@/app/manage/_components/createForm/content/_components/basics";
+
+import { useSelector } from "@/store";
+import { getCurrentUserListings } from "@/store/thunks/listings/getCurrentUserListing";
 import { getAllListings } from "@/store/thunks/listings/listings";
 
 import { handleUpdateFormAndLocalStorage } from "@/sharing/updateFormAndStorageStates";
@@ -25,16 +18,15 @@ import { handleUpdateFormAndLocalStorage } from "@/sharing/updateFormAndStorageS
 import { ContentProps, EditFormValues } from "../../type";
 
 import styles from "./basic.module.scss";
-import { Basics } from "@/app/manage/_components/createForm/content/_components/basics";
 
 export const BasicContent: React.FC<ContentProps> = ({ params }) => {
   const dispatch = useDispatch();
   const setValueRef = useRef<UseFormSetValue<EditFormValues> | null>(null);
 
-  const listing = useSelector((state) => getCurrentListing(state, params.id));
+  const listing = useSelector((state) => state.listingsInfo.listings[0]);
 
-  const [showConfirmationButton, setShowConfirmationButton] =
-    useState<boolean>(false);
+  const [enableConfirmationButton, setEnableConfirmationButton] =
+    useState(true);
 
   const { register, watch, setValue } = useForm({
     defaultValues: {
@@ -68,8 +60,13 @@ export const BasicContent: React.FC<ContentProps> = ({ params }) => {
         }),
         dispatch(getAllListings() as any),
       ]);
-      toast.success("All the basics has been updated successfully.");
-      setShowConfirmationButton(false);
+      toast.success("Successfully updated.", {
+        action: {
+          label: "Close",
+          onClick: () => {},
+        },
+      });
+      setEnableConfirmationButton(false);
       localStorage.removeItem("edit_guests");
       localStorage.removeItem("edit_pets_allowed");
       localStorage.removeItem("edit_accesable");
@@ -79,6 +76,15 @@ export const BasicContent: React.FC<ContentProps> = ({ params }) => {
       );
     }
   };
+
+  useEffect(() => {
+    dispatch(
+      getCurrentUserListings({
+        id: Number(params.id),
+        user_name: params.user,
+      }) as any
+    );
+  }, []);
 
   useEffect(() => {
     setValueRef.current = setValue;
@@ -91,12 +97,12 @@ export const BasicContent: React.FC<ContentProps> = ({ params }) => {
 
     if (!listing) {
       if (edit_guests) {
-        setShowConfirmationButton(true);
+        setEnableConfirmationButton(true);
         setValueRef.current!("edit_guests", JSON.parse(edit_guests));
       }
 
       if (edit_pets_allowed) {
-        setShowConfirmationButton(true);
+        setEnableConfirmationButton(true);
         setValueRef.current!(
           "edit_pets_allowed",
           JSON.parse(edit_pets_allowed)
@@ -104,7 +110,7 @@ export const BasicContent: React.FC<ContentProps> = ({ params }) => {
       }
 
       if (edit_accesable) {
-        setShowConfirmationButton(true);
+        setEnableConfirmationButton(true);
         setValueRef.current!("edit_accesable", JSON.parse(edit_accesable));
       }
     } else {
@@ -124,13 +130,13 @@ export const BasicContent: React.FC<ContentProps> = ({ params }) => {
         selectedGuests={selectedGuests}
         selectedAccesable={selectedAccesable}
         selectedPetsAllowed={selectedPetsAllowed}
-        onConfirmation={setShowConfirmationButton}
+        onConfirmation={setEnableConfirmationButton}
         handleUpdateFormAndLocalStorage={handleUpdateFormAndLocalStorage}
       />
 
       <ConfirmationButton
         onConfirm={onConfirmation}
-        trigger={showConfirmationButton}
+        enable={enableConfirmationButton}
         position="bottom-right"
       >
         Confirm

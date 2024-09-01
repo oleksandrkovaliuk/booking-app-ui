@@ -131,7 +131,7 @@ export const CreateForm: React.FC = () => {
     (formStep === CreateListingSteps.ADDITIONAL_DETAILS &&
       isAdditionalFieldsEmpty) ||
     (formStep === CreateListingSteps.PRICE &&
-      Number(selectedPrice.split(",")) <= 14);
+      Number(selectedPrice.split(",")) < 14);
 
   const allowScroll =
     formStep === CreateListingSteps.CATEGORY ||

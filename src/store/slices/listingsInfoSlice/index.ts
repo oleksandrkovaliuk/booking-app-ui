@@ -1,11 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-import { State } from "./type";
-
 import { getAllCategories } from "@/store/thunks/listings/categories";
 import { getTypeOfPlace } from "@/store/thunks/listings/typeOfPlace";
 import { getAllListings } from "@/store/thunks/listings/listings";
 import { RequestDeleteListing } from "@/store/thunks/listings/delete";
+
+import { getUserListings } from "@/store/thunks/listings/getUserListings";
+import { getCurrentUserListings } from "@/store/thunks/listings/getCurrentUserListing";
+
+import { State } from "./type";
 
 const initialState: State = {
   categories: [],
@@ -82,6 +85,49 @@ const listingsInfo = createSlice({
       };
     });
     builder.addCase(getAllListings.rejected, (state) => {
+      state.listings = [];
+      state.isLoading = {
+        ...state.isLoading,
+        listings: false,
+      };
+    });
+
+    builder.addCase(getUserListings.pending, (state) => {
+      state.listings = [];
+      state.isLoading = {
+        ...state.isLoading,
+        listings: true,
+      };
+    });
+    builder.addCase(getUserListings.fulfilled, (state, action) => {
+      state.listings = action.payload;
+      state.isLoading = {
+        ...state.isLoading,
+        listings: false,
+      };
+    });
+    builder.addCase(getUserListings.rejected, (state) => {
+      state.listings = [];
+      state.isLoading = {
+        ...state.isLoading,
+        listings: false,
+      };
+    });
+    builder.addCase(getCurrentUserListings.pending, (state) => {
+      state.listings = [];
+      state.isLoading = {
+        ...state.isLoading,
+        listings: true,
+      };
+    });
+    builder.addCase(getCurrentUserListings.fulfilled, (state, action) => {
+      state.listings = action.payload;
+      state.isLoading = {
+        ...state.isLoading,
+        listings: false,
+      };
+    });
+    builder.addCase(getCurrentUserListings.rejected, (state) => {
       state.listings = [];
       state.isLoading = {
         ...state.isLoading,

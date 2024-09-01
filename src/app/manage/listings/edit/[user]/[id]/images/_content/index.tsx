@@ -5,8 +5,8 @@ import { useDispatch } from "react-redux";
 import { useForm, UseFormSetValue } from "react-hook-form";
 
 import { useSelector } from "@/store";
-import { getCurrentListing } from "@/store/selector/getCurrentListing";
 import { getAllListings } from "@/store/thunks/listings/listings";
+import { getCurrentUserListings } from "@/store/thunks/listings/getCurrentUserListing";
 
 import { Images } from "@/app/manage/_components/createForm/content/_components/images/images";
 import { ConfirmationButton } from "@/components/confirmationButton";
@@ -23,9 +23,10 @@ import "@/app/manage/_components/createForm/additionalStyles.scss";
 export const ImagesContent: React.FC<ContentProps> = ({ params }) => {
   const dispatch = useDispatch();
   const setValueRef = useRef<UseFormSetValue<EditFormValues> | null>(null);
-  const listing = useSelector((state) => getCurrentListing(state, params.id));
 
-  const [showConfirmationButton, setShowConfirmationButton] =
+  const listing = useSelector((state) => state.listingsInfo.listings[0]);
+
+  const [enableConfirmationButton, setEnableConfirmationButton] =
     useState<boolean>(false);
 
   const { register, watch, setValue } = useForm({
@@ -46,15 +47,27 @@ export const ImagesContent: React.FC<ContentProps> = ({ params }) => {
         }),
         dispatch(getAllListings() as any),
       ]);
-      toast.success("Images has been updated successfully.");
-      setShowConfirmationButton(false);
+      toast.success("Successfully updated.", {
+        action: {
+          label: "Close",
+          onClick: () => {},
+        },
+      });
+      setEnableConfirmationButton(false);
       localStorage.removeItem("edit_images");
     } catch (error) {
       console.log(error);
     }
   };
 
-  console.log(selectedImages?.length);
+  useEffect(() => {
+    dispatch(
+      getCurrentUserListings({
+        id: Number(params.id),
+        user_name: params.user,
+      }) as any
+    );
+  }, []);
 
   useEffect(() => {
     setValueRef.current = setValue;
@@ -63,7 +76,7 @@ export const ImagesContent: React.FC<ContentProps> = ({ params }) => {
   useEffect(() => {
     const edit_images = localStorage.getItem("edit_images");
     if (edit_images) {
-      setShowConfirmationButton(true);
+      setEnableConfirmationButton(true);
       setValueRef.current!("edit_images", JSON.parse(edit_images));
     } else {
       setValueRef.current!("edit_images", listing?.images);
@@ -80,13 +93,13 @@ export const ImagesContent: React.FC<ContentProps> = ({ params }) => {
           images={selectedImages!}
           setValue={setValueRef.current!}
           selectedAdress={listing?.address}
-          onConfirmation={setShowConfirmationButton}
+          onConfirmation={setEnableConfirmationButton}
           handleUpdateFormAndLocalStorage={handleUpdateFormAndLocalStorage}
         />
       )}
       <ConfirmationButton
         onConfirm={onConfirmation}
-        trigger={showConfirmationButton}
+        enable={enableConfirmationButton}
         position="bottom-right"
       >
         Confirm

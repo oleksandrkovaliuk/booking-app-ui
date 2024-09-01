@@ -18,21 +18,23 @@ import { DateInputConrainerProps, ReserveListingBlockProps } from "./type";
 import { Procantages } from "@/_utilities/enums";
 
 import styles from "./reserveListing.module.scss";
+import "./additionalStyles.scss";
 
 const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
   disabledDates,
   inputSelection,
-  userDateSelection,
   setInputSelection,
+  setModalState,
 }) => {
   const dispatch = useDispatch();
+  const userDateSelection = useSelector((state) => state.userDateSelection);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleSetDateSelection = (value: RangeValue<DateValue>) => {
     if (value.start.toString() !== value.end.toString()) {
-      dispatch(setCheckOut(value.end));
       dispatch(setCheckIn(value.start));
+      dispatch(setCheckOut(value.end));
       setInputSelection("checkOut");
     } else {
       toast(
@@ -43,14 +45,16 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
       dispatch(setResetDate());
     }
   };
+
   return (
     <>
       {isModalOpen && (
         <>
-          <div
+          <button
             className={styles.modal_bg}
             onClick={() => {
               setIsModalOpen(false);
+              setModalState(false);
             }}
           />
           <div className={styles.modal_container}>
@@ -73,16 +77,9 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
                 onChange={(value: RangeValue<DateValue>) =>
                   handleSetDateSelection(value)
                 }
-                onFocusChange={(value: DateValue) => {
-                  setInputSelection("checkOut");
-                  dispatch(setCheckIn(value));
-                }}
                 color="primary"
                 minValue={today(getLocalTimeZone())}
-                value={
-                  userDateSelection &&
-                  (userDateSelection as RangeValue<DateValue>)
-                }
+                value={userDateSelection}
                 isDateUnavailable={(date: DateValue) => {
                   if (!date) return false;
                   return disabledDates?.some(
@@ -110,6 +107,7 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
                 className={`${styles.modal_button} ${styles.close_button}`}
                 onClick={() => {
                   setIsModalOpen(false);
+                  setModalState(false);
                 }}
               >
                 Close
@@ -118,11 +116,12 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
           </div>
         </>
       )}
-      <div
+      <button
         className={styles.date_inputs_container}
         onClick={() => {
           setInputSelection("checkIn");
           setIsModalOpen(true);
+          setModalState(true);
         }}
       >
         <div
@@ -159,7 +158,7 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
             readOnly
           />
         </div>
-      </div>
+      </button>
     </>
   );
 };
@@ -169,11 +168,11 @@ export const ReserveListingBlock: React.FC<ReserveListingBlockProps> = ({
   disabledDates,
 }) => {
   const userDateSelection = useSelector((state) => state.userDateSelection);
-
   const [guestsAmount, setGuestsAmount] = useState(1);
   const [inputSelection, setInputSelection] = useState<
-    "checkIn" | "checkOut" | "both" | "guests" | "none"
+    "checkIn" | "checkOut" | "guests" | "none"
   >("checkIn");
+  const [modalState, setModalState] = useState(false);
 
   const calculationOfPrice =
     Number(Number(price).toLocaleString().split(",").join("")) *
@@ -182,14 +181,16 @@ export const ReserveListingBlock: React.FC<ReserveListingBlockProps> = ({
   const calculateTaxes = Math.round(calculationOfPrice * Procantages.TAXES);
   const cleaningFee = Math.round(calculationOfPrice * Procantages.CLEANING_FEE);
   const serviceFee = Math.round(calculationOfPrice * Procantages.SPACER_FEE);
-  const taxes = Math.round(calculationOfPrice * Procantages.TAXES);
-  const total =
-    calculationOfPrice + calculateTaxes + cleaningFee + serviceFee + taxes;
+
+  const total = calculationOfPrice + calculateTaxes + cleaningFee + serviceFee;
   useEffect(() => {
     setInputSelection("guests");
   }, [guestsAmount]);
   return (
-    <div className={styles.reserve_listing_container}>
+    <div
+      className={styles.reserve_listing_container}
+      data-modal-open={modalState}
+    >
       <div className={styles.price_block}>
         ${Number(price).toLocaleString()}
         <span className={styles.night}>night</span>
@@ -197,8 +198,8 @@ export const ReserveListingBlock: React.FC<ReserveListingBlockProps> = ({
       <DateInputsContainer
         disabledDates={disabledDates}
         inputSelection={inputSelection}
-        userDateSelection={userDateSelection}
         setInputSelection={setInputSelection}
+        setModalState={setModalState}
       />
       <div
         className={styles.guest_block}
@@ -244,7 +245,7 @@ export const ReserveListingBlock: React.FC<ReserveListingBlockProps> = ({
 
           <div className={styles.calculate_price_block}>
             <span className={styles.price_label}>Taxes</span>
-            <span className={styles.price_result}>${taxes}</span>
+            <span className={styles.price_result}>${calculateTaxes}</span>
           </div>
 
           <div className={styles.calculate_total_block}>

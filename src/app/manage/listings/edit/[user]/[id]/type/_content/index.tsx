@@ -1,14 +1,12 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import { toast } from "sonner";
 import { useDispatch } from "react-redux";
 import { useForm, UseFormSetValue } from "react-hook-form";
-import { motion } from "framer-motion";
 
 import { useSelector } from "@/store";
 import { getAllListings } from "@/store/thunks/listings/listings";
-import { getCurrentListing } from "@/store/selector/getCurrentListing";
+import { getCurrentUserListings } from "@/store/thunks/listings/getCurrentUserListing";
 
 import { ConfirmationButton } from "@/components/confirmationButton";
 
@@ -26,9 +24,9 @@ export const TypeContent: React.FC<ContentProps> = ({ params }) => {
   const setValueRef = useRef<UseFormSetValue<EditFormValues> | null>(null);
 
   const { typeOfPlace } = useSelector((state) => state.listingsInfo);
-  const listing = useSelector((state) => getCurrentListing(state, params.id));
+  const listing = useSelector((state) => state.listingsInfo.listings[0]);
 
-  const [showConfirmationButton, setShowConfirmationButton] =
+  const [enableConfirmationButton, setEnableConfirmationButton] =
     useState<boolean>(false);
 
   const { register, watch, setValue } = useForm({
@@ -49,8 +47,13 @@ export const TypeContent: React.FC<ContentProps> = ({ params }) => {
         }),
         dispatch(getAllListings() as any),
       ]);
-      toast.success("Type of place has been updated successfully.");
-      setShowConfirmationButton(false);
+      toast.success("Successfully updated.", {
+        action: {
+          label: "Close",
+          onClick: () => {},
+        },
+      });
+      setEnableConfirmationButton(false);
       localStorage.removeItem("edit_type");
     } catch (error) {
       return toast.error(
@@ -60,13 +63,22 @@ export const TypeContent: React.FC<ContentProps> = ({ params }) => {
   };
 
   useEffect(() => {
+    dispatch(
+      getCurrentUserListings({
+        id: Number(params.id),
+        user_name: params.user,
+      }) as any
+    );
+  }, []);
+
+  useEffect(() => {
     setValueRef.current = setValue;
   }, [setValue]);
 
   useEffect(() => {
     const edit_type = localStorage.getItem("edit_type");
     if (edit_type) {
-      setShowConfirmationButton(true);
+      setEnableConfirmationButton(true);
       setValueRef.current!("edit_type", JSON.parse(edit_type));
     } else {
       setValueRef.current!("edit_type", listing?.type);
@@ -82,13 +94,13 @@ export const TypeContent: React.FC<ContentProps> = ({ params }) => {
         register={register}
         typeOfPlace={typeOfPlace}
         selectedTypeOfPlace={selectedTypeOfPlace!}
-        onConfirmation={setShowConfirmationButton}
+        onConfirmation={setEnableConfirmationButton}
         handleUpdateFormAndLocalStorage={handleUpdateFormAndLocalStorage}
       />
 
       <ConfirmationButton
         onConfirm={onConfirmation}
-        trigger={showConfirmationButton}
+        enable={enableConfirmationButton}
         position="bottom-right"
       >
         Confirm

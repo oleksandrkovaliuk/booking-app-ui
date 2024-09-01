@@ -1,5 +1,5 @@
-import { globalCalendarState } from "@/store/slices/userDateSelectionSlice/type";
 import { DateValue } from "@nextui-org/calendar";
+import { Dispatch, SetStateAction } from "react";
 
 export interface ReserveListingBlockProps {
   price: string;
@@ -9,9 +9,9 @@ export interface ReserveListingBlockProps {
 
 export interface DateInputConrainerProps {
   disabledDates: DateValue[];
-  userDateSelection: globalCalendarState;
-  inputSelection: "checkIn" | "checkOut" | "both" | "guests" | "none";
+  inputSelection: "checkIn" | "checkOut" | "guests" | "none";
   setInputSelection: React.Dispatch<
-    React.SetStateAction<"checkIn" | "checkOut" | "both" | "guests" | "none">
+    React.SetStateAction<"checkIn" | "checkOut" | "guests" | "none">
   >;
+  setModalState: Dispatch<SetStateAction<boolean>>;
 }

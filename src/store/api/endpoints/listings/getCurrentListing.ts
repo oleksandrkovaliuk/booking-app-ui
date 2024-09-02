@@ -8,8 +8,10 @@ const getCurrentListingApi = api.injectEndpoints({
       query: ({ id }: { id: number }) => ({
         url: `${apiUrls.getCurrentListing}/${id}`,
       }),
+      providesTags: ["CURRENT_LISTING"],
     }),
   }),
+
   overrideExisting: true,
 });
 

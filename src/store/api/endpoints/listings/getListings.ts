@@ -8,6 +8,7 @@ const getListingsApi = api.injectEndpoints({
       query: () => ({
         url: apiUrls.getListings,
       }),
+      providesTags: ["LISTINGS"],
     }),
   }),
   overrideExisting: true,

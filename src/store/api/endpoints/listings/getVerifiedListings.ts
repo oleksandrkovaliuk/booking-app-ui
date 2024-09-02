@@ -8,6 +8,7 @@ const getVerifiedListingsApi = api.injectEndpoints({
       query: () => ({
         url: apiUrls.getVerifiedListings,
       }),
+      providesTags: ["VERIFIED_LISTINGS"],
     }),
   }),
   overrideExisting: true,

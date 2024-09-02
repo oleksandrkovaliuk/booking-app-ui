@@ -20,6 +20,7 @@ const getUserListingsApi = api.injectEndpoints({
       }) => ({
         url: `${apiUrls.getUserListings}/${user_name}/${user_email}`,
       }),
+      providesTags: ["USER_LISTINGS"],
     }),
   }),
   overrideExisting: true,

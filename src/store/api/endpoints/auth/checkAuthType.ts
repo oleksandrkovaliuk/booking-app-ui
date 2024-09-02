@@ -9,6 +9,7 @@ const CheckAuthType = api.injectEndpoints({
         method: "POST",
         body: { email },
       }),
+      invalidatesTags: ["USER"],
     }),
   }),
   overrideExisting: false,

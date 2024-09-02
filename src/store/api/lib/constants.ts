@@ -12,3 +12,13 @@ export const apiUrls = {
   getListingsTypeOfPlace: "/listings/typeofplace",
   requestToDeleteListing: "/listings/deleteListing",
 };
+
+export const ApiTagsTypes = [
+  "LISTING_CATEGORIES",
+  "LISTING_TYPE_OF_PLACE",
+  "USER",
+  "CURRENT_USER",
+  "VERIFIED_LISTINGS",
+  "LISTING",
+  "USER_LISTINGS",
+];

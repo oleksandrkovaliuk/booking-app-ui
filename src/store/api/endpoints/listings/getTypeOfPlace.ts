@@ -8,6 +8,7 @@ const getListingsTypeOfPlaceApi = api.injectEndpoints({
       query: () => ({
         url: apiUrls.getListingsTypeOfPlace,
       }),
+      providesTags: ["LISTING_TYPE_OF_PLACE"],
     }),
   }),
   overrideExisting: true,

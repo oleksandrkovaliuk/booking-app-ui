@@ -4,13 +4,17 @@ import React from "react";
 import { motion } from "framer-motion";
 import { skeletonData } from "@/information/data";
 
-import { useGetVerifiedListingsQuery } from "@/store/api/endpoints/listings/getVerifiedListings";
+import {
+  getVerifiedListings,
+  useGetVerifiedListingsQuery,
+} from "@/store/api/endpoints/listings/getVerifiedListings";
 
 import { ListingCard } from "@/components/listingCard";
 import { appearAnimation } from "@/app/manage/_components/consts";
 import { SkeletonListingCard } from "@/components/listingCard/components/skeleton";
 
 import styles from "./homeContent.module.scss";
+import { store } from "@/store";
 
 export const HomeContent: React.FC = () => {
   const {
@@ -19,7 +23,6 @@ export const HomeContent: React.FC = () => {
     data: listings,
   } = useGetVerifiedListingsQuery();
 
-  console.log(listings, "listings");
   return (
     <div className={styles.home_container}>
       <div className={styles.listings_container}>

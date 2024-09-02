@@ -9,6 +9,7 @@ const requestToDeleteListingApi = api.injectEndpoints({
         method: "POST",
         body: { id },
       }),
+      invalidatesTags: ["USER_LISTINGS"],
     }),
   }),
   overrideExisting: true,

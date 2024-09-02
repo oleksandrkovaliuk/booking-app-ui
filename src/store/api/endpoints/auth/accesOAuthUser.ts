@@ -23,6 +23,8 @@ const accesOAuthUserApi = api.injectEndpoints({
           provider,
         },
       }),
+
+      invalidatesTags: ["USER"],
     }),
   }),
   overrideExisting: false,

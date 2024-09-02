@@ -13,6 +13,7 @@ const GetUser = api.injectEndpoints({
       }) => ({
         url: `${apiUrls.getUser}/${user_email}/${user_name}`,
       }),
+      providesTags: ["CURRENT_USER"],
     }),
   }),
   overrideExisting: false,

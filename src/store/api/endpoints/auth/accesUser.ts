@@ -10,6 +10,7 @@ const accesUserApi = api.injectEndpoints({
         method: "POST",
         body: { email, password },
       }),
+      invalidatesTags: ["USER"],
     }),
   }),
   overrideExisting: false,

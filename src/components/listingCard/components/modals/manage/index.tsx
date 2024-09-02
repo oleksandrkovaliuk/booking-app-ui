@@ -2,15 +2,18 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 import Image from "next/image";
-import { useDispatch } from "react-redux";
 import { useSession } from "next-auth/react";
 import { Button, Modal, ModalBody, ModalContent } from "@nextui-org/react";
 
-import { ModalProps } from "../type";
-import { RequestDeleteListing } from "@/store/thunks/listings/delete";
-import { deleteUserListingImages } from "@/sharing/firebaseImages/users/listings/uploadImg";
+import { DeleteUserListingImages } from "@/app/api/apiCalls";
+
+import { store } from "@/store";
+import { requestToDeleteListing } from "@/store/api/endpoints/listings/requestToDeleteListing";
+
 import { EditIcon } from "@/svgs/EditIcon";
 import { CalendarIcon } from "@/svgs/CalendarIcon";
+
+import { ModalProps } from "../type";
 
 export const ManageModal: React.FC<ModalProps> = ({
   id,
@@ -23,8 +26,6 @@ export const ManageModal: React.FC<ModalProps> = ({
   onOpenChange,
   listingHasUnsavedChanges,
 }) => {
-  const dispatch = useDispatch();
-
   const { data: session } = useSession();
   const [isDeleteProcess, setIsDeleteProcess] = useState<boolean>(false);
 
@@ -33,8 +34,10 @@ export const ManageModal: React.FC<ModalProps> = ({
   };
   const handleDeleteListing = async () => {
     try {
-      dispatch(RequestDeleteListing(id!) as any);
-      await deleteUserListingImages({
+      await store
+        .dispatch(requestToDeleteListing.initiate({ id: id! }))
+        .unwrap();
+      await DeleteUserListingImages({
         user_email: session?.user?.email!,
         location: address?.formattedAddress!,
       });

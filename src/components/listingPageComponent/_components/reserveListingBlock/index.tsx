@@ -11,7 +11,7 @@ import {
   setResetDate,
 } from "@/store/slices/userDateSelectionSlice";
 
-import { CountNights, DateFormatingMonthDay } from "@/sharing/dateManagment";
+import { CountNights, DateFormatingMonthDay } from "@/helpers/dateManagment";
 import { Counter } from "@/components/counter";
 
 import { DateInputConrainerProps, ReserveListingBlockProps } from "./type";
@@ -164,6 +164,7 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
 };
 export const ReserveListingBlock: React.FC<ReserveListingBlockProps> = ({
   price,
+  isPublic,
   guests_limit,
   disabledDates,
 }) => {
@@ -217,7 +218,9 @@ export const ReserveListingBlock: React.FC<ReserveListingBlockProps> = ({
         className={styles.request_reserve}
         data-date-is-selected={inputSelection === "checkOut"}
       >
-        <button className={styles.reserve_button}>Reserve</button>
+        <button className={styles.reserve_button} disabled={!isPublic}>
+          Reserve
+        </button>
         <p className={styles.reserve_text}>You will not be charged yet.</p>
       </div>
       {inputSelection === "checkOut" && (

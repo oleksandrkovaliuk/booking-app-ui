@@ -1,41 +1,6 @@
-import {
-  FullUserTypes,
-  ShowCaseUser,
-  UploadImgProps,
-  UserTypes,
-} from "@/_utilities/interfaces";
-import { GET, POST } from "./config";
+import { POST } from "./config";
 import { FormState } from "../manage/_components/type";
 import { DateValue } from "@nextui-org/calendar";
-
-// AUTH
-export const AccessUser = ({ email, password }: UserTypes) =>
-  POST("auth/accessUser", { email, password });
-export const InsertOAuthUser = ({
-  email,
-  user_name,
-  user_lastname,
-  img_url,
-  provider,
-}: FullUserTypes) =>
-  POST("auth/oauthUser", {
-    email,
-    user_name,
-    user_lastname,
-    img_url,
-    provider,
-  });
-export const CheckAuthType = ({ email }: { email: string }) =>
-  POST("auth/checkAuthType", { email });
-
-// USER
-export const GetUser = ({
-  user_name,
-  user_email,
-}: {
-  user_name: string;
-  user_email: string;
-}) => GET(`user/get/${user_email}/${user_name}`);
 
 // LISTINGS
 export interface ListingState extends FormState {
@@ -47,25 +12,6 @@ export interface ListingState extends FormState {
   disabled_dates?: DateValue[];
   [key: string]: any;
 }
-export const GetListingsCategories = () => GET("listings/categories");
-export const GetTypeOfPlace = () => GET("listings/typeofplace");
-export const GetListings = () => GET(`listings/listings`);
-
-export const GetUserListings = ({
-  user_name,
-  user_email,
-}: {
-  user_name: string;
-  user_email: string;
-}) => GET(`listings/listings/${user_name}/${user_email}`);
-
-export const GetCurrentUserListings = ({
-  id,
-  user_name,
-}: {
-  id: number;
-  user_name: string;
-}) => GET(`listings/get/current/${id}/${user_name}`);
 
 export const CreateListing = ({
   host_name,

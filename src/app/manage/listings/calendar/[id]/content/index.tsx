@@ -11,7 +11,7 @@ import { Calendar, momentLocalizer } from "react-big-calendar";
 
 import { updateCalendar } from "@/store/thunks/listings/updateCalendar";
 import { getCurrentListing } from "@/store/selector/getCurrentListing";
-import { ConverIntoDateValueFormat } from "@/sharing/dateManagment";
+import { ConverIntoDateValueFormat } from "@/helpers/dateManagment";
 
 import { CustomDayComponent } from "../component/customDayComponent";
 import { ConfirmationButton } from "@/components/confirmationButton";

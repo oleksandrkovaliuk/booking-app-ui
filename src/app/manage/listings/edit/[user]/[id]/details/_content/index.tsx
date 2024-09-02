@@ -1,18 +1,15 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { useDispatch } from "react-redux";
 import { useForm, UseFormSetValue } from "react-hook-form";
 
-import { useSelector } from "@/store";
-import { getAllListings } from "@/store/thunks/listings/listings";
-import { getCurrentUserListings } from "@/store/thunks/listings/getCurrentUserListing";
+import { useGetCurrentListingQuery } from "@/store/api/endpoints/listings/getCurrentListing";
 
 import { ConfirmationButton } from "@/components/confirmationButton";
 import { AdditionalDetails } from "@/app/manage/_components/createForm/content/_components/additionalDetails";
 
 import { updateListing } from "@/app/api/apiCalls";
-import { handleUpdateFormAndLocalStorage } from "@/sharing/updateFormAndStorageStates";
+import { handleUpdateFormAndLocalStorage } from "@/helpers/updateFormAndStorageStates";
 
 import { ContentProps, EditFormValues } from "../../type";
 
@@ -20,10 +17,11 @@ import "../../shared/sharedStyles.scss";
 import styles from "./details.module.scss";
 
 export const DetailsContent: React.FC<ContentProps> = ({ params }) => {
-  const dispatch = useDispatch();
   const setValueRef = useRef<UseFormSetValue<EditFormValues> | null>(null);
 
-  const listing = useSelector((state) => state.listingsInfo.listings[0]);
+  const { data: listing } = useGetCurrentListingQuery({
+    id: Number(params?.id),
+  });
 
   const [enableConfirmationButton, setEnableConfirmationButton] =
     useState<boolean>(false);
@@ -48,26 +46,25 @@ export const DetailsContent: React.FC<ContentProps> = ({ params }) => {
     try {
       await Promise.all([
         updateListing({
-          id: listing.id!,
+          id: listing?.id!,
           data: selectedTitle!,
           column: "title",
         }),
         updateListing({
-          id: listing.id!,
+          id: listing?.id!,
           data: selectedPlaceIs!,
           column: "placeis",
         }),
         updateListing({
-          id: listing.id!,
+          id: listing?.id!,
           data: selectedAboutPlace!,
           column: "aboutplace",
         }),
         updateListing({
-          id: listing.id!,
+          id: listing?.id!,
           data: selectedNotes!,
           column: "notes",
         }),
-        dispatch(getAllListings() as any),
       ]);
       toast.success("Successfully updated.", {
         action: {
@@ -86,15 +83,6 @@ export const DetailsContent: React.FC<ContentProps> = ({ params }) => {
       );
     }
   };
-
-  useEffect(() => {
-    dispatch(
-      getCurrentUserListings({
-        id: Number(params.id),
-        user_name: params.user,
-      }) as any
-    );
-  }, []);
 
   useEffect(() => {
     setValueRef.current = setValue;

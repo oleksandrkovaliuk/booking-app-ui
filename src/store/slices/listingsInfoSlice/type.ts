@@ -14,12 +14,7 @@ export interface TypeOfPlace {
 }
 
 export interface State {
-  categories: Category[];
-  typeOfPlace: TypeOfPlace[];
+  // categories: Category[];
+  // typeOfPlace: TypeOfPlace[];
   listings: ListingState[];
-  isLoading: {
-    categories: boolean;
-    typeOfPlace: boolean;
-    listings: boolean;
-  };
 }

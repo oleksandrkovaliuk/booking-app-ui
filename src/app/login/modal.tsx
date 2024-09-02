@@ -8,6 +8,7 @@ import {
   ModalHeader,
   useDisclosure,
 } from "@nextui-org/react";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
 import Image from "next/image";
 import { toast } from "sonner";
@@ -16,12 +17,16 @@ import { signIn } from "next-auth/react";
 
 import { useSearchParams, useRouter } from "next/navigation";
 
+import { store } from "@/store";
+import { checkAuthType } from "@/store/api/endpoints/auth/checkAuthType";
+
 import peopleAuthPng from "@/assets/topPeekI.png";
 import { GoogleIcon } from "@/svgs/GoogleIcon";
 import { FaceBookIcon } from "@/svgs/FacebookIcon";
-import { EmailValidation } from "@/validation/emailValidation";
+
 import { ReactEvent } from "@/_utilities/type";
-import { CheckAuthType } from "../api/apiCalls";
+import { EmailValidation } from "@/validation/emailValidation";
+import { ErrorHandler } from "@/helpers/errorHandler";
 
 import styles from "./authorization.module.scss";
 
@@ -46,6 +51,7 @@ export const LoginModal = () => {
       toast.error((error as Error).message);
     }
   };
+
   const emailValidation = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
@@ -53,8 +59,14 @@ export const LoginModal = () => {
     const emailValue = (emailRef.current as HTMLInputElement).value;
     try {
       if (EmailValidation(emailValue)) {
-        await CheckAuthType({ email: btoa(emailValue) });
-        setEmailValid(true);
+        const { data: res, error } = await store.dispatch(
+          checkAuthType.initiate({ email: btoa(emailValue) })
+        );
+        if (!error && res.data) {
+          setEmailValid(true);
+        } else {
+          ErrorHandler(error as FetchBaseQueryError);
+        }
       } else throw Error("Email is not valid. Please try again");
     } catch (error) {
       if (emailRef.current) {

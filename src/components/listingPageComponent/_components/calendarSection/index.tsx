@@ -10,7 +10,7 @@ import {
   setResetDate,
 } from "@/store/slices/userDateSelectionSlice";
 
-import { CountNights, DateFormatingMonthDay } from "@/sharing/dateManagment";
+import { CountNights, DateFormatingMonthDay } from "@/helpers/dateManagment";
 
 import styles from "./calendarSection.module.scss";
 import { useSelector } from "@/store";

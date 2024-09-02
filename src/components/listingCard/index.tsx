@@ -15,7 +15,7 @@ import "./additional.scss";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import styles from "./listingCard.module.scss";
-import { formattedAddressComponent } from "@/sharing/address/formattedAddressVariants";
+import { formattedAddressComponent } from "@/helpers/address/formattedAddressVariants";
 import { useSelector } from "@/store";
 
 export const ListingCard: React.FC<ListingCardProps> = ({

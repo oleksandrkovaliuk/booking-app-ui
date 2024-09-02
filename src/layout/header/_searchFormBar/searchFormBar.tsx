@@ -23,7 +23,7 @@ import { Counter } from "@/components/counter";
 import { getCountriesByRequest } from "./getCountriesByRequest";
 import { useDebounce } from "@/hooks/useDebounce";
 import { regions } from "@/information/data";
-import { DateFormatingMonthDay } from "@/sharing/dateManagment";
+import { DateFormatingMonthDay } from "@/helpers/dateManagment";
 
 import { regionResponceType, regionsType, SearchFormBarProps } from "../types";
 import { TypesOfSelections } from "@/_utilities/enums";

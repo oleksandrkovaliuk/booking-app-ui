@@ -14,16 +14,14 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useForm, UseFormSetValue } from "react-hook-form";
 
-import { useSelector } from "@/store";
-
 import { Content } from "./content";
 import { clearAllStorage } from "./utils";
 import { CreateListingSteps } from "../enums";
 import { FormState } from "../type";
 
 import { GoogleMapProps } from "@/components/googleMap/type";
-import { deleteUserListingImages } from "../../../../sharing/firebaseImages/users/listings/uploadImg";
-import { requirmentForAddressComponent } from "@/sharing/address/formattedAddressVariants";
+import { deleteUserListingImages } from "../../../../helpers/firebaseImages/users/listings/uploadImg";
+import { requirmentForAddressComponent } from "@/helpers/address/formattedAddressVariants";
 
 import {
   motion_transition,
@@ -33,7 +31,9 @@ import {
 
 import { RequestCreateListing } from "@/store/thunks/listings/create";
 import { Category, TypeOfPlace } from "@/store/slices/listingsInfoSlice/type";
-import { handleUpdateFormAndLocalStorage } from "@/sharing/updateFormAndStorageStates";
+import { useGetListingsCategoriesQuery } from "@/store/api/endpoints/listings/getCategories";
+import { useGetListingsTypeOfPlaceQuery } from "@/store/api/endpoints/listings/getTypeOfPlace";
+import { handleUpdateFormAndLocalStorage } from "@/helpers/updateFormAndStorageStates";
 
 // FORMAT DATE TO DD/MM/HH/MM
 
@@ -56,9 +56,9 @@ export const CreateForm: React.FC = () => {
   const dispath = useDispatch();
   const router = useRouter();
   const { data: session } = useSession();
-  const { categories, typeOfPlace } = useSelector(
-    (state) => state.listingsInfo
-  );
+
+  const { data: categories } = useGetListingsCategoriesQuery();
+  const { data: typeOfPlace } = useGetListingsTypeOfPlaceQuery();
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 

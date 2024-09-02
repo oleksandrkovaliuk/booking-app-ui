@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react";
 
 import { ModalProps } from "../type";
 import { Modal, ModalBody, ModalContent, ModalHeader } from "@nextui-org/react";
-import { formattedAddressComponent } from "@/sharing/address/formattedAddressVariants";
+import { formattedAddressComponent } from "@/helpers/address/formattedAddressVariants";
 
 export const PreviewModal: React.FC<ModalProps> = ({
   isOpen,

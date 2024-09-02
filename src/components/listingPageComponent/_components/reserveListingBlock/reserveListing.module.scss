@@ -231,6 +231,11 @@
     color: var(--booking-app-white-color);
 
     margin-bottom: 10px;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
   }
   .reserve_text {
     font-size: 12px;

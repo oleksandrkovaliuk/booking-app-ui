@@ -1,30 +1,29 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { useDispatch } from "react-redux";
-import { useForm, UseFormSetValue } from "react-hook-form";
 
-import { useSelector } from "@/store";
-import { getAllListings } from "@/store/thunks/listings/listings";
-import { getCurrentUserListings } from "@/store/thunks/listings/getCurrentUserListing";
+import { useForm, UseFormSetValue } from "react-hook-form";
 
 import { ConfirmationButton } from "@/components/confirmationButton";
 
 import { TypeOfPlace } from "@/app/manage/_components/createForm/content/_components/typeOfPlace";
 import { updateListing } from "@/app/api/apiCalls";
-import { handleUpdateFormAndLocalStorage } from "@/sharing/updateFormAndStorageStates";
+import { handleUpdateFormAndLocalStorage } from "@/helpers/updateFormAndStorageStates";
 
 import { ContentProps, EditFormValues } from "../../type";
 
 import styles from "./type.module.scss";
 import "../../shared/sharedStyles.scss";
+import { useGetListingsTypeOfPlaceQuery } from "@/store/api/endpoints/listings/getTypeOfPlace";
+import { useGetCurrentListingQuery } from "@/store/api/endpoints/listings/getCurrentListing";
 
 export const TypeContent: React.FC<ContentProps> = ({ params }) => {
-  const dispatch = useDispatch();
   const setValueRef = useRef<UseFormSetValue<EditFormValues> | null>(null);
 
-  const { typeOfPlace } = useSelector((state) => state.listingsInfo);
-  const listing = useSelector((state) => state.listingsInfo.listings[0]);
+  const { data: typeOfPlace } = useGetListingsTypeOfPlaceQuery();
+  const { data: listing } = useGetCurrentListingQuery({
+    id: Number(params?.id),
+  });
 
   const [enableConfirmationButton, setEnableConfirmationButton] =
     useState<boolean>(false);
@@ -41,11 +40,10 @@ export const TypeContent: React.FC<ContentProps> = ({ params }) => {
     try {
       await Promise.all([
         updateListing({
-          id: listing.id!,
+          id: listing?.id!,
           data: selectedTypeOfPlace!,
           column: "type",
         }),
-        dispatch(getAllListings() as any),
       ]);
       toast.success("Successfully updated.", {
         action: {
@@ -61,15 +59,6 @@ export const TypeContent: React.FC<ContentProps> = ({ params }) => {
       );
     }
   };
-
-  useEffect(() => {
-    dispatch(
-      getCurrentUserListings({
-        id: Number(params.id),
-        user_name: params.user,
-      }) as any
-    );
-  }, []);
 
   useEffect(() => {
     setValueRef.current = setValue;

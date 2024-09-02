@@ -4,14 +4,14 @@ import {
   useSelector as useReduxSelector,
 } from "react-redux";
 
+import { api } from "./api/api";
+
 import { reducer as listingsInfoReducer } from "./slices/listingsInfoSlice";
 import userDateSelectionReducer from "./slices/userDateSelectionSlice";
-import { api } from "./api/reducer";
 
 export const store = configureStore({
   reducer: {
     [api.reducerPath]: api.reducer,
-    // [authSlice.name]: authSlice.reducer,
     listingsInfo: listingsInfoReducer,
     userDateSelection: userDateSelectionReducer,
   },

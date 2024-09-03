@@ -1,6 +1,6 @@
-import { ListingState } from "@/app/api/apiCalls";
 import { api } from "../../api";
 import { apiUrls } from "../../lib/constants";
+import { ListingState } from "../../lib/type";
 
 const getVerifiedListingsApi = api.injectEndpoints({
   endpoints: (builder) => ({

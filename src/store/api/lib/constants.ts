@@ -10,7 +10,10 @@ export const apiUrls = {
   getVerifiedListings: "/listings/verified",
   getListingsCategories: "/listings/categories",
   getListingsTypeOfPlace: "/listings/typeofplace",
-  requestToDeleteListing: "/listings/deleteListing",
+  requestToDeleteListing: "/listings/listing/delete",
+  requestToCreateListing: "/listings/listing/create",
+
+  uploadListingImages: "/listings/images/upload",
 };
 
 export const ApiTagsTypes = [

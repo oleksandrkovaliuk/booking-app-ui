@@ -1,7 +1,6 @@
 import { CreateListingSteps } from "./enums";
 
-import { Category, TypeOfPlace } from "@/store/slices/listingsInfoSlice/type";
-
+import { Category, TypeOfPlace } from "@/store/api/lib/type";
 import { GoogleMapProps } from "@/components/googleMap/type";
 
 export interface FormState {

@@ -1,9 +1,12 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useForm, UseFormSetValue } from "react-hook-form";
 
-import { useGetCurrentListingQuery } from "@/store/api/endpoints/listings/getCurrentListing";
+import {
+  getCurrentListing,
+  useGetCurrentListingQuery,
+} from "@/store/api/endpoints/listings/getCurrentListing";
 
 import { Images } from "@/app/manage/_components/createForm/content/_components/images/images";
 import { ConfirmationButton } from "@/components/confirmationButton";
@@ -16,20 +19,22 @@ import { ContentProps, EditFormValues } from "../../type";
 import "../../shared/sharedStyles.scss";
 import styles from "./images.module.scss";
 import "@/app/manage/_components/createForm/additionalStyles.scss";
+import { store } from "@/store";
+import { ListingState } from "@/store/api/lib/type";
 
 export const ImagesContent: React.FC<ContentProps> = ({ params }) => {
   const setValueRef = useRef<UseFormSetValue<EditFormValues> | null>(null);
+
+  const [enableConfirmationButton, setEnableConfirmationButton] =
+    useState<boolean>(false);
 
   const { data: listing } = useGetCurrentListingQuery({
     id: Number(params?.id),
   });
 
-  const [enableConfirmationButton, setEnableConfirmationButton] =
-    useState<boolean>(false);
-
   const { register, watch, setValue } = useForm({
     defaultValues: {
-      edit_images: listing?.images || [],
+      edit_images: [],
     } as EditFormValues,
   });
 

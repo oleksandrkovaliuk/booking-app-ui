@@ -6,13 +6,11 @@ import {
 
 import { api } from "./api/api";
 
-import { reducer as listingsInfoReducer } from "./slices/listingsInfoSlice";
 import userDateSelectionReducer from "./slices/userDateSelectionSlice";
 
 export const store = configureStore({
   reducer: {
     [api.reducerPath]: api.reducer,
-    listingsInfo: listingsInfoReducer,
     userDateSelection: userDateSelectionReducer,
   },
   middleware: (getDefaultMiddleware) =>

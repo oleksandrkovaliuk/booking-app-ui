@@ -37,6 +37,7 @@ export const ManageModal: React.FC<ModalProps> = ({
       await store
         .dispatch(requestToDeleteListing.initiate({ id: id! }))
         .unwrap();
+
       await DeleteUserListingImages({
         user_email: session?.user?.email!,
         location: address?.formattedAddress!,

@@ -27,7 +27,7 @@ export const PriceContent: React.FC<ContentProps> = ({ params }) => {
 
   const { register, watch, setValue } = useForm({
     defaultValues: {
-      edit_price: listing?.price,
+      edit_price: "14",
     } as EditFormValues,
   });
 

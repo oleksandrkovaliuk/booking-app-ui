@@ -9,7 +9,6 @@ import {
 } from "@nextui-org/react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useForm, UseFormSetValue } from "react-hook-form";
@@ -29,8 +28,8 @@ import {
   deepAppearAnimation,
 } from "../consts";
 
-import { RequestCreateListing } from "@/store/thunks/listings/create";
-import { Category, TypeOfPlace } from "@/store/slices/listingsInfoSlice/type";
+import { Category, TypeOfPlace } from "@/store/api/lib/type";
+
 import { useGetListingsCategoriesQuery } from "@/store/api/endpoints/listings/getCategories";
 import { useGetListingsTypeOfPlaceQuery } from "@/store/api/endpoints/listings/getTypeOfPlace";
 import { handleUpdateFormAndLocalStorage } from "@/helpers/updateFormAndStorageStates";
@@ -49,11 +48,13 @@ const formatDate = (date: Date) => {
 
 import styles from "./createForm.module.scss";
 import "./additionalStyles.scss";
+import { store } from "@/store";
+import { requestCreateListing } from "@/store/api/endpoints/listings/requestCreateListing";
+import { ErrorHandler } from "@/helpers/errorHandler";
 
 export const CreateForm: React.FC = () => {
   const setValueRef = useRef<UseFormSetValue<FormState> | null>(null);
 
-  const dispath = useDispatch();
   const router = useRouter();
   const { data: session } = useSession();
 
@@ -218,8 +219,8 @@ export const CreateForm: React.FC = () => {
   // SUBMIT
   const submitCreatedListing = async () => {
     try {
-      await dispath(
-        RequestCreateListing({
+      const { data: res, error } = await store.dispatch(
+        requestCreateListing.initiate({
           host_email: session?.user.email!,
           host_name: session?.user.name || "",
           category: selectedCategory,
@@ -235,8 +236,10 @@ export const CreateForm: React.FC = () => {
           placeis: selectedPlaceIs,
           notes: selectedNotes,
           price: selectedPrice,
-        }) as any
+        })
       );
+
+      if (error && !res) ErrorHandler(error);
 
       toast(
         <div className="toast success">

@@ -31,8 +31,8 @@ export const LocationContent: React.FC<ContentProps> = ({ params }) => {
 
   const { register, watch, setValue } = useForm({
     defaultValues: {
-      edit_cordinates: listing?.cordinates,
-      edit_address: listing?.address,
+      edit_cordinates: {},
+      edit_address: {},
     } as EditFormValues,
   });
 

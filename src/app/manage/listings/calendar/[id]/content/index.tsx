@@ -10,7 +10,8 @@ import { today, getLocalTimeZone } from "@internationalized/date";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 
 import { updateCalendar } from "@/store/thunks/listings/updateCalendar";
-import { getCurrentListing } from "@/store/selector/getCurrentListing";
+import { useGetCurrentListingQuery } from "@/store/api/endpoints/listings/getCurrentListing";
+
 import { ConverIntoDateValueFormat } from "@/helpers/dateManagment";
 
 import { CustomDayComponent } from "../component/customDayComponent";
@@ -28,7 +29,9 @@ export const CalendarPageContent: React.FC<CalendarPageContentProps> = ({
   const dispatch = useDispatch();
   const localizer = momentLocalizer(moment);
 
-  const listing = useSelector((state) => getCurrentListing(state, params.id));
+  const { data: listing } = useGetCurrentListingQuery({
+    id: Number(params.id),
+  });
 
   const [selectedDate, setSelectedDate] = useState<DateValue[]>([]);
 

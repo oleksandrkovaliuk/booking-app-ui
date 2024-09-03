@@ -1,4 +1,5 @@
-import { ListingState } from "@/app/api/apiCalls";
+import { ListingState } from "../../lib/type";
+
 import { api } from "../../api";
 import { apiUrls } from "../../lib/constants";
 

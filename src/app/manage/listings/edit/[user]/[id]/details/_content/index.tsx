@@ -28,10 +28,10 @@ export const DetailsContent: React.FC<ContentProps> = ({ params }) => {
 
   const { register, watch, setValue } = useForm({
     defaultValues: {
-      edit_title: listing?.title || "",
-      edit_placeis: listing?.placeis || "",
-      edit_aboutplace: listing?.aboutplace || "",
-      edit_notes: listing?.notes || "",
+      edit_title: "",
+      edit_placeis: "",
+      edit_aboutplace: "",
+      edit_notes: "",
     } as EditFormValues,
   });
 

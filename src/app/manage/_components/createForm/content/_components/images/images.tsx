@@ -15,10 +15,9 @@ import { toast } from "sonner";
 import { motion, Reorder } from "framer-motion";
 import { useSession } from "next-auth/react";
 
-import { ImagesCard } from "./card";
-import { LoadingValue } from "./type";
-import { AddIcon } from "@/svgs/Addicon";
-import camera from "@/assets/3d-camera.png";
+import { store } from "@/store";
+import { uploadListingImages } from "@/store/api/endpoints/listings/uploadListingImages";
+
 import {
   appearAnimation,
   deepAppearAnimation,
@@ -34,8 +33,14 @@ import {
 import {
   DeleteListingIndividualImage,
   DeleteUserListingImages,
-  UploadListingImages,
 } from "@/app/api/apiCalls";
+
+import { ErrorHandler } from "@/helpers/errorHandler";
+
+import { ImagesCard } from "./card";
+import { LoadingValue } from "./type";
+import { AddIcon } from "@/svgs/Addicon";
+import camera from "@/assets/3d-camera.png";
 
 export const Images: React.FC<ContentProps> = ({
   styles,
@@ -47,6 +52,7 @@ export const Images: React.FC<ContentProps> = ({
   selectedAdress,
   handleUpdateFormAndLocalStorage,
 }) => {
+  console.log(images, "images");
   const { data: session } = useSession();
 
   const [isLoading, setIsLoading] = useState<LoadingValue>({
@@ -128,16 +134,26 @@ export const Images: React.FC<ContentProps> = ({
       formData.append("user_email", session?.user.email!);
       formData.append("location", selectedAdress!.formattedAddress);
 
-      const res = await UploadListingImages(formData, "form");
+      // const res = await UploadListingImages(formData, "form");
 
+      console.log(formData, "d ");
+      const { data: res, error } = await store.dispatch(
+        uploadListingImages.initiate(formData)
+      );
+
+      if (error && !res) {
+        ErrorHandler(error);
+        setIsLoading({ ...isLoading, uploadingImgs: false });
+      }
       setIsLoading({ ...isLoading, uploadingImgs: false });
+
       setUploadedImages({
         ...uploadedImages,
-        images: res.data!,
+        images: res!,
       });
       handleUpdateFormAndLocalStorage(
         editPage ? "edit_images" : "images",
-        res.data,
+        res,
         setValue
       );
       editPage && uploadedImages.images.length > 5 && onConfirmation!(true);
@@ -344,7 +360,12 @@ export const Images: React.FC<ContentProps> = ({
                 size="md"
                 variant="light"
                 onClick={
-                  uploadedImages.isImagesReady ? onClose : handleCancelUploading
+                  uploadedImages.isImagesReady
+                    ? () => {
+                        onClose();
+                        setIsLoading({ ...isLoading, uploadingImgs: false });
+                      }
+                    : handleCancelUploading
                 }
               >
                 {isLoading.deletingImages.status &&

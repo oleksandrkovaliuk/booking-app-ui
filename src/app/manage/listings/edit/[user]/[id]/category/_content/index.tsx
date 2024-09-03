@@ -31,7 +31,7 @@ export const CategoryPageContent: React.FC<ContentProps> = ({ params }) => {
 
   const { register, watch, setValue } = useForm({
     defaultValues: {
-      edit_category: listing?.category,
+      edit_category: {},
     } as EditFormValues,
   });
 

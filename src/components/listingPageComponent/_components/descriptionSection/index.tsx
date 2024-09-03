@@ -1,12 +1,13 @@
 import React from "react";
 
 import styles from "./descriptionSection.module.scss";
-import { ListingState } from "@/app/api/apiCalls";
+
+import { ListingState } from "@/store/api/lib/type";
+
 import {
   Modal,
   ModalBody,
   ModalContent,
-  ModalHeader,
   useDisclosure,
 } from "@nextui-org/react";
 

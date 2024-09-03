@@ -28,9 +28,9 @@ export const BasicContent: React.FC<ContentProps> = ({ params }) => {
 
   const { register, watch, setValue } = useForm({
     defaultValues: {
-      edit_guests: listing?.guests,
-      edit_pets_allowed: listing?.pets_allowed,
-      edit_accesable: listing?.accesable,
+      edit_guests: 0,
+      edit_pets_allowed: false,
+      edit_accesable: false,
     } as EditFormValues,
   });
 

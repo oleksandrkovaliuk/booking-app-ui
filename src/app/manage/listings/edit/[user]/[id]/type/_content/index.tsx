@@ -30,7 +30,7 @@ export const TypeContent: React.FC<ContentProps> = ({ params }) => {
 
   const { register, watch, setValue } = useForm({
     defaultValues: {
-      edit_type: listing?.type,
+      edit_type: {},
     } as EditFormValues,
   });
 

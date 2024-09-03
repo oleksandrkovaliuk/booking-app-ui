@@ -2,52 +2,6 @@ import { POST } from "./config";
 import { FormState } from "../manage/_components/type";
 import { DateValue } from "@nextui-org/calendar";
 
-// LISTINGS
-export interface ListingState extends FormState {
-  id?: number;
-  host_id?: number;
-  host_email?: string;
-  host_name?: string;
-  iscomplete?: boolean;
-  disabled_dates?: DateValue[];
-  [key: string]: any;
-}
-
-export const CreateListing = ({
-  host_name,
-  host_email,
-  category,
-  type,
-  cordinates,
-  address,
-  guests,
-  pets_allowed,
-  accesable,
-  images,
-  title,
-  aboutplace,
-  placeis,
-  notes,
-  price,
-}: ListingState) =>
-  POST("listings/createListing", {
-    host_name,
-    host_email,
-    category,
-    type,
-    cordinates,
-    address,
-    guests,
-    pets_allowed,
-    accesable,
-    images,
-    title,
-    aboutplace,
-    placeis,
-    notes,
-    price,
-  });
-
 export const DeleteListing = (id: number) =>
   POST("listings/deleteListing", { id });
 

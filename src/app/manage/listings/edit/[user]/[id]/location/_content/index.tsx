@@ -3,9 +3,10 @@ import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useForm, UseFormSetValue } from "react-hook-form";
 
+import { store } from "@/store";
+import { requestUpdateListing } from "@/store/api/endpoints/listings/requestUpdateListing";
 import { useGetCurrentListingQuery } from "@/store/api/endpoints/listings/getCurrentListing";
 
-import { updateListing } from "@/app/api/apiCalls";
 import { Location } from "@/app/manage/_components/createForm/content/_components/location";
 
 import { handleUpdateFormAndLocalStorage } from "@/helpers/updateFormAndStorageStates";
@@ -86,17 +87,22 @@ export const LocationContent: React.FC<ContentProps> = ({ params }) => {
   const onConfirmation = async () => {
     try {
       await Promise.all([
-        updateListing({
-          id: listing?.id!,
-          data: selectedCordinates!,
-          column: "cordinates",
-        }),
-        updateListing({
-          id: listing?.id!,
-          data: selectedAddress!,
-          column: "address",
-        }),
+        store.dispatch(
+          requestUpdateListing.initiate({
+            id: listing?.id!,
+            data: selectedCordinates!,
+            column: "cordinates",
+          })
+        ),
+        store.dispatch(
+          requestUpdateListing.initiate({
+            id: listing?.id!,
+            data: selectedAddress!,
+            column: "address",
+          })
+        ),
       ]);
+
       toast.success("Successfully updated.", {
         action: {
           label: "Close",

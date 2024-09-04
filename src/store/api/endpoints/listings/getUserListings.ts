@@ -1,5 +1,6 @@
 import { api } from "../../api";
-import { apiUrls } from "../../lib/constants";
+import { ApiTags } from "../../lib/enums";
+import { ApiUrls } from "../../lib/constants";
 import { ListingState } from "../../lib/type";
 
 const getUserListingsApi = api.injectEndpoints({
@@ -18,9 +19,9 @@ const getUserListingsApi = api.injectEndpoints({
         user_name: string;
         user_email: string;
       }) => ({
-        url: `${apiUrls.getUserListings}/${user_name}/${user_email}`,
+        url: `${ApiUrls.getUserListings}/${user_name}/${user_email}`,
       }),
-      providesTags: ["USER_LISTINGS"],
+      providesTags: [ApiTags.USER_LISTINGS],
     }),
   }),
   overrideExisting: true,

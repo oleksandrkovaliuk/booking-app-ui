@@ -48,8 +48,8 @@
       border-radius: 5px;
       transition: all 0.2s ease;
       cursor: pointer;
+      position: relative;
       .tab_icon {
-        position: relative;
         svg {
           width: 20px;
           height: 20px;
@@ -58,6 +58,17 @@
             fill: var(--booking-app-black-color);
           }
         }
+      }
+
+      .circle {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background-color: #ffa836;
       }
 
       &:hover {

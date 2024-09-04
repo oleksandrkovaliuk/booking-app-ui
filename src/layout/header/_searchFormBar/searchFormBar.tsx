@@ -132,15 +132,8 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
     if (isSearchSettedUp) {
       setTriggeredSelection(TypesOfSelections.UNSELECTED);
       onCloseCallBack && onCloseCallBack();
-      console.log({
-        regionSelection: regionSelection,
-        checkInInputValue: userDateSelection.start,
-        checkOutInputValue: userDateSelection.end,
-        amoutOfGuests: amoutOfGuests,
-        includePets: includePets,
-      });
     } else {
-      console.log("Search not setted up");
+      // console.log("Search not setted up");
     }
   };
   useEffect(() => {

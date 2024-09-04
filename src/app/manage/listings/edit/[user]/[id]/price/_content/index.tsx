@@ -3,12 +3,14 @@ import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useForm, UseFormSetValue } from "react-hook-form";
 
+import { store } from "@/store";
+import { requestUpdateListing } from "@/store/api/endpoints/listings/requestUpdateListing";
 import { useGetCurrentListingQuery } from "@/store/api/endpoints/listings/getCurrentListing";
 
 import { Price } from "@/app/manage/_components/createForm/content/_components/price";
-import { updateListing } from "@/app/api/apiCalls";
-
 import { ConfirmationButton } from "@/components/confirmationButton";
+
+import { ErrorHandler } from "@/helpers/errorHandler";
 import { handleUpdateFormAndLocalStorage } from "@/helpers/updateFormAndStorageStates";
 
 import { ContentProps, EditFormValues } from "../../type";
@@ -35,13 +37,16 @@ export const PriceContent: React.FC<ContentProps> = ({ params }) => {
 
   const onConfirmation = async () => {
     try {
-      await Promise.all([
-        updateListing({
+      const { error } = await store.dispatch(
+        requestUpdateListing.initiate({
           id: listing?.id!,
           data: selectedPrice!,
           column: "price",
-        }),
-      ]);
+        })
+      );
+
+      if (error) return ErrorHandler(error);
+
       toast.success("Successfully updated.", {
         action: {
           label: "Close",

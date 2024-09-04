@@ -1,5 +1,7 @@
 import { api } from "../../api";
-import { apiUrls } from "../../lib/constants";
+import { ApiTags } from "../../lib/enums";
+import { ApiUrls } from "../../lib/constants";
+
 import { FullUserTypes } from "@/_utilities/interfaces";
 
 const accesOAuthUserApi = api.injectEndpoints({
@@ -12,7 +14,7 @@ const accesOAuthUserApi = api.injectEndpoints({
         img_url,
         provider,
       }: FullUserTypes) => ({
-        url: apiUrls.auth_oauth_user,
+        url: ApiUrls.auth_oauth_user,
         method: "POST",
 
         body: {
@@ -24,7 +26,7 @@ const accesOAuthUserApi = api.injectEndpoints({
         },
       }),
 
-      invalidatesTags: ["USER"],
+      invalidatesTags: [ApiTags.USER],
     }),
   }),
   overrideExisting: false,

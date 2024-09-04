@@ -1,15 +1,16 @@
-import { ListingState } from "../../lib/type";
-
 import { api } from "../../api";
-import { apiUrls } from "../../lib/constants";
+import { ApiTags } from "../../lib/enums";
+import { ApiUrls } from "../../lib/constants";
+
+import { ListingState } from "../../lib/type";
 
 const getCurrentListingApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getCurrentListing: builder.query<ListingState, { id: number }>({
       query: ({ id }: { id: number }) => ({
-        url: `${apiUrls.getCurrentListing}/${id}`,
+        url: `${ApiUrls.getCurrentListing}/${id}`,
       }),
-      providesTags: ["CURRENT_LISTING"],
+      providesTags: [ApiTags.CURRENT_LISTING],
     }),
   }),
 

@@ -1,15 +1,16 @@
 import { api } from "../../api";
-import { apiUrls } from "../../lib/constants";
+import { ApiTags } from "../../lib/enums";
+import { ApiUrls } from "../../lib/constants";
 
 const uploadListingImagesApi = api.injectEndpoints({
   endpoints: (builder) => ({
     uploadListingImages: builder.mutation<any, FormData>({
       query: (formData) => ({
-        url: apiUrls.uploadListingImages,
+        url: ApiUrls.uploadListingImages,
         method: "POST",
         body: formData,
       }),
-      invalidatesTags: ["CURRENT_LISTING"],
+      invalidatesTags: [ApiTags.CURRENT_LISTING],
     }),
   }),
   overrideExisting: true,

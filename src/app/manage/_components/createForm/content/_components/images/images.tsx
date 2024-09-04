@@ -17,6 +17,8 @@ import { useSession } from "next-auth/react";
 
 import { store } from "@/store";
 import { uploadListingImages } from "@/store/api/endpoints/listings/uploadListingImages";
+import { requestDeleteUserListingImages } from "@/store/api/endpoints/listings/requestDeleteUserListingImages";
+import { requestDeleteIndividualListingImage } from "@/store/api/endpoints/listings/requestDeleteIndividualListingImage";
 
 import {
   appearAnimation,
@@ -29,11 +31,6 @@ import {
   ContentProps,
   ImagesStoreType,
 } from "@/app/manage/_components/createForm/content/type";
-
-import {
-  DeleteListingIndividualImage,
-  DeleteUserListingImages,
-} from "@/app/api/apiCalls";
 
 import { ErrorHandler } from "@/helpers/errorHandler";
 
@@ -52,7 +49,6 @@ export const Images: React.FC<ContentProps> = ({
   selectedAdress,
   handleUpdateFormAndLocalStorage,
 }) => {
-  console.log(images, "images");
   const { data: session } = useSession();
 
   const [isLoading, setIsLoading] = useState<LoadingValue>({
@@ -70,6 +66,8 @@ export const Images: React.FC<ContentProps> = ({
     isImagesReady: images?.length! >= 1 ? true : false,
   });
 
+  console.log(uploadedImages.images, "images");
+
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handelModalOpening = (e: React.FormEvent) => {
@@ -78,10 +76,16 @@ export const Images: React.FC<ContentProps> = ({
   };
   const handleSetHeadImage = (image: string, i: number) => {
     let copyOfImages = [...uploadedImages.images];
-    let prevHeadImage = copyOfImages[0].url;
+    let prevHeadImage = {
+      ...copyOfImages[0],
+      url: copyOfImages[0].url,
+    };
     if (i) {
-      copyOfImages[0].url = image;
-      copyOfImages[i].url = prevHeadImage;
+      copyOfImages[0] = {
+        ...copyOfImages[0],
+        url: image,
+      };
+      copyOfImages[i] = prevHeadImage;
     }
     setUploadedImages({
       ...uploadedImages,
@@ -97,7 +101,10 @@ export const Images: React.FC<ContentProps> = ({
 
   const handleSetHeadImageDown = (image: string, i: number) => {
     let copyOfImages = [...uploadedImages.images];
-    let underHeadImage = copyOfImages[i + 1]?.url;
+    let underHeadImage = {
+      ...copyOfImages[i + 1],
+      url: copyOfImages[i + 1].url,
+    };
     if (!underHeadImage) {
       toast.info(
         <div className="toast">
@@ -106,8 +113,11 @@ export const Images: React.FC<ContentProps> = ({
       );
       return;
     } else {
-      copyOfImages[i + 1].url = image;
-      copyOfImages[i].url = underHeadImage;
+      copyOfImages[i + 1] = {
+        ...copyOfImages[i],
+        url: image,
+      };
+      copyOfImages[i] = underHeadImage;
       setUploadedImages({
         ...uploadedImages,
         images: copyOfImages,
@@ -134,9 +144,6 @@ export const Images: React.FC<ContentProps> = ({
       formData.append("user_email", session?.user.email!);
       formData.append("location", selectedAdress!.formattedAddress);
 
-      // const res = await UploadListingImages(formData, "form");
-
-      console.log(formData, "d ");
       const { data: res, error } = await store.dispatch(
         uploadListingImages.initiate(formData)
       );
@@ -171,10 +178,15 @@ export const Images: React.FC<ContentProps> = ({
           status: true,
         },
       });
-      await DeleteUserListingImages({
-        user_email: session?.user.email!,
-        location: selectedAdress!.formattedAddress,
-      });
+      const { error } = await store.dispatch(
+        requestDeleteUserListingImages.initiate({
+          user_email: session?.user?.email || "",
+          location: selectedAdress!.formattedAddress,
+        })
+      );
+
+      if (error) ErrorHandler(error);
+
       setUploadedImages({
         ...uploadedImages,
         images: [],
@@ -206,11 +218,16 @@ export const Images: React.FC<ContentProps> = ({
         },
       });
 
-      const res = await DeleteListingIndividualImage({
-        user_email: session?.user.email!,
-        location: selectedAdress!.formattedAddress,
-        image,
-      });
+      const { data: res, error } = await store.dispatch(
+        requestDeleteIndividualListingImage.initiate({
+          user_email: session?.user.email!,
+          location: selectedAdress!.formattedAddress,
+          image,
+        })
+      );
+
+      if (error || !res) ErrorHandler(error);
+
       setIsLoading({
         ...isLoading,
         deletingImages: {
@@ -219,7 +236,7 @@ export const Images: React.FC<ContentProps> = ({
         },
       });
 
-      if (res.data?.length! < 1) {
+      if (res?.length! < 1) {
         onClose();
         setUploadedImages({
           images: [],
@@ -233,11 +250,11 @@ export const Images: React.FC<ContentProps> = ({
       } else {
         setUploadedImages({
           ...uploadedImages,
-          images: res.data,
+          images: res!,
         });
         handleUpdateFormAndLocalStorage(
           editPage ? "edit_images" : "images",
-          res.data,
+          res,
           setValue
         );
       }

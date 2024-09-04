@@ -61,7 +61,6 @@ export const Price: React.FC<ContentProps> = ({
     }
 
     if (Number(price) < 14) {
-      console.log("less than 14");
       editPage && onConfirmation!(false);
     } else {
       editPage && onConfirmation!(true);

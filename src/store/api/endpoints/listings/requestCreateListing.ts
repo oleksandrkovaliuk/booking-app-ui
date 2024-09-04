@@ -1,10 +1,11 @@
 import { api } from "../../api";
-import { apiUrls } from "../../lib/constants";
+import { ApiTags } from "../../lib/enums";
+import { ApiUrls } from "../../lib/constants";
 import { ListingState } from "../../lib/type";
 
 const requestCreateListingApi = api.injectEndpoints({
   endpoints: (build) => ({
-    requestCreateListing: build.mutation<ListingState, ListingState>({
+    requestCreateListing: build.mutation<void, ListingState>({
       query: ({
         host_name,
         host_email,
@@ -22,7 +23,7 @@ const requestCreateListingApi = api.injectEndpoints({
         notes,
         price,
       }) => ({
-        url: apiUrls.requestToCreateListing,
+        url: ApiUrls.requestCreateListing,
         method: "POST",
         body: {
           host_name,
@@ -42,7 +43,11 @@ const requestCreateListingApi = api.injectEndpoints({
           price,
         },
       }),
-      invalidatesTags: ["USER_LISTINGS", "VERIFIED_LISTINGS", "LISTINGS"],
+      invalidatesTags: [
+        ApiTags.USER_LISTINGS,
+        ApiTags.VERIFIED_LISTINGS,
+        ApiTags.LISTING,
+      ],
     }),
   }),
 });

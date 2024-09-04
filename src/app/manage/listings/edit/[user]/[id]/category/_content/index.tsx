@@ -3,16 +3,18 @@ import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useForm, UseFormSetValue } from "react-hook-form";
 
-import { ContentProps, EditFormValues } from "../../type";
-
+import { store } from "@/store";
+import { requestUpdateListing } from "@/store/api/endpoints/listings/requestUpdateListing";
 import { useGetListingsCategoriesQuery } from "@/store/api/endpoints/listings/getCategories";
 import { useGetCurrentListingQuery } from "@/store/api/endpoints/listings/getCurrentListing";
 
 import { ConfirmationButton } from "@/components/confirmationButton";
 import { Category } from "@/app/manage/_components/createForm/content/_components/category";
+
+import { ErrorHandler } from "@/helpers/errorHandler";
 import { handleUpdateFormAndLocalStorage } from "@/helpers/updateFormAndStorageStates";
 
-import { updateListing } from "@/app/api/apiCalls";
+import { ContentProps, EditFormValues } from "../../type";
 
 import styles from "./category.module.scss";
 import "../../shared/sharedStyles.scss";
@@ -39,13 +41,16 @@ export const CategoryPageContent: React.FC<ContentProps> = ({ params }) => {
 
   const onConfirmation = async () => {
     try {
-      await Promise.all([
-        updateListing({
+      const { error } = await store.dispatch(
+        requestUpdateListing.initiate({
           id: listing?.id!,
           data: selectedCategory!,
           column: "category",
-        }),
-      ]);
+        })
+      );
+
+      if (error) return ErrorHandler(error);
+
       toast.success("Successfully updated.", {
         action: {
           label: "Close",

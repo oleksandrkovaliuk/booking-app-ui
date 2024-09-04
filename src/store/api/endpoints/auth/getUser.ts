@@ -1,5 +1,6 @@
 import { api } from "../../api";
-import { apiUrls } from "../../lib/constants";
+import { ApiTags } from "../../lib/enums";
+import { ApiUrls } from "../../lib/constants";
 
 const GetUser = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -11,9 +12,9 @@ const GetUser = api.injectEndpoints({
         user_name: string;
         user_email: string;
       }) => ({
-        url: `${apiUrls.getUser}/${user_email}/${user_name}`,
+        url: `${ApiUrls.getUser}/${user_email}/${user_name}`,
       }),
-      providesTags: ["CURRENT_USER"],
+      providesTags: [ApiTags.CURRENT_USER],
     }),
   }),
   overrideExisting: false,

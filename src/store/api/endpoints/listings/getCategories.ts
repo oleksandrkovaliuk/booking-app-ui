@@ -1,14 +1,16 @@
 import { api } from "../../api";
-import { apiUrls } from "../../lib/constants";
-import { Category } from "@/store/slices/listingsInfoSlice/type";
+import { ApiTags } from "../../lib/enums";
+import { ApiUrls } from "../../lib/constants";
+
+import { Category } from "../../lib/type";
 
 const getListingsCategoriesApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getListingsCategories: builder.query<Category[], void>({
       query: () => ({
-        url: apiUrls.getListingsCategories,
+        url: ApiUrls.getListingsCategories,
       }),
-      providesTags: ["LISTING_CATEGORIES"],
+      providesTags: [ApiTags.LISTING_CATEGORIES],
     }),
   }),
   overrideExisting: true,

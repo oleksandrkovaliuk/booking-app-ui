@@ -3,12 +3,13 @@ import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useForm, UseFormSetValue } from "react-hook-form";
 
+import { store } from "@/store";
+import { requestUpdateListing } from "@/store/api/endpoints/listings/requestUpdateListing";
 import { useGetCurrentListingQuery } from "@/store/api/endpoints/listings/getCurrentListing";
 
 import { ConfirmationButton } from "@/components/confirmationButton";
 import { AdditionalDetails } from "@/app/manage/_components/createForm/content/_components/additionalDetails";
 
-import { updateListing } from "@/app/api/apiCalls";
 import { handleUpdateFormAndLocalStorage } from "@/helpers/updateFormAndStorageStates";
 
 import { ContentProps, EditFormValues } from "../../type";
@@ -45,27 +46,36 @@ export const DetailsContent: React.FC<ContentProps> = ({ params }) => {
   const onConfirmation = async () => {
     try {
       await Promise.all([
-        updateListing({
-          id: listing?.id!,
-          data: selectedTitle!,
-          column: "title",
-        }),
-        updateListing({
-          id: listing?.id!,
-          data: selectedPlaceIs!,
-          column: "placeis",
-        }),
-        updateListing({
-          id: listing?.id!,
-          data: selectedAboutPlace!,
-          column: "aboutplace",
-        }),
-        updateListing({
-          id: listing?.id!,
-          data: selectedNotes!,
-          column: "notes",
-        }),
+        store.dispatch(
+          requestUpdateListing.initiate({
+            id: listing?.id!,
+            data: selectedTitle!,
+            column: "title",
+          })
+        ),
+        store.dispatch(
+          requestUpdateListing.initiate({
+            id: listing?.id!,
+            data: selectedPlaceIs!,
+            column: "placeis",
+          })
+        ),
+        store.dispatch(
+          requestUpdateListing.initiate({
+            id: listing?.id!,
+            data: selectedAboutPlace!,
+            column: "aboutplace",
+          })
+        ),
+        store.dispatch(
+          requestUpdateListing.initiate({
+            id: listing?.id!,
+            data: selectedNotes!,
+            column: "notes",
+          })
+        ),
       ]);
+
       toast.success("Successfully updated.", {
         action: {
           label: "Close",

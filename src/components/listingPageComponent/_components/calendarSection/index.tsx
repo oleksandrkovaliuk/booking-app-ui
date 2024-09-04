@@ -41,13 +41,6 @@ export const CalendarSection: React.FC<{
         )} nights in ${title}`;
 
   const handleSetDateSelection = (value: RangeValue<DateValue>) => {
-    console.log(
-      value.start === value.end,
-      value.start.toString() === value.end.toString(),
-      value.start,
-      value.end,
-      "log"
-    );
     if (value.start.toString() !== value.end.toString()) {
       dispatch(setCheckIn(value.start));
       dispatch(setCheckOut(value.end));

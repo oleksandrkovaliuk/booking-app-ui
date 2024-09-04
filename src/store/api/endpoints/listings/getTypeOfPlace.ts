@@ -1,14 +1,15 @@
-import { TypeOfPlace } from "@/store/slices/listingsInfoSlice/type";
 import { api } from "../../api";
-import { apiUrls } from "../../lib/constants";
+import { ApiTags } from "../../lib/enums";
+import { ApiUrls } from "../../lib/constants";
+import { TypeOfPlace } from "../../lib/type";
 
 const getListingsTypeOfPlaceApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getListingsTypeOfPlace: builder.query<TypeOfPlace[], void>({
       query: () => ({
-        url: apiUrls.getListingsTypeOfPlace,
+        url: ApiUrls.getListingsTypeOfPlace,
       }),
-      providesTags: ["LISTING_TYPE_OF_PLACE"],
+      providesTags: [ApiTags.LISTING_TYPE_OF_PLACE],
     }),
   }),
   overrideExisting: true,

@@ -1,14 +1,15 @@
 import { api } from "../../api";
-import { apiUrls } from "../../lib/constants";
+import { ApiTags } from "../../lib/enums";
+import { ApiUrls } from "../../lib/constants";
 import { ListingState } from "../../lib/type";
 
 const getVerifiedListingsApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getVerifiedListings: builder.query<ListingState[], void>({
       query: () => ({
-        url: apiUrls.getVerifiedListings,
+        url: ApiUrls.getVerifiedListings,
       }),
-      providesTags: ["VERIFIED_LISTINGS"],
+      providesTags: [ApiTags.VERIFIED_LISTINGS],
     }),
   }),
   overrideExisting: true,

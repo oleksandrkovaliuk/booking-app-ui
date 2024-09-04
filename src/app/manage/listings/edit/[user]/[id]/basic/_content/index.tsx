@@ -3,12 +3,12 @@ import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useForm, UseFormSetValue } from "react-hook-form";
 
-import { updateListing } from "@/app/api/apiCalls";
+import { store } from "@/store";
+import { requestUpdateListing } from "@/store/api/endpoints/listings/requestUpdateListing";
+import { useGetCurrentListingQuery } from "@/store/api/endpoints/listings/getCurrentListing";
 
 import { ConfirmationButton } from "@/components/confirmationButton";
 import { Basics } from "@/app/manage/_components/createForm/content/_components/basics";
-
-import { useGetCurrentListingQuery } from "@/store/api/endpoints/listings/getCurrentListing";
 
 import { handleUpdateFormAndLocalStorage } from "@/helpers/updateFormAndStorageStates";
 
@@ -41,22 +41,29 @@ export const BasicContent: React.FC<ContentProps> = ({ params }) => {
   const onConfirmation = async () => {
     try {
       await Promise.all([
-        updateListing({
-          id: listing?.id!,
-          data: selectedGuests!,
-          column: "guests",
-        }),
-        updateListing({
-          id: listing?.id!,
-          data: selectedPetsAllowed!,
-          column: "pets_allowed",
-        }),
-        updateListing({
-          id: listing?.id!,
-          data: selectedAccesable!,
-          column: "accesable",
-        }),
+        store.dispatch(
+          requestUpdateListing.initiate({
+            id: listing?.id!,
+            data: selectedGuests!,
+            column: "guests",
+          })
+        ),
+        store.dispatch(
+          requestUpdateListing.initiate({
+            id: listing?.id!,
+            data: selectedPetsAllowed!,
+            column: "pets_allowed",
+          })
+        ),
+        store.dispatch(
+          requestUpdateListing.initiate({
+            id: listing?.id!,
+            data: selectedAccesable!,
+            column: "accesable",
+          })
+        ),
       ]);
+
       toast.success("Successfully updated.", {
         action: {
           label: "Close",

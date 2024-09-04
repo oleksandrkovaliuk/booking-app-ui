@@ -3,15 +3,14 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useForm, UseFormSetValue } from "react-hook-form";
 
-import {
-  getCurrentListing,
-  useGetCurrentListingQuery,
-} from "@/store/api/endpoints/listings/getCurrentListing";
+import { store } from "@/store";
+import { requestUpdateListing } from "@/store/api/endpoints/listings/requestUpdateListing";
+import { useGetCurrentListingQuery } from "@/store/api/endpoints/listings/getCurrentListing";
 
 import { Images } from "@/app/manage/_components/createForm/content/_components/images/images";
 import { ConfirmationButton } from "@/components/confirmationButton";
 
-import { updateListing } from "@/app/api/apiCalls";
+import { ErrorHandler } from "@/helpers/errorHandler";
 import { handleUpdateFormAndLocalStorage } from "@/helpers/updateFormAndStorageStates";
 
 import { ContentProps, EditFormValues } from "../../type";
@@ -19,8 +18,6 @@ import { ContentProps, EditFormValues } from "../../type";
 import "../../shared/sharedStyles.scss";
 import styles from "./images.module.scss";
 import "@/app/manage/_components/createForm/additionalStyles.scss";
-import { store } from "@/store";
-import { ListingState } from "@/store/api/lib/type";
 
 export const ImagesContent: React.FC<ContentProps> = ({ params }) => {
   const setValueRef = useRef<UseFormSetValue<EditFormValues> | null>(null);
@@ -42,13 +39,16 @@ export const ImagesContent: React.FC<ContentProps> = ({ params }) => {
 
   const onConfirmation = async () => {
     try {
-      await Promise.all([
-        updateListing({
+      const { error } = await store.dispatch(
+        requestUpdateListing.initiate({
           id: listing?.id!,
           data: selectedImages!,
           column: "images",
-        }),
-      ]);
+        })
+      );
+
+      if (error) ErrorHandler(error);
+
       toast.success("Successfully updated.", {
         action: {
           label: "Close",
@@ -58,7 +58,12 @@ export const ImagesContent: React.FC<ContentProps> = ({ params }) => {
       setEnableConfirmationButton(false);
       localStorage.removeItem("edit_images");
     } catch (error) {
-      console.log(error);
+      toast.error("Something went wrong.", {
+        action: {
+          label: "Try again",
+          onClick: () => onConfirmation(),
+        },
+      });
     }
   };
 

@@ -1,21 +1,24 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-
 import { useForm, UseFormSetValue } from "react-hook-form";
+
+import { store } from "@/store";
+import { requestUpdateListing } from "@/store/api/endpoints/listings/requestUpdateListing";
+import { useGetCurrentListingQuery } from "@/store/api/endpoints/listings/getCurrentListing";
+import { useGetListingsTypeOfPlaceQuery } from "@/store/api/endpoints/listings/getTypeOfPlace";
 
 import { ConfirmationButton } from "@/components/confirmationButton";
 
 import { TypeOfPlace } from "@/app/manage/_components/createForm/content/_components/typeOfPlace";
-import { updateListing } from "@/app/api/apiCalls";
+
+import { ErrorHandler } from "@/helpers/errorHandler";
 import { handleUpdateFormAndLocalStorage } from "@/helpers/updateFormAndStorageStates";
 
 import { ContentProps, EditFormValues } from "../../type";
 
 import styles from "./type.module.scss";
 import "../../shared/sharedStyles.scss";
-import { useGetListingsTypeOfPlaceQuery } from "@/store/api/endpoints/listings/getTypeOfPlace";
-import { useGetCurrentListingQuery } from "@/store/api/endpoints/listings/getCurrentListing";
 
 export const TypeContent: React.FC<ContentProps> = ({ params }) => {
   const setValueRef = useRef<UseFormSetValue<EditFormValues> | null>(null);
@@ -38,13 +41,16 @@ export const TypeContent: React.FC<ContentProps> = ({ params }) => {
 
   const onConfirmation = async () => {
     try {
-      await Promise.all([
-        updateListing({
+      const { error } = await store.dispatch(
+        requestUpdateListing.initiate({
           id: listing?.id!,
           data: selectedTypeOfPlace!,
           column: "type",
-        }),
-      ]);
+        })
+      );
+
+      if (error) return ErrorHandler(error);
+
       toast.success("Successfully updated.", {
         action: {
           label: "Close",

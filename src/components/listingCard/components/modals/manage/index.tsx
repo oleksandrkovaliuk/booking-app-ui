@@ -5,14 +5,14 @@ import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { Button, Modal, ModalBody, ModalContent } from "@nextui-org/react";
 
-import { DeleteUserListingImages } from "@/app/api/apiCalls";
-
 import { store } from "@/store";
-import { requestToDeleteListing } from "@/store/api/endpoints/listings/requestToDeleteListing";
+import { requestDeleteUserListingImages } from "@/store/api/endpoints/listings/requestDeleteUserListingImages";
+import { requestDeleteListing } from "@/store/api/endpoints/listings/requestDeleteListing";
 
 import { EditIcon } from "@/svgs/EditIcon";
 import { CalendarIcon } from "@/svgs/CalendarIcon";
 
+import { ErrorHandler } from "@/helpers/errorHandler";
 import { ModalProps } from "../type";
 
 export const ManageModal: React.FC<ModalProps> = ({
@@ -34,14 +34,16 @@ export const ManageModal: React.FC<ModalProps> = ({
   };
   const handleDeleteListing = async () => {
     try {
-      await store
-        .dispatch(requestToDeleteListing.initiate({ id: id! }))
-        .unwrap();
+      await store.dispatch(requestDeleteListing.initiate({ id: id! })).unwrap();
 
-      await DeleteUserListingImages({
-        user_email: session?.user?.email!,
-        location: address?.formattedAddress!,
-      });
+      const { error } = await store.dispatch(
+        requestDeleteUserListingImages.initiate({
+          user_email: session?.user?.email || "",
+          location: address?.formattedAddress!,
+        })
+      );
+      if (error) ErrorHandler(error);
+
       toast.info("Listing deleted successfully");
       onClose();
     } catch (error) {

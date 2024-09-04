@@ -13,14 +13,17 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useForm, UseFormSetValue } from "react-hook-form";
 
-import { Content } from "./content";
-import { clearAllStorage } from "./utils";
-import { CreateListingSteps } from "../enums";
-import { FormState } from "../type";
+import { store } from "@/store";
+import { requestCreateListing } from "@/store/api/endpoints/listings/requestCreateListing";
+import { useGetListingsCategoriesQuery } from "@/store/api/endpoints/listings/getCategories";
+import { useGetListingsTypeOfPlaceQuery } from "@/store/api/endpoints/listings/getTypeOfPlace";
+import { requestDeleteUserListingImages } from "@/store/api/endpoints/listings/requestDeleteUserListingImages";
 
 import { GoogleMapProps } from "@/components/googleMap/type";
-import { deleteUserListingImages } from "../../../../helpers/firebaseImages/users/listings/uploadImg";
+
 import { requirmentForAddressComponent } from "@/helpers/address/formattedAddressVariants";
+import { handleUpdateFormAndLocalStorage } from "@/helpers/updateFormAndStorageStates";
+import { ErrorHandler } from "@/helpers/errorHandler";
 
 import {
   motion_transition,
@@ -29,10 +32,11 @@ import {
 } from "../consts";
 
 import { Category, TypeOfPlace } from "@/store/api/lib/type";
+import { clearAllStorage } from "./utils";
+import { CreateListingSteps } from "../enums";
+import { FormState } from "../type";
 
-import { useGetListingsCategoriesQuery } from "@/store/api/endpoints/listings/getCategories";
-import { useGetListingsTypeOfPlaceQuery } from "@/store/api/endpoints/listings/getTypeOfPlace";
-import { handleUpdateFormAndLocalStorage } from "@/helpers/updateFormAndStorageStates";
+import { Content } from "./content";
 
 // FORMAT DATE TO DD/MM/HH/MM
 
@@ -48,9 +52,6 @@ const formatDate = (date: Date) => {
 
 import styles from "./createForm.module.scss";
 import "./additionalStyles.scss";
-import { store } from "@/store";
-import { requestCreateListing } from "@/store/api/endpoints/listings/requestCreateListing";
-import { ErrorHandler } from "@/helpers/errorHandler";
 
 export const CreateForm: React.FC = () => {
   const setValueRef = useRef<UseFormSetValue<FormState> | null>(null);
@@ -159,10 +160,13 @@ export const CreateForm: React.FC = () => {
 
   const handleClearForm = async () => {
     clearAllStorage();
-    await deleteUserListingImages({
-      user_email: session?.user.email!,
-      location: selectedAddress.formattedAddress!,
-    });
+    const { error } = await store.dispatch(
+      requestDeleteUserListingImages.initiate({
+        user_email: session?.user?.email || "",
+        location: selectedAddress.formattedAddress!,
+      })
+    );
+    if (error) ErrorHandler(error);
   };
 
   // LEAVE THE FORM

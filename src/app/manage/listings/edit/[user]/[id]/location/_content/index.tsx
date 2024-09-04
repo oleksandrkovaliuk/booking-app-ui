@@ -1,18 +1,16 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { useDispatch } from "react-redux";
 import { useForm, UseFormSetValue } from "react-hook-form";
 
-import { useSelector } from "@/store";
-import { getAllListings } from "@/store/thunks/listings/listings";
-import { getCurrentUserListings } from "@/store/thunks/listings/getCurrentUserListing";
+import { store } from "@/store";
+import { requestUpdateListing } from "@/store/api/endpoints/listings/requestUpdateListing";
+import { useGetCurrentListingQuery } from "@/store/api/endpoints/listings/getCurrentListing";
 
-import { updateListing } from "@/app/api/apiCalls";
 import { Location } from "@/app/manage/_components/createForm/content/_components/location";
 
-import { handleUpdateFormAndLocalStorage } from "@/sharing/updateFormAndStorageStates";
-import { requirmentForAddressComponent } from "@/sharing/address/formattedAddressVariants";
+import { handleUpdateFormAndLocalStorage } from "@/helpers/updateFormAndStorageStates";
+import { requirmentForAddressComponent } from "@/helpers/address/formattedAddressVariants";
 
 import { GoogleMapProps } from "@/components/googleMap/type";
 import { ConfirmationButton } from "@/components/confirmationButton";
@@ -23,18 +21,19 @@ import styles from "./location.module.scss";
 import "../../shared/sharedStyles.scss";
 
 export const LocationContent: React.FC<ContentProps> = ({ params }) => {
-  const dispatch = useDispatch();
   const setValueRef = useRef<UseFormSetValue<EditFormValues> | null>(null);
 
-  const listing = useSelector((state) => state.listingsInfo.listings[0]);
+  const { data: listing } = useGetCurrentListingQuery({
+    id: Number(params?.id),
+  });
 
   const [enableConfirmationButton, setEnableConfirmationButton] =
     useState<boolean>(false);
 
   const { register, watch, setValue } = useForm({
     defaultValues: {
-      edit_cordinates: listing?.cordinates,
-      edit_address: listing?.address,
+      edit_cordinates: {},
+      edit_address: {},
     } as EditFormValues,
   });
 
@@ -88,18 +87,22 @@ export const LocationContent: React.FC<ContentProps> = ({ params }) => {
   const onConfirmation = async () => {
     try {
       await Promise.all([
-        updateListing({
-          id: listing.id!,
-          data: selectedCordinates!,
-          column: "cordinates",
-        }),
-        updateListing({
-          id: listing.id!,
-          data: selectedAddress!,
-          column: "address",
-        }),
-        dispatch(getAllListings() as any),
+        store.dispatch(
+          requestUpdateListing.initiate({
+            id: listing?.id!,
+            data: selectedCordinates!,
+            column: "cordinates",
+          })
+        ),
+        store.dispatch(
+          requestUpdateListing.initiate({
+            id: listing?.id!,
+            data: selectedAddress!,
+            column: "address",
+          })
+        ),
       ]);
+
       toast.success("Successfully updated.", {
         action: {
           label: "Close",
@@ -115,15 +118,6 @@ export const LocationContent: React.FC<ContentProps> = ({ params }) => {
       );
     }
   };
-
-  useEffect(() => {
-    dispatch(
-      getCurrentUserListings({
-        id: Number(params.id),
-        user_name: params.user,
-      }) as any
-    );
-  }, []);
 
   useEffect(() => {
     setValueRef.current = setValue;

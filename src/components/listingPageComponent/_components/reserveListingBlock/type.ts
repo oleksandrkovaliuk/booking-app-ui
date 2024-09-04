@@ -3,6 +3,7 @@ import { Dispatch, SetStateAction } from "react";
 
 export interface ReserveListingBlockProps {
   price: string;
+  isPublic: boolean;
   guests_limit: number;
   disabledDates: DateValue[];
 }

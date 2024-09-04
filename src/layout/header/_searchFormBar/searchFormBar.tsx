@@ -23,7 +23,7 @@ import { Counter } from "@/components/counter";
 import { getCountriesByRequest } from "./getCountriesByRequest";
 import { useDebounce } from "@/hooks/useDebounce";
 import { regions } from "@/information/data";
-import { DateFormatingMonthDay } from "@/sharing/dateManagment";
+import { DateFormatingMonthDay } from "@/helpers/dateManagment";
 
 import { regionResponceType, regionsType, SearchFormBarProps } from "../types";
 import { TypesOfSelections } from "@/_utilities/enums";
@@ -132,15 +132,8 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
     if (isSearchSettedUp) {
       setTriggeredSelection(TypesOfSelections.UNSELECTED);
       onCloseCallBack && onCloseCallBack();
-      console.log({
-        regionSelection: regionSelection,
-        checkInInputValue: userDateSelection.start,
-        checkOutInputValue: userDateSelection.end,
-        amoutOfGuests: amoutOfGuests,
-        includePets: includePets,
-      });
     } else {
-      console.log("Search not setted up");
+      // console.log("Search not setted up");
     }
   };
   useEffect(() => {

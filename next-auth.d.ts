@@ -4,6 +4,7 @@ import { User } from "next-auth";
 declare module "next-auth" {
   interface User {
     role?: Roles;
+    jti?: string;
   }
 
   interface Session {
@@ -12,10 +13,12 @@ declare module "next-auth" {
       email?: string | null;
       image?: string | null;
       role?: Roles;
+      jti?: string;
     };
   }
 
   interface Token {
     role?: Roles;
+    jti?: string;
   }
 }

@@ -1,18 +1,17 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { useDispatch } from "react-redux";
 import { useForm, UseFormSetValue } from "react-hook-form";
 
-import { useSelector } from "@/store";
-import { getAllListings } from "@/store/thunks/listings/listings";
-import { getCurrentUserListings } from "@/store/thunks/listings/getCurrentUserListing";
+import { store } from "@/store";
+import { requestUpdateListing } from "@/store/api/endpoints/listings/requestUpdateListing";
+import { useGetCurrentListingQuery } from "@/store/api/endpoints/listings/getCurrentListing";
 
 import { Images } from "@/app/manage/_components/createForm/content/_components/images/images";
 import { ConfirmationButton } from "@/components/confirmationButton";
 
-import { updateListing } from "@/app/api/apiCalls";
-import { handleUpdateFormAndLocalStorage } from "@/sharing/updateFormAndStorageStates";
+import { ErrorHandler } from "@/helpers/errorHandler";
+import { handleUpdateFormAndLocalStorage } from "@/helpers/updateFormAndStorageStates";
 
 import { ContentProps, EditFormValues } from "../../type";
 
@@ -21,17 +20,18 @@ import styles from "./images.module.scss";
 import "@/app/manage/_components/createForm/additionalStyles.scss";
 
 export const ImagesContent: React.FC<ContentProps> = ({ params }) => {
-  const dispatch = useDispatch();
   const setValueRef = useRef<UseFormSetValue<EditFormValues> | null>(null);
-
-  const listing = useSelector((state) => state.listingsInfo.listings[0]);
 
   const [enableConfirmationButton, setEnableConfirmationButton] =
     useState<boolean>(false);
 
+  const { data: listing } = useGetCurrentListingQuery({
+    id: Number(params?.id),
+  });
+
   const { register, watch, setValue } = useForm({
     defaultValues: {
-      edit_images: listing?.images || [],
+      edit_images: [],
     } as EditFormValues,
   });
 
@@ -39,14 +39,16 @@ export const ImagesContent: React.FC<ContentProps> = ({ params }) => {
 
   const onConfirmation = async () => {
     try {
-      await Promise.all([
-        updateListing({
-          id: listing.id!,
+      const { error } = await store.dispatch(
+        requestUpdateListing.initiate({
+          id: listing?.id!,
           data: selectedImages!,
           column: "images",
-        }),
-        dispatch(getAllListings() as any),
-      ]);
+        })
+      );
+
+      if (error) ErrorHandler(error);
+
       toast.success("Successfully updated.", {
         action: {
           label: "Close",
@@ -56,18 +58,14 @@ export const ImagesContent: React.FC<ContentProps> = ({ params }) => {
       setEnableConfirmationButton(false);
       localStorage.removeItem("edit_images");
     } catch (error) {
-      console.log(error);
+      toast.error("Something went wrong.", {
+        action: {
+          label: "Try again",
+          onClick: () => onConfirmation(),
+        },
+      });
     }
   };
-
-  useEffect(() => {
-    dispatch(
-      getCurrentUserListings({
-        id: Number(params.id),
-        user_name: params.user,
-      }) as any
-    );
-  }, []);
 
   useEffect(() => {
     setValueRef.current = setValue;

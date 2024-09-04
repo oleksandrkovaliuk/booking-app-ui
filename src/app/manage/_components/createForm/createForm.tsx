@@ -9,21 +9,21 @@ import {
 } from "@nextui-org/react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useForm, UseFormSetValue } from "react-hook-form";
 
-import { useSelector } from "@/store";
-
-import { Content } from "./content";
-import { clearAllStorage } from "./utils";
-import { CreateListingSteps } from "../enums";
-import { FormState } from "../type";
+import { store } from "@/store";
+import { requestCreateListing } from "@/store/api/endpoints/listings/requestCreateListing";
+import { useGetListingsCategoriesQuery } from "@/store/api/endpoints/listings/getCategories";
+import { useGetListingsTypeOfPlaceQuery } from "@/store/api/endpoints/listings/getTypeOfPlace";
+import { requestDeleteUserListingImages } from "@/store/api/endpoints/listings/requestDeleteUserListingImages";
 
 import { GoogleMapProps } from "@/components/googleMap/type";
-import { deleteUserListingImages } from "../../../../sharing/firebaseImages/users/listings/uploadImg";
-import { requirmentForAddressComponent } from "@/sharing/address/formattedAddressVariants";
+
+import { requirmentForAddressComponent } from "@/helpers/address/formattedAddressVariants";
+import { handleUpdateFormAndLocalStorage } from "@/helpers/updateFormAndStorageStates";
+import { ErrorHandler } from "@/helpers/errorHandler";
 
 import {
   motion_transition,
@@ -31,9 +31,12 @@ import {
   deepAppearAnimation,
 } from "../consts";
 
-import { RequestCreateListing } from "@/store/thunks/listings/create";
-import { Category, TypeOfPlace } from "@/store/slices/listingsInfoSlice/type";
-import { handleUpdateFormAndLocalStorage } from "@/sharing/updateFormAndStorageStates";
+import { Category, TypeOfPlace } from "@/store/api/lib/type";
+import { clearAllStorage } from "./utils";
+import { CreateListingSteps } from "../enums";
+import { FormState } from "../type";
+
+import { Content } from "./content";
 
 // FORMAT DATE TO DD/MM/HH/MM
 
@@ -53,12 +56,11 @@ import "./additionalStyles.scss";
 export const CreateForm: React.FC = () => {
   const setValueRef = useRef<UseFormSetValue<FormState> | null>(null);
 
-  const dispath = useDispatch();
   const router = useRouter();
   const { data: session } = useSession();
-  const { categories, typeOfPlace } = useSelector(
-    (state) => state.listingsInfo
-  );
+
+  const { data: categories } = useGetListingsCategoriesQuery();
+  const { data: typeOfPlace } = useGetListingsTypeOfPlaceQuery();
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -158,10 +160,13 @@ export const CreateForm: React.FC = () => {
 
   const handleClearForm = async () => {
     clearAllStorage();
-    await deleteUserListingImages({
-      user_email: session?.user.email!,
-      location: selectedAddress.formattedAddress!,
-    });
+    const { error } = await store.dispatch(
+      requestDeleteUserListingImages.initiate({
+        user_email: session?.user?.email || "",
+        location: selectedAddress.formattedAddress!,
+      })
+    );
+    if (error) ErrorHandler(error);
   };
 
   // LEAVE THE FORM
@@ -218,8 +223,8 @@ export const CreateForm: React.FC = () => {
   // SUBMIT
   const submitCreatedListing = async () => {
     try {
-      await dispath(
-        RequestCreateListing({
+      const { data: res, error } = await store.dispatch(
+        requestCreateListing.initiate({
           host_email: session?.user.email!,
           host_name: session?.user.name || "",
           category: selectedCategory,
@@ -235,8 +240,10 @@ export const CreateForm: React.FC = () => {
           placeis: selectedPlaceIs,
           notes: selectedNotes,
           price: selectedPrice,
-        }) as any
+        })
       );
+
+      if (error && !res) ErrorHandler(error);
 
       toast(
         <div className="toast success">

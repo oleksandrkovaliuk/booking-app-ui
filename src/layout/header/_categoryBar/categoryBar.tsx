@@ -1,6 +1,5 @@
 import React from "react";
 import Image from "next/image";
-import { RootState, useSelector } from "@/store";
 import { motion } from "framer-motion";
 
 import {
@@ -12,13 +11,15 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 
+import { useGetListingsCategoriesQuery } from "@/store/api/endpoints/listings/getCategories";
+
 import { FilterIcon } from "@/svgs/FilterIcon";
 import { skeletonData } from "@/information/data";
 
 import styles from "./categoryBar.module.scss";
 
 const Categories: React.FC = () => {
-  const { categories, isLoading } = useSelector((state) => state.listingsInfo);
+  const { data: categories, isLoading } = useGetListingsCategoriesQuery();
 
   const [selectedCategory, setSelectedCategory] = React.useState<number | null>(
     null
@@ -29,7 +30,7 @@ const Categories: React.FC = () => {
 
   return (
     <>
-      {isLoading.categories || !categories.length
+      {isLoading || !categories?.length
         ? skeletonData?.map((item) => (
             <div className={styles.skeleton_macket} key={item}>
               <Skeleton className={styles.skeleton}>

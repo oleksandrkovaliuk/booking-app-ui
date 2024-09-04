@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useDispatch } from "react-redux";
@@ -19,7 +19,6 @@ import { EditDetailsIcon } from "@/svgs/EditDetailsIcon";
 import { EditPriceIcon } from "@/svgs/EditPriceIcon";
 
 import { NavigationBarProps } from "./type";
-import { EditFormValues } from "../../[user]/[id]/type";
 
 import styles from "./navigationBar.module.scss";
 
@@ -31,73 +30,83 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
 
   const [isMobile, setIsMobile] = useState<boolean>(false);
   const [isNavBarActive, setIsNavBarActive] = useState<boolean>(true);
+  const [unsavedSelection, setUnsavedSelection] = useState<string[]>([]);
+
   const TabsContent = [
     {
       id: 1,
       href: `/manage/listings/edit/${params.user}/${params.id}/overview`,
       content: "Overview",
-      key: "overview",
+      key: ["overview"],
       icon: <EditOverviewIcon />,
     },
     {
       id: 2,
       href: `/manage/listings/edit/${params.user}/${params.id}/category`,
       content: "Category",
-      key: "edit_category",
+      key: ["edit_category"],
       icon: <EditCategoryIcon />,
     },
     {
       id: 3,
       href: `/manage/listings/edit/${params.user}/${params.id}/type`,
       content: "Type of listing",
+      key: ["edit_type"],
       icon: <EditTypeIcon />,
     },
     {
       id: 4,
       href: `/manage/listings/edit/${params.user}/${params.id}/location`,
       content: "Location",
+      key: ["edit_cordinates", "edit_address"],
       icon: <EditLocationIcon />,
     },
     {
       id: 5,
       href: `/manage/listings/edit/${params.user}/${params.id}/basic`,
       content: "Basics",
+      key: ["edit_accesable", "edit_pets_allowed", "edit_guests"],
       icon: <EditBasicsIcon />,
     },
     {
       id: 6,
       href: `/manage/listings/edit/${params.user}/${params.id}/images`,
       content: "Images",
+      key: ["edit_images"],
       icon: <EditImagesIcon />,
     },
     {
       id: 7,
       href: `/manage/listings/edit/${params.user}/${params.id}/details`,
       content: "Details",
+      key: ["edit_title", "edit_placeis", "edit_aboutplace", "edit_notes"],
       icon: <EditDetailsIcon />,
     },
     {
       id: 9,
       href: `/manage/listings/edit/${params.user}/${params.id}/price`,
       content: "Price",
+      key: ["edit_price"],
       icon: <EditPriceIcon />,
     },
   ];
 
-  const isAnyUnsavedChanges = () => {
+  const checkIfAnyUnsavedChanges = useCallback(() => {
     const key = Object.keys(localStorage);
     if (key.some((item) => item.startsWith("edit"))) {
       localStorage.setItem(
         `${params.id}isAnyUnsavedChanges`,
         JSON.stringify(true)
       );
+      setUnsavedSelection(key.filter((item) => item.startsWith("edit")));
     } else {
       localStorage.setItem(
         `${params.id}isAnyUnsavedChanges`,
         JSON.stringify(false)
       );
     }
-  };
+  }, [params.id]);
+
   useEffect(() => {
     const screen = window.innerWidth;
     if (screen < 768) {
@@ -106,16 +115,13 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
     } else {
       setIsMobile(false);
     }
+    checkIfAnyUnsavedChanges();
 
     return () => {
-      isAnyUnsavedChanges();
-
-      localStorage.removeItem("edit_title");
-      localStorage.removeItem("edit_placeis");
-      localStorage.removeItem("edit_aboutplace");
-      localStorage.removeItem("edit_notes");
+      setUnsavedSelection([]);
+      checkIfAnyUnsavedChanges();
     };
-  }, []);
+  }, [checkIfAnyUnsavedChanges]);
 
   return (
     <>
@@ -207,6 +213,9 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
                 )}
 
                 {tab.content}
+                {tab.key?.some((item: string) =>
+                  unsavedSelection.includes(item!)
+                ) && <span className={styles.circle} />}
               </Link>
             ))}
           </motion.ul>

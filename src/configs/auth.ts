@@ -1,11 +1,16 @@
-import type { AuthOptions, User } from "next-auth";
+import { toast } from "sonner";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import Facebook from "next-auth/providers/facebook";
-import { AccessUser, InsertOAuthUser } from "@/app/api/apiCalls";
-import { toast } from "sonner";
-import { FacebookProfile, GoogleProfile } from "@/_utilities/type";
+
+import { store } from "@/store";
+import { AccesUser } from "@/store/api/endpoints/auth/accesUser";
+import { AccesOAuthUser } from "@/store/api/endpoints/auth/accesOAuthUser";
+
 import { Roles } from "@/_utilities/enums";
+
+import type { AuthOptions, User } from "next-auth";
+import { FacebookProfile, GoogleProfile } from "@/_utilities/type";
 
 export const authConfig: AuthOptions = {
   providers: [
@@ -30,7 +35,15 @@ export const authConfig: AuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
-        const res = await AccessUser(credentials);
+
+        const res = await store
+          .dispatch(
+            AccesUser.initiate({
+              email: credentials.email,
+              password: credentials.password,
+            })
+          )
+          .unwrap();
 
         if (res.status === "authorized" && res.user) {
           return {
@@ -48,17 +61,22 @@ export const authConfig: AuthOptions = {
     async signIn({ account, profile }: any) {
       if (account?.provider === "google" || account?.provider === "facebook") {
         try {
-          const res = await InsertOAuthUser({
-            email: profile?.email!,
-            user_name: profile?.name,
-            img_url:
-              account?.provider === "google"
-                ? (profile as GoogleProfile).picture!
-                : (profile as FacebookProfile).picture.data.url!,
-            provider: account?.provider,
-          });
-          if (res.role) {
-            account.role = res.role as Roles;
+          const result = await store
+            .dispatch(
+              AccesOAuthUser.initiate({
+                email: profile?.email!,
+                user_name: profile?.name,
+                img_url:
+                  account?.provider === "google"
+                    ? (profile as GoogleProfile).picture!
+                    : (profile as FacebookProfile).picture.data.url!,
+                provider: account?.provider,
+              })
+            )
+            .unwrap();
+
+          if (result.role) {
+            account.role = result.role as Roles;
             return true;
           } else {
             return false;
@@ -74,6 +92,7 @@ export const authConfig: AuthOptions = {
     async jwt({ token, account, user }) {
       if (account) {
         token.role = (account.role as Roles) || user.role || Roles.USER;
+        token.jti = account.id_token;
       }
       return token;
     },
@@ -81,6 +100,7 @@ export const authConfig: AuthOptions = {
     async session({ session, token }) {
       if (session?.user) {
         session.user.role = token.role as Roles;
+        session.user.jti = token.jti as string;
       }
       return session;
     },

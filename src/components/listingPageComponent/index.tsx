@@ -3,18 +3,18 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Tooltip } from "@nextui-org/react";
+import { useSearchParams } from "next/navigation";
 
-import { useSelector } from "@/store";
-import { getCurrentListing } from "@/store/selector/getCurrentListing";
-
-import { GetUser } from "@/app/api/apiCalls";
+import { store } from "@/store";
+import { getUser } from "@/store/api/endpoints/auth/getUser";
+import { useGetCurrentListingQuery } from "@/store/api/endpoints/listings/getCurrentListing";
 
 import { ImagesSection } from "./_components/imagesSection";
 import { GoogleMapComponent } from "../googleMap/googleMap";
 import { DescriptionSection } from "./_components/descriptionSection";
 import { CalendarSection } from "./_components/calendarSection";
 import { ReserveListingBlock } from "./_components/reserveListingBlock";
-import { formattedAddressComponent } from "@/sharing/address/formattedAddressVariants";
+import { formattedAddressComponent } from "@/helpers/address/formattedAddressVariants";
 
 import { Logo } from "@/svgs/Logo";
 import super_host from "@/assets/medal-of-honor.png";
@@ -25,21 +25,14 @@ import { ShowCaseUser } from "@/_utilities/interfaces";
 import { ListingPageComponentProps } from "./type";
 
 import styles from "./listing.module.scss";
-import { useSearchParams } from "next/navigation";
-import { useDispatch } from "react-redux";
-import {
-  setCheckIn,
-  setCheckOut,
-  setResetDate,
-} from "@/store/slices/userDateSelectionSlice";
 
 export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
   id,
   isPublic,
 }) => {
-  const dispatch = useDispatch();
   const params = useSearchParams().get("date_selection");
-  const listing = useSelector((state) => getCurrentListing(state, id));
+
+  const { data: listing } = useGetCurrentListingQuery({ id: Number(id) });
 
   const [host, setHost] = useState<ShowCaseUser>({
     user_name: "",
@@ -50,10 +43,15 @@ export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
 
   useEffect(() => {
     const setUpPage = async () => {
-      const user = await GetUser({
-        user_name: listing?.host_name!,
-        user_email: listing?.host_email!,
-      });
+      const user = await store
+        .dispatch(
+          getUser.initiate({
+            user_name: listing?.host_name!,
+            user_email: listing?.host_email!,
+          })
+        )
+        .unwrap();
+
       setHost((prev) => {
         if (!user.data) return prev;
         return {
@@ -63,13 +61,11 @@ export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
           role: user.data.role,
         };
       });
-      // dispatch(setCheckIn(JSON.parse(params!).start));
-      // dispatch(setCheckOut(JSON.parse(params!).end));
     };
 
     if (!listing?.host_email && !listing?.host_name) return;
     setUpPage();
-  }, [dispatch, listing?.host_email, listing?.host_name, params]);
+  }, [listing?.host_email, listing?.host_name, params]);
 
   return (
     <div className={styles.listing_container}>
@@ -261,6 +257,7 @@ export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
             </div>
             <div className={styles.right_side_grid}>
               <ReserveListingBlock
+                isPublic={isPublic || false}
                 price={listing?.price}
                 disabledDates={listing?.disabled_dates!}
                 guests_limit={listing?.guests}

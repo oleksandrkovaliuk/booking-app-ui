@@ -1,18 +1,19 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { useDispatch } from "react-redux";
 import { useForm, UseFormSetValue } from "react-hook-form";
 
-import { useSelector } from "@/store";
-import { getAllListings } from "@/store/thunks/listings/listings";
-import { getCurrentUserListings } from "@/store/thunks/listings/getCurrentUserListing";
+import { store } from "@/store";
+import { requestUpdateListing } from "@/store/api/endpoints/listings/requestUpdateListing";
+import { useGetCurrentListingQuery } from "@/store/api/endpoints/listings/getCurrentListing";
+import { useGetListingsTypeOfPlaceQuery } from "@/store/api/endpoints/listings/getTypeOfPlace";
 
 import { ConfirmationButton } from "@/components/confirmationButton";
 
 import { TypeOfPlace } from "@/app/manage/_components/createForm/content/_components/typeOfPlace";
-import { updateListing } from "@/app/api/apiCalls";
-import { handleUpdateFormAndLocalStorage } from "@/sharing/updateFormAndStorageStates";
+
+import { ErrorHandler } from "@/helpers/errorHandler";
+import { handleUpdateFormAndLocalStorage } from "@/helpers/updateFormAndStorageStates";
 
 import { ContentProps, EditFormValues } from "../../type";
 
@@ -20,18 +21,19 @@ import styles from "./type.module.scss";
 import "../../shared/sharedStyles.scss";
 
 export const TypeContent: React.FC<ContentProps> = ({ params }) => {
-  const dispatch = useDispatch();
   const setValueRef = useRef<UseFormSetValue<EditFormValues> | null>(null);
 
-  const { typeOfPlace } = useSelector((state) => state.listingsInfo);
-  const listing = useSelector((state) => state.listingsInfo.listings[0]);
+  const { data: typeOfPlace } = useGetListingsTypeOfPlaceQuery();
+  const { data: listing } = useGetCurrentListingQuery({
+    id: Number(params?.id),
+  });
 
   const [enableConfirmationButton, setEnableConfirmationButton] =
     useState<boolean>(false);
 
   const { register, watch, setValue } = useForm({
     defaultValues: {
-      edit_type: listing?.type,
+      edit_type: {},
     } as EditFormValues,
   });
 
@@ -39,14 +41,16 @@ export const TypeContent: React.FC<ContentProps> = ({ params }) => {
 
   const onConfirmation = async () => {
     try {
-      await Promise.all([
-        updateListing({
-          id: listing.id!,
+      const { error } = await store.dispatch(
+        requestUpdateListing.initiate({
+          id: listing?.id!,
           data: selectedTypeOfPlace!,
           column: "type",
-        }),
-        dispatch(getAllListings() as any),
-      ]);
+        })
+      );
+
+      if (error) return ErrorHandler(error);
+
       toast.success("Successfully updated.", {
         action: {
           label: "Close",
@@ -61,15 +65,6 @@ export const TypeContent: React.FC<ContentProps> = ({ params }) => {
       );
     }
   };
-
-  useEffect(() => {
-    dispatch(
-      getCurrentUserListings({
-        id: Number(params.id),
-        user_name: params.user,
-      }) as any
-    );
-  }, []);
 
   useEffect(() => {
     setValueRef.current = setValue;

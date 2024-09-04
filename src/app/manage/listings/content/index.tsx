@@ -1,15 +1,14 @@
 "use client";
 
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
-import { useDispatch } from "react-redux";
 import { Button, Skeleton, Tooltip } from "@nextui-org/react";
 
-import { useSelector } from "@/store";
 import { NotFoundIcon } from "@/svgs/NotFoundIcon";
-import { getAllListings } from "@/store/thunks/listings/listings";
+
+import { useGetUserListingsQuery } from "@/store/api/endpoints/listings/getUserListings";
 
 import { FormState } from "../../_components/type";
 import { ListingCard } from "@/components/listingCard";
@@ -20,13 +19,18 @@ import { SkeletonListingCard } from "@/components/listingCard/components/skeleto
 import { skeletonData } from "@/information/data";
 
 import styles from "./listings.module.scss";
-import { getUserListings } from "@/store/thunks/listings/getUserListings";
 
 export const ListingsPage: React.FC = () => {
-  const dispath = useDispatch();
   const { data: session } = useSession();
 
-  const { listings, isLoading } = useSelector((state) => state.listingsInfo);
+  const {
+    data: listings,
+    isLoading,
+    refetch,
+  } = useGetUserListingsQuery({
+    user_name: session?.user?.name!,
+    user_email: session?.user?.email!,
+  });
 
   const [listingInProccess, setListingInProgress] = useState<FormState | null>(
     null
@@ -36,15 +40,6 @@ export const ListingsPage: React.FC = () => {
     !listingInProccess?.images &&
     !listingInProccess?.title &&
     !listingInProccess?.price;
-
-  useEffect(() => {
-    dispath(
-      getUserListings({
-        user_email: session?.user?.email!,
-        user_name: session?.user?.name!,
-      }) as any
-    );
-  }, [dispath, session?.user]);
 
   useEffect(() => {
     if (typeof localStorage !== "undefined") {
@@ -73,16 +68,16 @@ export const ListingsPage: React.FC = () => {
           Welcome{" "}
           {session?.user.name && `, ${session?.user?.name?.split(" ")[0]}`}!
         </h1>
-        <Link href={!isLoading.listings ? "/manage/listings/create" : "#"}>
+        <Link href={!isLoading ? "/manage/listings/create" : "#"}>
           <Button className={styles.create_listing_button} size="sm">
             {listingInProccess ? "Continue creating" : "Create Listing"}
           </Button>
         </Link>
       </section>
       <section className={styles.listings_container}>
-        {!listings?.length && !isLoading.listings && !listingInProccess && (
+        {!listings?.length && !isLoading && !listingInProccess && (
           <Link
-            href={!isLoading.listings ? "/manage/listings/create" : "#"}
+            href={!isLoading ? "/manage/listings/create" : "#"}
             className={styles.empty_page}
           >
             <Tooltip
@@ -102,12 +97,10 @@ export const ListingsPage: React.FC = () => {
           </Link>
         )}
         {listingInProccess &&
-          !isLoading.listings &&
+          !isLoading &&
           (dataInProccess ? (
             <div className={styles.listing_in_progress}>
-              <Link
-                href={!isLoading.listings ? "/manage/listings/create" : "#"}
-              >
+              <Link href={!isLoading ? "/manage/listings/create" : "#"}>
                 <Skeleton className={styles.skeleton}>
                   <div className={styles.listing_in_progress_img}></div>
                 </Skeleton>
@@ -131,7 +124,7 @@ export const ListingsPage: React.FC = () => {
             />
           ))}
 
-        {isLoading.listings
+        {isLoading
           ? skeletonData.map((item) => (
               <SkeletonListingCard key={item} item={item} size="lg" />
             ))

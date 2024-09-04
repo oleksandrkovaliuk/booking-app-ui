@@ -1,7 +1,8 @@
 import { Dispatch, SetStateAction } from "react";
 import { UseFormRegister, UseFormSetValue } from "react-hook-form";
 
-import { Category, TypeOfPlace } from "@/store/slices/listingsInfoSlice/type";
+import { Category, TypeOfPlace } from "@/store/api/lib/type";
+
 import { EditFormValues } from "@/app/manage/listings/edit/[user]/[id]/type";
 import { GoogleMapProps } from "@/components/googleMap/type";
 

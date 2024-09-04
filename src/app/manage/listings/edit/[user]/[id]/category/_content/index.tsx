@@ -1,37 +1,39 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { useDispatch } from "react-redux";
 import { useForm, UseFormSetValue } from "react-hook-form";
 
-import { ContentProps, EditFormValues } from "../../type";
-
-import { useSelector } from "@/store";
-import { getAllListings } from "@/store/thunks/listings/listings";
+import { store } from "@/store";
+import { requestUpdateListing } from "@/store/api/endpoints/listings/requestUpdateListing";
+import { useGetListingsCategoriesQuery } from "@/store/api/endpoints/listings/getCategories";
+import { useGetCurrentListingQuery } from "@/store/api/endpoints/listings/getCurrentListing";
 
 import { ConfirmationButton } from "@/components/confirmationButton";
 import { Category } from "@/app/manage/_components/createForm/content/_components/category";
-import { handleUpdateFormAndLocalStorage } from "@/sharing/updateFormAndStorageStates";
 
-import { updateListing } from "@/app/api/apiCalls";
+import { ErrorHandler } from "@/helpers/errorHandler";
+import { handleUpdateFormAndLocalStorage } from "@/helpers/updateFormAndStorageStates";
+
+import { ContentProps, EditFormValues } from "../../type";
 
 import styles from "./category.module.scss";
 import "../../shared/sharedStyles.scss";
-import { getCurrentUserListings } from "@/store/thunks/listings/getCurrentUserListing";
 
 export const CategoryPageContent: React.FC<ContentProps> = ({ params }) => {
-  const dispatch = useDispatch();
   const setValueRef = useRef<UseFormSetValue<EditFormValues> | null>(null);
 
-  const { categories } = useSelector((state) => state.listingsInfo);
-  const listing = useSelector((state) => state.listingsInfo.listings[0]);
+  const { data: categories } = useGetListingsCategoriesQuery();
+
+  const { data: listing } = useGetCurrentListingQuery({
+    id: Number(params?.id),
+  });
 
   const [enableConfirmationButton, setEnableConfirmationButton] =
     useState<boolean>(false);
 
   const { register, watch, setValue } = useForm({
     defaultValues: {
-      edit_category: listing?.category,
+      edit_category: {},
     } as EditFormValues,
   });
 
@@ -39,14 +41,16 @@ export const CategoryPageContent: React.FC<ContentProps> = ({ params }) => {
 
   const onConfirmation = async () => {
     try {
-      await Promise.all([
-        updateListing({
-          id: listing.id!,
+      const { error } = await store.dispatch(
+        requestUpdateListing.initiate({
+          id: listing?.id!,
           data: selectedCategory!,
           column: "category",
-        }),
-        dispatch(getAllListings() as any),
-      ]);
+        })
+      );
+
+      if (error) return ErrorHandler(error);
+
       toast.success("Successfully updated.", {
         action: {
           label: "Close",
@@ -61,15 +65,6 @@ export const CategoryPageContent: React.FC<ContentProps> = ({ params }) => {
       );
     }
   };
-
-  useEffect(() => {
-    dispatch(
-      getCurrentUserListings({
-        id: Number(params.id),
-        user_name: params.user,
-      }) as any
-    );
-  }, []);
 
   useEffect(() => {
     setValueRef.current = setValue;

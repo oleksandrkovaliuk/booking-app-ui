@@ -18,9 +18,11 @@
     display: flex;
     justify-content: center;
   }
+
   &[data-centered-modal="true"] {
     transform: translateX(-50%);
   }
+
   .spinner {
     position: absolute;
     inset: 0;
@@ -29,6 +31,7 @@
     background-position: center;
     background-image: url("~@/assets/spinner.gif");
   }
+
   .modal_menu_guest_settings {
     display: flex;
     align-items: center;

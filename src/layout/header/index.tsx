@@ -180,8 +180,8 @@ export const Header = () => {
             windowIsScrolled={windowIsScrolled}
           />
         </motion.nav>
+        {isHomePage && <CategoryBar scrolled={windowIsScrolled} />}
       </header>
-      {isHomePage && <CategoryBar scrolled={windowIsScrolled} />}
     </>
   );
 };

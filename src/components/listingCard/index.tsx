@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Slider from "react-slick";
-import { useDisclosure } from "@nextui-org/react";
+import { DateValue, RangeValue, useDisclosure } from "@nextui-org/react";
+import { today, getLocalTimeZone } from "@internationalized/date";
 
 import { Arrow } from "@/svgs/RightArrow";
 
@@ -9,14 +10,14 @@ import { StatusBadge } from "../statusBadge";
 import { ManageModal } from "./components/modals/manage";
 import { PreviewModal } from "./components/modals/preview";
 
+import { formattedAddressComponent } from "@/helpers/address/formattedAddressVariants";
+
 import { ListingCardProps } from "./type";
 
 import "./additional.scss";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import styles from "./listingCard.module.scss";
-import { formattedAddressComponent } from "@/helpers/address/formattedAddressVariants";
-import { useSelector } from "@/store";
 
 export const ListingCard: React.FC<ListingCardProps> = ({
   id,
@@ -37,7 +38,12 @@ export const ListingCard: React.FC<ListingCardProps> = ({
 }) => {
   const sliderRef = useRef<Slider | null>(null);
 
-  const date = useSelector((state) => state.userDateSelection);
+  const [userDateSelection, setUserDateSelection] = useState<
+    RangeValue<DateValue>
+  >({
+    start: today(getLocalTimeZone()),
+    end: today(getLocalTimeZone()).add({ weeks: 1 }),
+  });
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
 
   const [currentSlide, setCurrentSlide] = useState<number>(0);
@@ -58,9 +64,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   const mainHref = !isPreview
     ? !isPublic && isInProccess
       ? "/manage/listings/create"
-      : `/listing/${
-          address?.shorterAddress
-        }/${id}?date_selection=${JSON.stringify(date)}`
+      : `/listing/${address?.shorterAddress}/${id}`
     : "#";
 
   // OPTIONS
@@ -84,6 +88,23 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   };
 
   useEffect(() => {
+    const userDateSelectionStart = localStorage.getItem(
+      "userDateSelection.start"
+    );
+    const userDateSelectionEnd = localStorage.getItem("userDateSelection.end");
+    if (userDateSelectionStart) {
+      setUserDateSelection({
+        ...userDateSelection,
+        start: JSON.parse(userDateSelectionStart),
+      });
+    }
+    if (userDateSelectionEnd) {
+      setUserDateSelection({
+        ...userDateSelection,
+        end: JSON.parse(userDateSelectionEnd),
+      });
+    }
+
     const sliderContainer = sliderRef.current?.innerSlider?.list;
 
     const handleWheelEvent = (e: WheelEvent) =>
@@ -176,6 +197,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
               <div key={image.url} className={styles.slider_content}>
                 <div
                   className={styles.slider_image}
+                  onLoadedDataCapture={() => console.log("loading")}
                   style={{ backgroundImage: `url(${image.url})` }}
                 />
               </div>

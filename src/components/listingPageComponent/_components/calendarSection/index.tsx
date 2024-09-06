@@ -1,49 +1,58 @@
-import React from "react";
+import React, { useState } from "react";
 import { toast } from "sonner";
-import { useDispatch } from "react-redux";
 import { getLocalTimeZone, today } from "@internationalized/date";
 import { DateValue, RangeCalendar, RangeValue } from "@nextui-org/calendar";
 
 import {
-  setCheckIn,
-  setCheckOut,
-  setResetDate,
-} from "@/store/slices/userDateSelectionSlice";
+  CountNights,
+  DateFormatingMonthDay,
+  isDateValueEqual,
+} from "@/helpers/dateManagment";
 
-import { CountNights, DateFormatingMonthDay } from "@/helpers/dateManagment";
+import { CalendarSelectionProps } from "../../_lib/type";
 
 import styles from "./calendarSection.module.scss";
-import { useSelector } from "@/store";
 
-export const CalendarSection: React.FC<{
-  title: string;
-  disabledDates: DateValue[];
-}> = ({ title, disabledDates }) => {
-  const dispatch = useDispatch();
-  const userDateSelection = useSelector((state) => state.userDateSelection);
-
-  const [triggeredSelection, setTriggeredSelection] = React.useState<
+export const CalendarSection: React.FC<CalendarSelectionProps> = ({
+  title,
+  disabledDates,
+  userDateSelection,
+  setUserDateSelection,
+}) => {
+  const [triggeredSelection, setTriggeredSelection] = useState<
     "checkIn" | "checkOut" | "both"
   >("checkIn");
 
   // CONDITIONS
+  const isDefaultDate =
+    isDateValueEqual(userDateSelection) && triggeredSelection !== "both";
+
   const checkInOrOutText =
     triggeredSelection === "checkIn"
       ? "Select check-in date"
       : "Select check-out date";
 
-  const textContentBasedOnSelection =
-    triggeredSelection !== "both"
-      ? checkInOrOutText
-      : `${CountNights(
-          userDateSelection.start,
-          userDateSelection.end
-        )} nights in ${title}`;
+  const textContentBasedOnSelection = isDefaultDate
+    ? checkInOrOutText
+    : `${CountNights(
+        userDateSelection.start,
+        userDateSelection.end
+      )} nights in ${title}`;
 
   const handleSetDateSelection = (value: RangeValue<DateValue>) => {
     if (value.start.toString() !== value.end.toString()) {
-      dispatch(setCheckIn(value.start));
-      dispatch(setCheckOut(value.end));
+      setUserDateSelection({
+        start: value.start,
+        end: value.end,
+      });
+
+      localStorage.setItem(
+        "userDateSelection",
+        JSON.stringify({
+          start: value.start,
+          end: value.end,
+        })
+      );
       setTriggeredSelection("both");
     } else {
       toast(
@@ -51,16 +60,21 @@ export const CalendarSection: React.FC<{
           🫣 Selected dates cannot be the same. The minimum stay is one night.
         </div>
       );
-      dispatch(setResetDate());
+      localStorage.removeItem("userDateSelection");
+      setUserDateSelection({
+        start: today(getLocalTimeZone()),
+        end: today(getLocalTimeZone()).add({ weeks: 1 }),
+      });
     }
   };
+
   return (
     <section className={styles.select_date}>
       <span className={styles.section_title}>
         {textContentBasedOnSelection}
       </span>
       <div className={styles.section_subtitle}>
-        {triggeredSelection !== "both"
+        {isDefaultDate
           ? "Minimum stay of 1 night"
           : `${DateFormatingMonthDay(
               userDateSelection.start

@@ -1,33 +1,29 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { useDispatch } from "react-redux";
 import { Checkbox } from "@nextui-org/react";
+import { today, getLocalTimeZone } from "@internationalized/date";
 import { DateValue, RangeCalendar, RangeValue } from "@nextui-org/calendar";
-
-import { useSelector } from "@/store";
-import {
-  setCheckIn,
-  setCheckOut,
-  setResetDate,
-} from "@/store/slices/userDateSelectionSlice";
-import { GlobalCalendarState } from "@/store/slices/userDateSelectionSlice/type";
 
 import { Location } from "@/svgs/Location";
 import { Search } from "@/svgs/Search";
 import spinner from "@/assets/spinner.gif";
 
+import { useDebounce } from "@/hooks/useDebounce";
+
 import { ModalPanel } from "@/components/modalPanel";
 import { Counter } from "@/components/counter";
 import { getCountriesByRequest } from "./getCountriesByRequest";
-import { useDebounce } from "@/hooks/useDebounce";
-import { regions } from "@/information/data";
-import { DateFormatingMonthDay } from "@/helpers/dateManagment";
 
-import { regionResponceType, regionsType, SearchFormBarProps } from "../types";
+import {
+  DateFormatingMonthDay,
+  isDateValueEqual,
+  ParseLocalStorageDates,
+} from "@/helpers/dateManagment";
+import { regions } from "@/information/data";
 import { TypesOfSelections } from "@/_utilities/enums";
-import { today, getLocalTimeZone } from "@internationalized/date";
+import { regionResponceType, regionsType, SearchFormBarProps } from "../types";
 
 import styles from "./search_form_bar.module.scss";
 
@@ -39,18 +35,29 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
   isMobile,
   onCloseCallBack,
 }) => {
-  const dispatch = useDispatch();
   const searchBarRef = useRef<HTMLFormElement | null>(null);
-  const userDateSelection = useSelector((state) => state.userDateSelection);
 
   const [triggeredSelection, setTriggeredSelection] =
     useState<TypesOfSelections>(TypesOfSelections.UNSELECTED);
+
+  const [userDateSelection, setUserDateSelection] = useState<
+    RangeValue<DateValue>
+  >({
+    start: today(getLocalTimeZone()),
+    end: today(getLocalTimeZone()).add({ weeks: 1 }),
+  });
+
+  const [isNewDateSelected, setIsNewDateSelected] = useState<boolean>(false);
 
   const [regionSelection, setRegionSelection] = useState<string>("");
   const [responseForRegion, setResponseForRegion] = useState<[]>([]);
 
   const [amoutOfGuests, setAmoutOfGuests] = useState<number>(1);
   const [includePets, setIncludePets] = useState<boolean>(false);
+
+  // CONDITIONS
+  const isDefaultDate =
+    isDateValueEqual(userDateSelection) && !isNewDateSelected;
 
   const isDateSelection = triggeredSelection === TypesOfSelections.DATE;
 
@@ -105,24 +112,46 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
       type === TypesOfSelections.DATE_EXPERIENCES_CHECKIN ||
       type === TypesOfSelections.DATE
     ) {
-      dispatch(setCheckIn(date));
+      setUserDateSelection({
+        ...userDateSelection,
+        start: date,
+      });
       setTriggeredSelection(TypesOfSelections.DATE_EXPERIENCES_CHECKOUT);
     }
   };
 
-  const handleBookingCalendarSelections = (value: GlobalCalendarState) => {
+  const handleBookingCalendarSelections = (value: RangeValue<DateValue>) => {
     if (isDateSelection) {
-      dispatch(setCheckIn(value.start));
+      setUserDateSelection({
+        ...userDateSelection,
+        start: value.start,
+      });
     } else if (value.start.toString() !== value.end.toString()) {
-      dispatch(setCheckOut(value.end));
+      localStorage.setItem(
+        "userDateSelection",
+        JSON.stringify({
+          start: value.start,
+          end: value.end,
+        })
+      );
+      setUserDateSelection({
+        ...userDateSelection,
+        end: value.end,
+      });
+      setIsNewDateSelected(true);
       setTriggeredSelection(TypesOfSelections.GUEST);
     } else {
       toast(
-        <div className="toast ">
+        <div className="toast">
           🫣 Selected dates cannot be the same. The minimum stay is one night.
         </div>
       );
-      dispatch(setResetDate());
+      setIsNewDateSelected(false);
+      setUserDateSelection({
+        start: today(getLocalTimeZone()),
+        end: today(getLocalTimeZone()).add({ weeks: 1 }),
+      });
+      localStorage.removeItem("userDateSelection");
     }
     return null;
   };
@@ -150,6 +179,13 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
     isDateSelection,
     setIsCategoryChanged,
   ]);
+
+  useEffect(() => {
+    const storedDates = localStorage.getItem("userDateSelection");
+    if (!storedDates) return;
+    setIsNewDateSelected(true);
+    setUserDateSelection(ParseLocalStorageDates(storedDates));
+  }, []);
 
   return (
     <>
@@ -304,6 +340,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
             Where
           </label>
         </div>
+
         <div
           className={styles.search_bar_input_dates}
           data-state={staysButtonState}
@@ -334,10 +371,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                   }}
                   color="primary"
                   minValue={today(getLocalTimeZone())}
-                  value={
-                    userDateSelection &&
-                    (userDateSelection as RangeValue<DateValue>)
-                  }
+                  value={userDateSelection}
                 />
               </ModalPanel>
             )}
@@ -360,7 +394,11 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                   id="dateInput"
                   className={styles.search_bar_input}
                   placeholder="Add dates"
-                  value={DateFormatingMonthDay(userDateSelection.start)}
+                  value={
+                    isDefaultDate
+                      ? "Add date"
+                      : DateFormatingMonthDay(userDateSelection.start)
+                  }
                   readOnly
                 />
                 <label htmlFor="dateInput" className={styles.search_bar_label}>
@@ -384,7 +422,11 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                   id="dateInput"
                   className={styles.search_bar_input}
                   placeholder="Add dates"
-                  value={DateFormatingMonthDay(userDateSelection.end)}
+                  value={
+                    isDefaultDate
+                      ? "Add date"
+                      : DateFormatingMonthDay(userDateSelection.end)
+                  }
                   readOnly
                 />
                 <label htmlFor="dateInput" className={styles.search_bar_label}>

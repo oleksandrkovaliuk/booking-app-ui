@@ -5,6 +5,7 @@
 
   padding-block: 15px;
   background-color: var(--booking-app-white-color);
+  border-bottom: 1px solid var(--booking-app-lightgrey-color);
 }
 .listing_header_nav {
   display: flex;
@@ -19,9 +20,6 @@
     .logo {
       width: 40px;
       height: 40px;
-      path {
-        fill: var(--booking-app-black-color);
-      }
     }
   }
 }
@@ -29,5 +27,8 @@
 @media (width <= 1280px) {
   .listing_header {
     padding-inline: 20px;
+    .listing_header_nav {
+      max-width: unset;
+    }
   }
 }

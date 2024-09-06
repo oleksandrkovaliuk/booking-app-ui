@@ -66,6 +66,7 @@
     position: sticky;
     top: 100px;
     flex-grow: 1;
+    z-index: 2;
   }
 }
 
@@ -227,8 +228,60 @@
   transform: translate(-50%, -50%);
 }
 
+@media (width <= 1440px) {
+  .information_grid_wrap {
+    gap: 20px;
+  }
+}
 @media (width <= 1280px) {
   .listing_container {
+    padding-block: 50px;
     padding-inline: 20px;
+    max-width: unset;
+  }
+
+  .information_grid_wrap {
+    .left_side_grid {
+      max-width: unset;
+    }
+    .right_side_grid {
+      position: fixed;
+      top: unset;
+      bottom: 0;
+      right: 0;
+      left: 0;
+    }
+  }
+
+  .host_trusted_for {
+    .host_trusted_for_wrap {
+      max-width: 60dvw;
+    }
+  }
+}
+
+@media (width <= 768px) {
+  .sub_title_text_content {
+    .sub_title_text {
+      font-size: 20px;
+    }
+  }
+  .host_trusted_for {
+    .host_trusted_for_wrap {
+      max-width: unset;
+      gap: 10px;
+      .host_trusted_img {
+        width: 50px;
+        height: 50px;
+      }
+    }
+  }
+  .more_details {
+    gap: 25px;
+    .more_details_wrap {
+      flex-grow: 1;
+      max-width: unset;
+      width: 100%;
+    }
   }
 }

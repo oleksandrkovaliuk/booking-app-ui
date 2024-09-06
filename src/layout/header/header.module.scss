@@ -1,6 +1,4 @@
 .header_container {
-  padding: 30px 50px;
-  border-bottom: 1px solid var(--booking-app-lightgrey-color);
   position: sticky;
   background-color: var(--booking-app-white-color);
   top: 0;
@@ -18,6 +16,8 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  padding: 30px 50px;
+  border-bottom: 1px solid var(--booking-app-lightgrey-color);
   .logo {
     position: relative;
     z-index: 3;
@@ -212,7 +212,7 @@
   }
 }
 @media (width <= 768px) {
-  .header_container {
+  .navigation {
     padding: 20px 15px;
   }
   .center_nagivation_menu {

@@ -100,8 +100,8 @@ export const CategoryBar = ({ scrolled }: { scrolled: boolean }) => {
         </ModalContent>
       </Modal>
       <motion.div
-        data-scrolled={scrolled}
         className={styles.category_container}
+        data-scrolled={scrolled}
       >
         <ScrollShadow
           hideScrollBar

@@ -3,7 +3,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { useDispatch } from "react-redux";
 import { Tooltip } from "@nextui-org/react";
 import { usePathname } from "next/navigation";
 

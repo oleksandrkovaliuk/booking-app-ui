@@ -1,8 +1,8 @@
+import { getSession } from "next-auth/react";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import { BASE_API_URL } from "../../helpers/constants";
 import { ApiTagsTypes } from "./lib/constants";
-import { getSession } from "next-auth/react";
 
 export const api = createApi({
   baseQuery: fetchBaseQuery({
@@ -12,6 +12,7 @@ export const api = createApi({
       if (session) {
         headers.set("Authorization", `Bearer ${session.user.jwt} `);
       }
+      return headers;
     },
   }),
   keepUnusedDataFor: 5,

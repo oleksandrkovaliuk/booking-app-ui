@@ -50,6 +50,7 @@ export const authConfig: AuthOptions = {
         if (res.status === "authorized" && res.user) {
           return {
             ...res.user,
+            jwt: res.user.jwt,
             email: res.user?.email,
             role: (res.user.role as Roles) || (Roles.USER as Roles),
           } as User;
@@ -87,6 +88,7 @@ export const authConfig: AuthOptions = {
 
           if (res.role) {
             account.role = res.role as Roles;
+            account.jwt = res.jwt as string;
             return true;
           } else {
             return false;
@@ -102,10 +104,7 @@ export const authConfig: AuthOptions = {
     async jwt({ token, account, user }) {
       if (account) {
         token.role = (account.role as Roles) || user.role || Roles.USER;
-        token.jwt = njwt
-          .create(JSON.stringify(token)!, process.env.JWT_SECRET!)
-          .setExpiration(new Date().getTime() + 24 * 60 * 60 * 1000)
-          .compact();
+        token.jwt = account.jwt;
       }
       return token;
     },

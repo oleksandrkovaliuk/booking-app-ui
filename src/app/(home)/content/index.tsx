@@ -4,17 +4,12 @@ import React from "react";
 import { motion } from "framer-motion";
 import { skeletonData } from "@/information/data";
 
-import {
-  getVerifiedListings,
-  useGetVerifiedListingsQuery,
-} from "@/store/api/endpoints/listings/getVerifiedListings";
+import { useGetVerifiedListingsQuery } from "@/store/api/endpoints/listings/getVerifiedListings";
 
 import { ListingCard } from "@/components/listingCard";
-import { appearAnimation } from "@/app/manage/_components/consts";
 import { SkeletonListingCard } from "@/components/listingCard/components/skeleton";
 
 import styles from "./homeContent.module.scss";
-import { store } from "@/store";
 
 export const HomeContent: React.FC = () => {
   const {

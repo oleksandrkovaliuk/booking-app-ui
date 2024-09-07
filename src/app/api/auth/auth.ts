@@ -1,9 +1,8 @@
+import njwt from "njwt";
 import { toast } from "sonner";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import Facebook from "next-auth/providers/facebook";
-
-import { store } from "@/store";
 
 import { Roles } from "@/_utilities/enums";
 
@@ -103,7 +102,10 @@ export const authConfig: AuthOptions = {
     async jwt({ token, account, user }) {
       if (account) {
         token.role = (account.role as Roles) || user.role || Roles.USER;
-        token.jti = account.id_token;
+        token.jwt = njwt
+          .create(JSON.stringify(token)!, process.env.JWT_SECRET!)
+          .setExpiration(new Date().getTime() + 24 * 60 * 60 * 1000)
+          .compact();
       }
       return token;
     },
@@ -111,7 +113,7 @@ export const authConfig: AuthOptions = {
     async session({ session, token }) {
       if (session?.user) {
         session.user.role = token.role as Roles;
-        session.user.jti = token.jti as string;
+        session.user.jwt = token.jwt as string;
       }
       return session;
     },

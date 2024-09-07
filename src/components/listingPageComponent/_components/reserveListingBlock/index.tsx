@@ -1,40 +1,122 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { useDispatch } from "react-redux";
 import { DateValue, RangeCalendar, RangeValue } from "@nextui-org/calendar";
 import { today, getLocalTimeZone } from "@internationalized/date";
 
-import { useSelector } from "@/store";
 import {
-  setCheckIn,
-  setCheckOut,
-  setResetDate,
-} from "@/store/slices/userDateSelectionSlice";
-
-import { CountNights, DateFormatingMonthDay } from "@/helpers/dateManagment";
+  CountNights,
+  DateFormatingMonthDay,
+  isDateValueEqual,
+} from "@/helpers/dateManagment";
 import { Counter } from "@/components/counter";
 
-import { DateInputConrainerProps, ReserveListingBlockProps } from "./type";
 import { Procantages } from "@/_utilities/enums";
+import {
+  DateInputConrainerProps,
+  ReserveListingBlockProps,
+} from "../../_lib/type";
 
 import styles from "./reserveListing.module.scss";
 import "./additionalStyles.scss";
+import { Modal, ModalBody, ModalContent } from "@nextui-org/react";
 
 const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
   disabledDates,
   inputSelection,
-  setInputSelection,
-  setModalState,
-}) => {
-  const dispatch = useDispatch();
-  const userDateSelection = useSelector((state) => state.userDateSelection);
+  userDateSelection,
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  setInputSelection,
+  setUserDateSelection,
+}) => {
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+  const ModalComponent = (
+    <div className={styles.modal} data-is-mobile={isMobile}>
+      <button
+        aria-label="Close modal"
+        className={styles.modal_bg}
+        onClick={() => {
+          setIsModalOpen(false);
+          inputSelection === "checkOut"
+            ? setInputSelection("guests")
+            : setInputSelection("none");
+        }}
+      />
+      <div className={styles.modal_container}>
+        <div className={styles.modal_header}>
+          <span className={styles.modal_title}>Select your booking dates</span>
+          <p className={styles.modal_subtitle}>
+            {inputSelection === "checkIn"
+              ? "Minimum stay of 1 night"
+              : `${DateFormatingMonthDay(
+                  userDateSelection.start
+                )} - ${DateFormatingMonthDay(userDateSelection.end)}`}
+          </p>
+        </div>
+        <div className={styles.calendar_container}>
+          <RangeCalendar
+            aria-label="Booking dates"
+            visibleMonths={3}
+            onChange={(value: RangeValue<DateValue>) =>
+              handleSetDateSelection(value)
+            }
+            color="primary"
+            minValue={today(getLocalTimeZone())}
+            value={userDateSelection}
+            isDateUnavailable={(date: DateValue) => {
+              if (!date) return false;
+              return disabledDates?.some(
+                (disabledDate) =>
+                  disabledDate.day === date.day &&
+                  disabledDate.month === date.month &&
+                  disabledDate.year === date.year
+              );
+            }}
+          />
+        </div>
+        <div className={styles.modal_footer}>
+          <button
+            className={`${styles.modal_button} ${styles.clear_button}`}
+            onClick={() => {
+              setUserDateSelection({
+                start: today(getLocalTimeZone()),
+                end: today(getLocalTimeZone()).add({ weeks: 1 }),
+              });
+              setInputSelection("none");
+            }}
+          >
+            Clear dates
+          </button>
+          <button
+            className={`${styles.modal_button} ${styles.close_button}`}
+            onClick={() => {
+              setIsModalOpen(false);
+
+              inputSelection === "checkOut"
+                ? setInputSelection("guests")
+                : setInputSelection("none");
+            }}
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 
   const handleSetDateSelection = (value: RangeValue<DateValue>) => {
     if (value.start.toString() !== value.end.toString()) {
-      dispatch(setCheckIn(value.start));
-      dispatch(setCheckOut(value.end));
+      setUserDateSelection({
+        start: value.start,
+        end: value.end,
+      });
+      localStorage.setItem(
+        "userDateSelection",
+        JSON.stringify({
+          start: value.start,
+          end: value.end,
+        })
+      );
       setInputSelection("checkOut");
     } else {
       toast(
@@ -42,86 +124,39 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
           🫣 Selected dates cannot be the same. The minimum stay is one night.
         </div>
       );
-      dispatch(setResetDate());
+      setUserDateSelection({
+        start: today(getLocalTimeZone()),
+        end: today(getLocalTimeZone()).add({ weeks: 1 }),
+      });
+      localStorage.removeItem("userDateSelection");
     }
   };
 
+  useEffect(() => {
+    if (window && window.innerWidth <= 1280) setIsMobile(true);
+  }, []);
+
   return (
     <>
-      {isModalOpen && (
-        <>
-          <button
-            className={styles.modal_bg}
-            onClick={() => {
-              setIsModalOpen(false);
-              setModalState(false);
-            }}
-          />
-          <div className={styles.modal_container}>
-            <div className={styles.modal_header}>
-              <span className={styles.modal_title}>
-                Select your booking dates
-              </span>
-              <p className={styles.modal_subtitle}>
-                {inputSelection === "checkIn"
-                  ? "Minimum stay of 1 night"
-                  : `${DateFormatingMonthDay(
-                      userDateSelection.start
-                    )} - ${DateFormatingMonthDay(userDateSelection.end)}`}
-              </p>
-            </div>
-            <div className={styles.calendar_container}>
-              <RangeCalendar
-                aria-label="Booking dates"
-                visibleMonths={3}
-                onChange={(value: RangeValue<DateValue>) =>
-                  handleSetDateSelection(value)
-                }
-                color="primary"
-                minValue={today(getLocalTimeZone())}
-                value={userDateSelection}
-                isDateUnavailable={(date: DateValue) => {
-                  if (!date) return false;
-                  return disabledDates?.some(
-                    (disabledDate) =>
-                      disabledDate.day === date.day &&
-                      disabledDate.month === date.month &&
-                      disabledDate.year === date.year
-                  );
-                }}
-              />
-            </div>
-            <div className={styles.modal_footer}>
-              <button
-                className={`${styles.modal_button} ${styles.clear_button}`}
-                onClick={() => {
-                  dispatch(setCheckIn(today(getLocalTimeZone())));
-                  dispatch(
-                    setCheckOut(today(getLocalTimeZone()).add({ weeks: 1 }))
-                  );
-                }}
-              >
-                Clear dates
-              </button>
-              <button
-                className={`${styles.modal_button} ${styles.close_button}`}
-                onClick={() => {
-                  setIsModalOpen(false);
-                  setModalState(false);
-                }}
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </>
+      {isModalOpen && !isMobile ? (
+        ModalComponent
+      ) : (
+        <Modal
+          size="lg"
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          backdrop="opaque"
+        >
+          <ModalContent className={styles.mobile_modal_container}>
+            <ModalBody>{ModalComponent}</ModalBody>
+          </ModalContent>
+        </Modal>
       )}
       <button
         className={styles.date_inputs_container}
         onClick={() => {
           setInputSelection("checkIn");
           setIsModalOpen(true);
-          setModalState(true);
         }}
       >
         <div
@@ -166,14 +201,17 @@ export const ReserveListingBlock: React.FC<ReserveListingBlockProps> = ({
   price,
   isPublic,
   guests_limit,
+  userDateSelection,
+  setUserDateSelection,
   disabledDates,
 }) => {
-  const userDateSelection = useSelector((state) => state.userDateSelection);
   const [guestsAmount, setGuestsAmount] = useState(1);
+
   const [inputSelection, setInputSelection] = useState<
     "checkIn" | "checkOut" | "guests" | "none"
-  >("checkIn");
-  const [modalState, setModalState] = useState(false);
+  >("none");
+
+  const isDefaultDate = isDateValueEqual(userDateSelection);
 
   const calculationOfPrice =
     Number(Number(price).toLocaleString().split(",").join("")) *
@@ -184,34 +222,33 @@ export const ReserveListingBlock: React.FC<ReserveListingBlockProps> = ({
   const serviceFee = Math.round(calculationOfPrice * Procantages.SPACER_FEE);
 
   const total = calculationOfPrice + calculateTaxes + cleaningFee + serviceFee;
-  useEffect(() => {
-    setInputSelection("guests");
-  }, [guestsAmount]);
+
   return (
-    <div
-      className={styles.reserve_listing_container}
-      data-modal-open={modalState}
-    >
-      <div className={styles.price_block}>
-        ${Number(price).toLocaleString()}
-        <span className={styles.night}>night</span>
-      </div>
-      <DateInputsContainer
-        disabledDates={disabledDates}
-        inputSelection={inputSelection}
-        setInputSelection={setInputSelection}
-        setModalState={setModalState}
-      />
-      <div
-        className={styles.guest_block}
-        data-input-selection-guest={inputSelection === "guests"}
-      >
-        <span className={styles.guests_label}>Guests</span>
-        <Counter
-          counter={guestsAmount}
-          setCounter={setGuestsAmount}
-          maxCount={guests_limit}
+    <div className={styles.reserve_listing_container}>
+      <div className={styles.reserve_listing_main_block}>
+        <div className={styles.price_block}>
+          ${Number(price).toLocaleString()}
+          <span className={styles.night}>night</span>
+        </div>
+
+        <DateInputsContainer
+          disabledDates={disabledDates}
+          inputSelection={inputSelection}
+          setInputSelection={setInputSelection}
+          userDateSelection={userDateSelection}
+          setUserDateSelection={setUserDateSelection}
         />
+        <div
+          className={styles.guest_block}
+          data-input-selection-guest={inputSelection === "guests"}
+        >
+          <span className={styles.guests_label}>Guests</span>
+          <Counter
+            counter={guestsAmount}
+            setCounter={setGuestsAmount}
+            maxCount={guests_limit}
+          />
+        </div>
       </div>
 
       <div
@@ -223,7 +260,8 @@ export const ReserveListingBlock: React.FC<ReserveListingBlockProps> = ({
         </button>
         <p className={styles.reserve_text}>You will not be charged yet.</p>
       </div>
-      {inputSelection === "checkOut" && (
+
+      {!isDefaultDate && inputSelection !== "checkIn" && (
         <div className={styles.price_calculator}>
           <div className={styles.calculate_price_block}>
             <span className={styles.price_label}>

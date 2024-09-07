@@ -6,12 +6,9 @@ import {
 
 import { api } from "./api/api";
 
-import userDateSelectionReducer from "./slices/userDateSelectionSlice";
-
 export const store = configureStore({
   reducer: {
     [api.reducerPath]: api.reducer,
-    userDateSelection: userDateSelectionReducer,
   },
   middleware: (getDefaultMiddleware) =>
     // adding the api middleware enables caching, invalidation, polling and other features of `rtk-query`

@@ -63,6 +63,7 @@
     font-size: 15px;
     font-weight: 500;
     font-family: var(--booking-app-Nunito-Sans-font);
+
     &:not(:last-child) {
       margin-bottom: 8px;
     }
@@ -128,4 +129,9 @@
   font-weight: 600;
   font-family: var(--booking-app-Nunito-Sans-font);
   margin-bottom: 5px;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
 }

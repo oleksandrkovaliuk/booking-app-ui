@@ -33,8 +33,9 @@ export const HomeContent: React.FC = () => {
           : listings?.map((listing, i) => (
               <motion.div
                 key={listing.id}
-                {...appearAnimation}
-                transition={{ delay: 0.1 * i, ease: "easeInOut" }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.15 * i, ease: "easeInOut" }}
               >
                 <ListingCard
                   id={listing.id!}

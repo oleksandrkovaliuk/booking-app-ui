@@ -8,14 +8,12 @@ import {
   ModalHeader,
   useDisclosure,
 } from "@nextui-org/react";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-
-import Image from "next/image";
 import { toast } from "sonner";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { signIn } from "next-auth/react";
-
 import { useSearchParams, useRouter } from "next/navigation";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
 import { store } from "@/store";
 import { checkAuthType } from "@/store/api/endpoints/auth/checkAuthType";
@@ -62,7 +60,7 @@ export const LoginModal = () => {
         const { data: res, error } = await store.dispatch(
           checkAuthType.initiate({ email: btoa(emailValue) })
         );
-        if (!error && res.data) {
+        if (!error && res) {
           setEmailValid(true);
         } else {
           ErrorHandler(error as FetchBaseQueryError);
@@ -186,6 +184,7 @@ export const LoginModal = () => {
             <div className={styles.authorization_input_wrap}>
               <input
                 ref={emailRef}
+                onChange={() => (emailValid ? setEmailValid(false) : null)}
                 type="email"
                 id="email"
                 placeholder="Enter your email address..."
@@ -223,6 +222,7 @@ export const LoginModal = () => {
             )}
 
             <button
+              disabled={!passRef.current?.value.length && emailValid}
               className={styles.authorization_submit_button}
               onClick={!emailValid ? emailValidation : submitCredentials}
             >

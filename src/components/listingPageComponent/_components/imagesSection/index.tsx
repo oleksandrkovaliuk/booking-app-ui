@@ -99,6 +99,7 @@ export const ImagesSection: React.FC<{
             />
           ))}
         </div>
+
         <Button
           size="sm"
           variant="flat"
@@ -106,7 +107,7 @@ export const ImagesSection: React.FC<{
           onClick={onOpen}
         >
           <ShowMoreIcon className={styles.show_all_icon} />
-          Show all photos
+          <span>Show all photos</span>
         </Button>
       </section>
     </>

@@ -142,7 +142,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
           }}
         >
           <button
-            className={styles.mobile_navigation_trigger}
+            className={styles.mobile_navigation_show_button}
             onClick={() => setIsNavBarActive(!isNavBarActive)}
             aria-label="Menu"
           >

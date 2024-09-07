@@ -1,10 +1,19 @@
-import { DateValue } from "@nextui-org/calendar";
+import { DateValue, RangeValue } from "@nextui-org/calendar";
+import {
+  CalendarDate,
+  isEqualDay,
+  isEqualMonth,
+  isEqualYear,
+  today,
+  getLocalTimeZone,
+} from "@internationalized/date";
 
 export interface DateFormatingProps {
   year: number;
   month: number;
   day: number;
 }
+
 export const DateFormatingMonthDay = ({
   year,
   month,
@@ -27,6 +36,32 @@ export const CountNights = (start: DateValue, end: DateValue): number => {
 
   const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
   return Math.round(diffInDays);
+};
+
+export const ParseLocalStorageDates = (storedDates: string) => {
+  const { start, end } = JSON.parse(storedDates);
+  const newUserDateSelection: RangeValue<DateValue> = {
+    start: new CalendarDate(start.year, start.month, start.day),
+    end: new CalendarDate(end.year, end.month, end.day),
+  };
+  return newUserDateSelection;
+};
+
+export const isDateValueEqual = (dateSelection: RangeValue<DateValue>) => {
+  return (
+    isEqualDay(dateSelection.start, today(getLocalTimeZone())) &&
+    isEqualMonth(dateSelection.start, today(getLocalTimeZone())) &&
+    isEqualYear(dateSelection.start, today(getLocalTimeZone())) &&
+    isEqualDay(
+      dateSelection.end,
+      today(getLocalTimeZone()).add({ weeks: 1 })
+    ) &&
+    isEqualMonth(
+      dateSelection.end,
+      today(getLocalTimeZone()).add({ weeks: 1 })
+    ) &&
+    isEqualYear(dateSelection.end, today(getLocalTimeZone()).add({ weeks: 1 }))
+  );
 };
 
 export const ConverIntoDateValueFormat = (

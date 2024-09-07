@@ -4,13 +4,12 @@ import Google from "next-auth/providers/google";
 import Facebook from "next-auth/providers/facebook";
 
 import { store } from "@/store";
-import { AccesUser } from "@/store/api/endpoints/auth/accesUser";
-import { AccesOAuthUser } from "@/store/api/endpoints/auth/accesOAuthUser";
 
 import { Roles } from "@/_utilities/enums";
 
 import type { AuthOptions, User } from "next-auth";
 import { FacebookProfile, GoogleProfile } from "@/_utilities/type";
+import { AccesOAuthUser, AccessUser } from "@/app/api/auth/_accesUserApi.ts";
 
 export const authConfig: AuthOptions = {
   providers: [
@@ -36,14 +35,18 @@ export const authConfig: AuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        const res = await store
-          .dispatch(
-            AccesUser.initiate({
-              email: credentials.email,
-              password: credentials.password,
-            })
-          )
-          .unwrap();
+        // const res = await store
+        //   .dispatch(
+        //     AccesUser.initiate({
+        //       email: credentials.email,
+        //       password: credentials.password,
+        //     })
+        //   )
+        //   .unwrap();
+        const res = await AccessUser({
+          email: credentials.email,
+          password: credentials.password,
+        });
 
         if (res.status === "authorized" && res.user) {
           return {
@@ -61,22 +64,30 @@ export const authConfig: AuthOptions = {
     async signIn({ account, profile }: any) {
       if (account?.provider === "google" || account?.provider === "facebook") {
         try {
-          const result = await store
-            .dispatch(
-              AccesOAuthUser.initiate({
-                email: profile?.email!,
-                user_name: profile?.name,
-                img_url:
-                  account?.provider === "google"
-                    ? (profile as GoogleProfile).picture!
-                    : (profile as FacebookProfile).picture.data.url!,
-                provider: account?.provider,
-              })
-            )
-            .unwrap();
+          // const { data: result, error } = await store.dispatch(
+          //   AccesOAuthUser.initiate({
+          //     email: profile?.email!,
+          //     user_name: profile?.name,
+          //     img_url:
+          //       account?.provider === "google"
+          //         ? (profile as GoogleProfile).picture!
+          //         : (profile as FacebookProfile).picture.data.url!,
+          //     provider: account?.provider,
+          //   })
+          // );
 
-          if (result.role) {
-            account.role = result.role as Roles;
+          const res = await AccesOAuthUser({
+            email: profile?.email!,
+            user_name: profile?.name,
+            img_url:
+              account?.provider === "google"
+                ? (profile as GoogleProfile).picture!
+                : (profile as FacebookProfile).picture.data.url!,
+            provider: account?.provider,
+          });
+
+          if (res.role) {
+            account.role = res.role as Roles;
             return true;
           } else {
             return false;

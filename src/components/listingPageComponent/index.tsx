@@ -2,8 +2,8 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Tooltip } from "@nextui-org/react";
-import { useSearchParams } from "next/navigation";
+import { DateValue, RangeValue, Tooltip } from "@nextui-org/react";
+import { today, getLocalTimeZone } from "@internationalized/date";
 
 import { store } from "@/store";
 import { getUser } from "@/store/api/endpoints/auth/getUser";
@@ -22,17 +22,24 @@ import super_host_black from "@/assets/medal-of-honor-black.png";
 import regular_host from "@/assets/renter.png";
 
 import { ShowCaseUser } from "@/_utilities/interfaces";
-import { ListingPageComponentProps } from "./type";
+import { ListingPageComponentProps } from "./_lib/type";
 
 import styles from "./listing.module.scss";
+import { ParseLocalStorageDates } from "@/helpers/dateManagment";
 
 export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
   id,
   isPublic,
 }) => {
-  const params = useSearchParams().get("date_selection");
-
   const { data: listing } = useGetCurrentListingQuery({ id: Number(id) });
+
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+  const [userDateSelection, setUserDateSelection] = useState<
+    RangeValue<DateValue>
+  >({
+    start: today(getLocalTimeZone()),
+    end: today(getLocalTimeZone()).add({ weeks: 1 }),
+  });
 
   const [host, setHost] = useState<ShowCaseUser>({
     user_name: "",
@@ -65,7 +72,13 @@ export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
 
     if (!listing?.host_email && !listing?.host_name) return;
     setUpPage();
-  }, [listing?.host_email, listing?.host_name, params]);
+  }, [listing?.host_email, listing?.host_name]);
+
+  useEffect(() => {
+    const storedDates = localStorage.getItem("userDateSelection");
+    if (!storedDates) return;
+    setUserDateSelection(ParseLocalStorageDates(storedDates));
+  }, []);
 
   return (
     <div className={styles.listing_container}>
@@ -252,13 +265,17 @@ export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
 
               <CalendarSection
                 title={listing?.title}
+                userDateSelection={userDateSelection}
+                setUserDateSelection={setUserDateSelection}
                 disabledDates={listing?.disabled_dates!}
               />
             </div>
             <div className={styles.right_side_grid}>
               <ReserveListingBlock
-                isPublic={isPublic || false}
                 price={listing?.price}
+                isPublic={isPublic || false}
+                userDateSelection={userDateSelection}
+                setUserDateSelection={setUserDateSelection}
                 disabledDates={listing?.disabled_dates!}
                 guests_limit={listing?.guests}
               />

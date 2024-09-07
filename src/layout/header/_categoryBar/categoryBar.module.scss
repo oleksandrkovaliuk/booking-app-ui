@@ -1,7 +1,5 @@
 .category_container {
-  position: sticky;
   padding-inline: 50px;
-  top: 195px;
   min-height: 86px;
 
   display: flex;
@@ -13,11 +11,9 @@
 
   z-index: 5;
   overflow: visible;
-  will-change: top;
   transition: top 0.3s ease-in-out, border 0.2s ease-in-out;
   &[data-scrolled="true"] {
     border-bottom: 1px solid var(--booking-app-lightgrey-color);
-    top: 132px;
   }
   .filter_btn {
     background-color: transparent;

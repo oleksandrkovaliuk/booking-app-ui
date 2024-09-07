@@ -2,8 +2,6 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import { BASE_API_URL } from "../../helpers/constants";
 import { ApiTagsTypes } from "./lib/constants";
-import { getServerSession, type Session } from "next-auth";
-import { Roles } from "@/_utilities/enums";
 import { getSession } from "next-auth/react";
 
 export const api = createApi({

@@ -23,15 +23,11 @@ export const GET = async (apiPath: string) =>
       throw Error(error);
     });
 
-export const POST = async (
-  apiPath: string,
-  content: Record<string, any>,
-  way?: string
-) =>
+export const POST = async (apiPath: string, content: Record<string, any>) =>
   await fetch(`${URL}/${apiPath}`, {
     method: "POST",
-    headers: way === "form" ? {} : { ...HEADER },
-    body: way === "form" ? (content as FormData) : JSON.stringify(content),
+    headers: { ...HEADER },
+    body: JSON.stringify(content),
   })
     .then(handleError)
     .catch((error) => {

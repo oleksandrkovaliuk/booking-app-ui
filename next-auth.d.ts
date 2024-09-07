@@ -3,22 +3,22 @@ import { User } from "next-auth";
 
 declare module "next-auth" {
   interface User {
-    role?: Roles;
-    jti?: string;
+    role: Roles;
+    jwt: string | null;
   }
 
   interface Session {
     user: {
-      name?: string | null;
-      email?: string | null;
-      image?: string | null;
-      role?: Roles;
-      jti?: string;
+      name: string | null;
+      email: string | null;
+      image: string | null;
+      jwt: string | null;
+      role: Roles;
     };
   }
 
   interface Token {
-    role?: Roles;
-    jti?: string;
+    role: Roles;
+    jwt: string | null;
   }
 }

@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Slider from "react-slick";
-import { DateValue, RangeValue, useDisclosure } from "@nextui-org/react";
-import { today, getLocalTimeZone } from "@internationalized/date";
+import { useSearchParams } from "next/navigation";
+import { useDisclosure } from "@nextui-org/react";
 
 import { Arrow } from "@/svgs/RightArrow";
 
@@ -13,11 +13,16 @@ import { PreviewModal } from "./components/modals/preview";
 import { formattedAddressComponent } from "@/helpers/address/formattedAddressVariants";
 
 import { ListingCardProps } from "./type";
+import { SEARCH_PARAM_KEYS } from "@/layout/header/_lib/enums";
 
 import "./additional.scss";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import styles from "./listingCard.module.scss";
+import {
+  ExtractAvailableQueryParams,
+  PrepareExtractedQueryParams,
+} from "@/helpers/paramsManagment";
 
 export const ListingCard: React.FC<ListingCardProps> = ({
   id,
@@ -37,13 +42,13 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   isInProccess,
 }) => {
   const sliderRef = useRef<Slider | null>(null);
+  const params = useSearchParams();
+  const preparedRedirectParams = params
+    ? `/listing/${address?.shorterAddress}/${id}?${PrepareExtractedQueryParams({
+        searchParamsResult: ExtractAvailableQueryParams(params),
+      })}`
+    : `/listing/${address?.shorterAddress}/${id}`;
 
-  const [userDateSelection, setUserDateSelection] = useState<
-    RangeValue<DateValue>
-  >({
-    start: today(getLocalTimeZone()),
-    end: today(getLocalTimeZone()).add({ weeks: 1 }),
-  });
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
 
   const [currentSlide, setCurrentSlide] = useState<number>(0);
@@ -64,7 +69,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   const mainHref = !isPreview
     ? !isPublic && isInProccess
       ? "/manage/listings/create"
-      : `/listing/${address?.shorterAddress}/${id}`
+      : preparedRedirectParams
     : "#";
 
   // OPTIONS
@@ -86,37 +91,6 @@ export const ListingCard: React.FC<ListingCardProps> = ({
     if (e.deltaX > 10) sliderRef.current?.slickNext();
     else if (e.deltaX < -10) sliderRef.current?.slickPrev();
   };
-
-  useEffect(() => {
-    const userDateSelectionStart = localStorage.getItem(
-      "userDateSelection.start"
-    );
-    const userDateSelectionEnd = localStorage.getItem("userDateSelection.end");
-    if (userDateSelectionStart) {
-      setUserDateSelection({
-        ...userDateSelection,
-        start: JSON.parse(userDateSelectionStart),
-      });
-    }
-    if (userDateSelectionEnd) {
-      setUserDateSelection({
-        ...userDateSelection,
-        end: JSON.parse(userDateSelectionEnd),
-      });
-    }
-
-    const sliderContainer = sliderRef.current?.innerSlider?.list;
-
-    const handleWheelEvent = (e: WheelEvent) =>
-      e.deltaX !== 0 && e.preventDefault();
-
-    sliderContainer?.addEventListener("wheel", handleWheelEvent, {
-      passive: false,
-    });
-    return () => {
-      sliderContainer?.removeEventListener("wheel", handleWheelEvent);
-    };
-  }, []);
 
   useEffect(() => {
     const unsavedData = localStorage.getItem(`${id}`);

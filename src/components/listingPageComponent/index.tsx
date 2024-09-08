@@ -25,9 +25,11 @@ import { formattedAddressComponent } from "@/helpers/address/formattedAddressVar
 
 import { ShowCaseUser } from "@/_utilities/interfaces";
 import { ListingPageComponentProps } from "./_lib/type";
-import { SEARCH_PARAM_KEYS } from "@/layout/header/lib/enums";
+import { SEARCH_PARAM_KEYS } from "@/layout/header/_lib/enums";
 
 import styles from "./listing.module.scss";
+import { useSearchParams } from "next/navigation";
+import { ExtractAvailableQueryParams } from "@/helpers/paramsManagment";
 
 export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
   id,
@@ -35,13 +37,15 @@ export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
 }) => {
   const { data: listing } = useGetCurrentListingQuery({ id: Number(id) });
 
-  const [userDateSelection, setUserDateSelection] = useState<
-    RangeValue<DateValue>
-  >({
-    start: today(getLocalTimeZone()),
-    end: today(getLocalTimeZone()).add({ weeks: 1 }),
-  });
+  const params = useSearchParams();
+  const extractedDateParams = params.get(SEARCH_PARAM_KEYS.SEARCH_DATE);
 
+  const userDateSelection = extractedDateParams
+    ? ParseLocalStorageDates(extractedDateParams)
+    : {
+        start: today(getLocalTimeZone()),
+        end: today(getLocalTimeZone()).add({ weeks: 1 }),
+      };
   const [host, setHost] = useState<ShowCaseUser>({
     user_name: "",
     email: "",
@@ -74,12 +78,6 @@ export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
     if (!listing?.host_email && !listing?.host_name) return;
     setUpPage();
   }, [listing?.host_email, listing?.host_name]);
-
-  useEffect(() => {
-    const storedDates = localStorage.getItem(SEARCH_PARAM_KEYS.SEARCH_DATE);
-    if (!storedDates) return;
-    setUserDateSelection(ParseLocalStorageDates(storedDates));
-  }, []);
 
   return (
     <div className={styles.listing_container}>
@@ -267,7 +265,6 @@ export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
               <CalendarSection
                 title={listing?.title}
                 userDateSelection={userDateSelection}
-                setUserDateSelection={setUserDateSelection}
                 disabledDates={listing?.disabled_dates!}
               />
             </div>
@@ -276,7 +273,6 @@ export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
                 price={listing?.price}
                 isPublic={isPublic || false}
                 userDateSelection={userDateSelection}
-                setUserDateSelection={setUserDateSelection}
                 disabledDates={listing?.disabled_dates!}
                 guests_limit={listing?.guests}
               />

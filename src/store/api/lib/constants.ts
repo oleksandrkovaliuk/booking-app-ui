@@ -13,6 +13,7 @@ export const ApiUrls = {
   getListingsCategories: "/listings/categories",
   getListingsTypeOfPlace: "/listings/typeofplace",
 
+  requestListingSearch: "/listings/request/search",
   requestUpdateListing: "/listings/request/update",
   requestDeleteListing: "/listings/listing/delete",
   requestCreateListing: "/listings/listing/create",
@@ -28,6 +29,7 @@ export const ApiTagsTypes = [
   ApiTags.LISTING_TYPE_OF_PLACE,
   ApiTags.USER,
   ApiTags.CURRENT_USER,
+  ApiTags.CURRENT_LISTING,
   ApiTags.VERIFIED_LISTINGS,
   ApiTags.LISTING,
   ApiTags.USER_LISTINGS,

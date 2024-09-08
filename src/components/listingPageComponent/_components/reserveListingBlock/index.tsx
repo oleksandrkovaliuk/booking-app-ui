@@ -2,21 +2,24 @@ import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { today, getLocalTimeZone } from "@internationalized/date";
 import { Modal, ModalBody, ModalContent } from "@nextui-org/react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { DateValue, RangeCalendar, RangeValue } from "@nextui-org/calendar";
+
+import { Counter } from "@/components/counter";
 
 import {
   CountNights,
   DateFormatingMonthDay,
   isDateValueEqual,
 } from "@/helpers/dateManagment";
-import { Counter } from "@/components/counter";
+import { updateAndStoreQueryParams } from "@/helpers/paramsManagment";
 
 import { Procantages } from "@/_utilities/enums";
 import {
   DateInputConrainerProps,
   ReserveListingBlockProps,
 } from "../../_lib/type";
-import { SEARCH_PARAM_KEYS } from "@/layout/header/lib/enums";
+import { SEARCH_PARAM_KEYS } from "@/layout/header/_lib/enums";
 
 import styles from "./reserveListing.module.scss";
 import "./additionalStyles.scss";
@@ -26,8 +29,11 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
   inputSelection,
   userDateSelection,
   setInputSelection,
-  setUserDateSelection,
 }) => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const params = useSearchParams();
+
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isMobile, setIsMobile] = useState<boolean>(false);
 
@@ -79,9 +85,16 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
           <button
             className={`${styles.modal_button} ${styles.clear_button}`}
             onClick={() => {
-              setUserDateSelection({
-                start: today(getLocalTimeZone()),
-                end: today(getLocalTimeZone()).add({ weeks: 1 }),
+              updateAndStoreQueryParams({
+                updatedParams: {
+                  [SEARCH_PARAM_KEYS.SEARCH_DATE]: JSON.stringify({
+                    start: today(getLocalTimeZone()),
+                    end: today(getLocalTimeZone()).add({ weeks: 1 }),
+                  }),
+                },
+                pathname,
+                params,
+                router,
               });
               setInputSelection("none");
             }}
@@ -107,17 +120,14 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
 
   const handleSetDateSelection = (value: RangeValue<DateValue>) => {
     if (value.start.toString() !== value.end.toString()) {
-      setUserDateSelection({
-        start: value.start,
-        end: value.end,
+      updateAndStoreQueryParams({
+        updatedParams: {
+          [SEARCH_PARAM_KEYS.SEARCH_DATE]: JSON.stringify(value),
+        },
+        pathname,
+        params,
+        router,
       });
-      localStorage.setItem(
-        SEARCH_PARAM_KEYS.SEARCH_DATE,
-        JSON.stringify({
-          start: value.start,
-          end: value.end,
-        })
-      );
       setInputSelection("checkOut");
     } else {
       toast(
@@ -125,9 +135,17 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
           🫣 Selected dates cannot be the same. The minimum stay is one night.
         </div>
       );
-      setUserDateSelection({
-        start: today(getLocalTimeZone()),
-        end: today(getLocalTimeZone()).add({ weeks: 1 }),
+
+      updateAndStoreQueryParams({
+        updatedParams: {
+          [SEARCH_PARAM_KEYS.SEARCH_DATE]: JSON.stringify({
+            start: today(getLocalTimeZone()),
+            end: today(getLocalTimeZone()).add({ weeks: 1 }),
+          }),
+        },
+        pathname,
+        params,
+        router,
       });
       localStorage.removeItem("userDateSelection");
     }
@@ -203,7 +221,6 @@ export const ReserveListingBlock: React.FC<ReserveListingBlockProps> = ({
   isPublic,
   guests_limit,
   userDateSelection,
-  setUserDateSelection,
   disabledDates,
 }) => {
   const [guestsAmount, setGuestsAmount] = useState(1);
@@ -222,7 +239,7 @@ export const ReserveListingBlock: React.FC<ReserveListingBlockProps> = ({
   const cleaningFee = Math.round(calculationOfPrice * Procantages.CLEANING_FEE);
   const serviceFee = Math.round(calculationOfPrice * Procantages.SPACER_FEE);
 
-  const total = calculationOfPrice + calculateTaxes + cleaningFee + serviceFee;
+  const total = calculationOfPrice + cleaningFee + serviceFee + calculateTaxes;
 
   return (
     <div className={styles.reserve_listing_container}>
@@ -237,7 +254,6 @@ export const ReserveListingBlock: React.FC<ReserveListingBlockProps> = ({
           inputSelection={inputSelection}
           setInputSelection={setInputSelection}
           userDateSelection={userDateSelection}
-          setUserDateSelection={setUserDateSelection}
         />
         <div
           className={styles.guest_block}
@@ -277,22 +293,30 @@ export const ReserveListingBlock: React.FC<ReserveListingBlockProps> = ({
 
           <div className={styles.calculate_price_block}>
             <span className={styles.price_label}>Cleaning fee</span>
-            <span className={styles.price_result}>${cleaningFee}</span>
+            <span className={styles.price_result}>
+              ${cleaningFee.toLocaleString()}
+            </span>
           </div>
 
           <div className={styles.calculate_price_block}>
             <span className={styles.price_label}>Spacer fee</span>
-            <span className={styles.price_result}>${serviceFee}</span>
+            <span className={styles.price_result}>
+              ${serviceFee.toLocaleString()}
+            </span>
           </div>
 
           <div className={styles.calculate_price_block}>
             <span className={styles.price_label}>Taxes</span>
-            <span className={styles.price_result}>${calculateTaxes}</span>
+            <span className={styles.price_result}>
+              ${calculateTaxes.toLocaleString()}
+            </span>
           </div>
 
           <div className={styles.calculate_total_block}>
             <span className={styles.price_label}>Total</span>
-            <span className={styles.price_result}>${total}</span>
+            <span className={styles.price_result}>
+              ${total.toLocaleString()}
+            </span>
           </div>
         </div>
       )}

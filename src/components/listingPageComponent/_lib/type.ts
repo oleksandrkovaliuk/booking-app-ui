@@ -10,7 +10,6 @@ export interface CalendarSelectionProps {
   title: string;
   disabledDates: DateValue[];
   userDateSelection: RangeValue<DateValue>;
-  setUserDateSelection: Dispatch<SetStateAction<RangeValue<DateValue>>>;
 }
 export interface ReserveListingBlockProps {
   price: string;
@@ -18,7 +17,6 @@ export interface ReserveListingBlockProps {
   guests_limit: number;
   disabledDates: DateValue[];
   userDateSelection: RangeValue<DateValue>;
-  setUserDateSelection: Dispatch<SetStateAction<RangeValue<DateValue>>>;
 }
 
 export interface DateInputConrainerProps {
@@ -29,5 +27,4 @@ export interface DateInputConrainerProps {
   setInputSelection: React.Dispatch<
     React.SetStateAction<"checkIn" | "checkOut" | "guests" | "none">
   >;
-  setUserDateSelection: Dispatch<SetStateAction<RangeValue<DateValue>>>;
 }

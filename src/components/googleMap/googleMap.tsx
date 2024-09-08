@@ -40,6 +40,7 @@ export const GoogleMapComponent: React.FC<GoogleMapProps> = ({
       const places =
         searchBar.current.getPlaces() as google.maps.places.PlaceResult[];
 
+      console.log(places, "places");
       if (places) {
         editPage && onConfirmation!(true);
         setCordinates!({

@@ -1,7 +1,7 @@
 export const getSearchSelection = (
   params: URLSearchParams,
   searchParamsTypes: { [key: string]: string }
-): { [key in keyof typeof searchParamsTypes]: string } => {
+) => {
   const result: Partial<{ [key in keyof typeof searchParamsTypes]: string }> =
     {};
 
@@ -12,5 +12,5 @@ export const getSearchSelection = (
     }
   });
 
-  return result as { [key in keyof typeof searchParamsTypes]: string };
+  return result;
 };

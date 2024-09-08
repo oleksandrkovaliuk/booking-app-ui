@@ -7,6 +7,10 @@ import { today, getLocalTimeZone, parseDate } from "@internationalized/date";
 import { DateValue, RangeCalendar, RangeValue } from "@nextui-org/calendar";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
+import { store } from "@/store";
+import { getVerifiedListings } from "@/store/api/endpoints/listings/getVerifiedListings";
+import { requestListingSearch } from "@/store/api/endpoints/listings/requestListingSearch";
+
 import { Location } from "@/svgs/Location";
 import { Search } from "@/svgs/Search";
 import spinner from "@/assets/spinner.gif";
@@ -21,17 +25,18 @@ import {
   isDateValueEqual,
   ParseLocalStorageDates,
 } from "@/helpers/dateManagment";
-import { getSearchSelection } from "../lib/getSearchSelection";
-import { getCountriesByRequest } from "../lib/getCountriesByRequest";
-import { updateAndStoreQueryParams } from "@/helpers/updateAndStoreQueryParams";
+import { ErrorHandler } from "@/helpers/errorHandler";
+import { getSearchSelection } from "../_lib/getSearchSelection";
+import { getCountriesByRequest } from "../_lib/getCountriesByRequest";
+import { updateAndStoreQueryParams } from "@/helpers/paramsManagment";
 import { regions } from "@/information/data";
 
 import {
   regionResponceType,
   regionsType,
   SearchFormBarProps,
-} from "../lib/types";
-import { SEARCH_PARAM_KEYS } from "../lib/enums";
+} from "../_lib/types";
+import { SEARCH_PARAM_KEYS } from "../_lib/enums";
 import { TypesOfSelections } from "@/_utilities/enums";
 
 import styles from "./search_form_bar.module.scss";
@@ -62,7 +67,15 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
 
   const [isNewDateSelected, setIsNewDateSelected] = useState<boolean>(false);
 
-  const [regionSelection, setRegionSelection] = useState<string>("");
+  const [regionSelection, setRegionSelection] = useState<{
+    value: string | null;
+    country: string | null;
+    city: string | null;
+  }>({
+    value: null,
+    country: null,
+    city: null,
+  });
   const [responseForRegion, setResponseForRegion] = useState<[]>([]);
 
   const [amoutOfGuests, setAmoutOfGuests] = useState<number>(1);
@@ -80,16 +93,14 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
   const isDateExperiencesSelectionCheckOut =
     triggeredSelection === TypesOfSelections.DATE_EXPERIENCES_CHECKOUT;
 
-  const isRegions = regions.some((region) => region.region === regionSelection);
+  const isRegions = regions.some(
+    (region) => region.region === regionSelection?.value
+  );
 
   const handleClearAllTriggeredSelections = () => {
     setTriggeredSelection(TypesOfSelections.UNSELECTED);
   };
 
-  // const cachedUpdateAndStoreQueryParams = useCallback(() => {
-  //   updateAndStoreQueryParams({
-  //     updatedParams: {
-  // },[])
   const handlePopUpMenuOpening = (
     e: React.MouseEvent,
     type: TypesOfSelections
@@ -101,11 +112,21 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
 
   const getData = async () => {
     try {
-      const res = await getCountriesByRequest(regionSelection);
-      console.log(res.data);
+      const res = await getCountriesByRequest(regionSelection.value!);
       setResponseForRegion(res.data);
     } catch (error) {
-      setRegionSelection("");
+      toast.info("Too many requests at the same time", {
+        position: "bottom-center",
+        action: {
+          label: "Close",
+          onClick: (e) => requestSearch(e),
+        },
+      });
+      setRegionSelection({
+        value: "",
+        country: null,
+        city: null,
+      });
     }
   };
   const delaiedDataResponse = useDebounce(getData, 500);
@@ -114,9 +135,17 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
     if (e.target.value) {
       delaiedDataResponse();
 
-      setRegionSelection(e.target.value);
+      setRegionSelection({
+        value: e.target.value,
+        country: null,
+        city: null,
+      });
     } else {
-      setRegionSelection("");
+      setRegionSelection({
+        value: null,
+        country: null,
+        city: null,
+      });
     }
   };
 
@@ -165,18 +194,56 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
         start: today(getLocalTimeZone()),
         end: today(getLocalTimeZone()).add({ weeks: 1 }),
       });
-      localStorage.removeItem("userDateSelection");
     }
     return null;
   };
 
-  const requestSearch = (e: React.FormEvent) => {
+  const requestSearch = async (e: React.FormEvent) => {
     e.preventDefault();
+    try {
+      const searchSelection = getSearchSelection(params, SEARCH_PARAM_KEYS);
+      console.log(searchSelection, "searchSelection");
+      const { data: res, error } = await store.dispatch(
+        requestListingSearch.initiate({
+          search_place: searchSelection[SEARCH_PARAM_KEYS.SEARCH_PLACE]
+            ? JSON.parse(searchSelection[SEARCH_PARAM_KEYS.SEARCH_PLACE])
+            : null,
+          search_date: searchSelection[SEARCH_PARAM_KEYS.SEARCH_DATE]
+            ? ParseLocalStorageDates(
+                searchSelection[SEARCH_PARAM_KEYS.SEARCH_DATE]
+              )
+            : null,
+          search_amountOfGuests: searchSelection[
+            SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS
+          ]
+            ? JSON.parse(
+                searchSelection[SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS]
+              )
+            : null,
+          search_includePets: searchSelection[
+            SEARCH_PARAM_KEYS.SEARCH_INCLUDE_PETS
+          ]
+            ? JSON.parse(searchSelection[SEARCH_PARAM_KEYS.SEARCH_INCLUDE_PETS])
+            : null,
+          search_category: searchSelection[SEARCH_PARAM_KEYS.SEARCH_CATEGORY]
+            ? JSON.parse(searchSelection[SEARCH_PARAM_KEYS.SEARCH_CATEGORY])
+            : null,
+        })
+      );
 
-    setTriggeredSelection(TypesOfSelections.UNSELECTED);
-    onCloseCallBack && onCloseCallBack();
-    const searchSelection = getSearchSelection(params, SEARCH_PARAM_KEYS);
-    console.log(searchSelection[SEARCH_PARAM_KEYS.SEARCH_DATE]);
+      if (error || !res) ErrorHandler(error as Error);
+
+      setTriggeredSelection(TypesOfSelections.UNSELECTED);
+      onCloseCallBack && onCloseCallBack();
+    } catch (error) {
+      await store.dispatch(getVerifiedListings.initiate());
+      toast.error("We couldn't process your request. Please try again", {
+        action: {
+          label: "Try again",
+          onClick: (e) => requestSearch(e),
+        },
+      });
+    }
   };
   useEffect(() => {
     if (
@@ -205,7 +272,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
         router,
       });
     }
-  }, [amoutOfGuests]);
+  }, [amoutOfGuests, params, pathname, router]);
 
   useEffect(() => {
     if (includePets) {
@@ -216,51 +283,40 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
         router,
       });
     }
-  }, [includePets]);
+  }, [includePets, params, pathname, router]);
 
   useEffect(() => {
     Object.values(SEARCH_PARAM_KEYS).forEach((key) => {
-      const storedValue = localStorage.getItem(key);
       const storedParams = params.get(key);
 
-      if (storedValue || storedParams) {
-        switch (key) {
-          case SEARCH_PARAM_KEYS.SEARCH_REGION: {
-            setRegionSelection(
-              JSON.parse(storedValue ? storedValue : storedParams!)
-            );
-            break;
-          }
-          case SEARCH_PARAM_KEYS.SEARCH_DATE: {
-            setIsNewDateSelected(true);
-            setUserDateSelection({
-              start: ParseLocalStorageDates(
-                storedValue ? storedValue : storedParams!
-              ).start,
-              end: ParseLocalStorageDates(
-                storedValue ? storedValue : storedParams!
-              ).end,
-            });
-            break;
-          }
-          case SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS: {
-            setAmoutOfGuests(
-              JSON.parse(storedValue ? storedValue : storedParams!)
-            );
-            break;
-          }
-          case SEARCH_PARAM_KEYS.SEARCH_INCLUDE_PETS: {
-            setIncludePets(
-              JSON.parse(storedValue ? storedValue : storedParams!)
-            );
-            break;
-          }
+      if (!storedParams) return;
+      switch (key) {
+        case SEARCH_PARAM_KEYS.SEARCH_PLACE: {
+          setRegionSelection({
+            ...JSON.parse(storedParams),
+          });
+          break;
         }
-      } else {
-        return;
+
+        case SEARCH_PARAM_KEYS.SEARCH_DATE: {
+          setIsNewDateSelected(true);
+          setUserDateSelection({
+            start: ParseLocalStorageDates(storedParams!).start,
+            end: ParseLocalStorageDates(storedParams!).end,
+          });
+          break;
+        }
+        case SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS: {
+          setAmoutOfGuests(JSON.parse(storedParams!));
+          break;
+        }
+        case SEARCH_PARAM_KEYS.SEARCH_INCLUDE_PETS: {
+          setIncludePets(JSON.parse(storedParams!));
+          break;
+        }
       }
     });
-  }, []);
+  }, [params]);
 
   return (
     <>
@@ -305,7 +361,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                     margin: "auto",
                   }}
                 >
-                  {!regionSelection || isRegions ? (
+                  {!regionSelection.value || isRegions ? (
                     <div className={styles.regions_cards_container}>
                       <h2 className={styles.search_region_modal_title}>
                         Search by region
@@ -323,17 +379,21 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                                     : TypesOfSelections.DATE
                                 );
                                 const value = region.region;
-                                if (prev !== value) {
+                                if (prev.value !== value) {
                                   updateAndStoreQueryParams({
                                     updatedParams: {
-                                      [SEARCH_PARAM_KEYS.SEARCH_REGION]:
-                                        JSON.stringify(value),
+                                      [SEARCH_PARAM_KEYS.SEARCH_PLACE]:
+                                        JSON.stringify({ value: value }),
                                     },
                                     pathname,
                                     params,
                                     router,
                                   });
-                                  return value;
+                                  return {
+                                    value: value,
+                                    city: null,
+                                    country: null,
+                                  };
                                 }
                                 return prev;
                               })
@@ -379,18 +439,27 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                                           : TypesOfSelections.DATE
                                       );
                                       const value = formattedValue;
-                                      if (prev !== value) {
+
+                                      if (prev.value !== value) {
                                         updateAndStoreQueryParams({
                                           updatedParams: {
-                                            [SEARCH_PARAM_KEYS.SEARCH_REGION]:
-                                              JSON.stringify(value),
+                                            [SEARCH_PARAM_KEYS.SEARCH_PLACE]:
+                                              JSON.stringify({
+                                                city: countires.city,
+                                                country: countires.country,
+                                                value: formattedValue,
+                                              }),
                                           },
                                           pathname,
                                           params,
                                           router,
                                         });
 
-                                        return value;
+                                        return {
+                                          value: formattedValue,
+                                          city: countires.city,
+                                          country: countires.country,
+                                        };
                                       }
                                       return prev;
                                     })
@@ -425,13 +494,13 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
             className={styles.search_bar_input}
             placeholder="Search destinations"
             onChange={getRegionSelectionValue}
-            value={regionSelection}
+            value={regionSelection?.value!}
           />
           <label
             htmlFor="searchRegionInput"
             className={styles.search_bar_label}
           >
-            Where
+            Which City you heading?
           </label>
         </div>
 

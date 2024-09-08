@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -17,8 +17,8 @@ import { useGetListingsCategoriesQuery } from "@/store/api/endpoints/listings/ge
 import { FilterIcon } from "@/svgs/FilterIcon";
 import { skeletonData } from "@/information/data";
 
-import { SEARCH_PARAM_KEYS } from "../lib/enums";
-import { updateAndStoreQueryParams } from "@/helpers/updateAndStoreQueryParams";
+import { SEARCH_PARAM_KEYS } from "../_lib/enums";
+import { updateAndStoreQueryParams } from "@/helpers/paramsManagment";
 
 import styles from "./categoryBar.module.scss";
 
@@ -35,6 +35,14 @@ const Categories: React.FC = () => {
   const selectCategory = (id: number) => {
     setSelectedCategory((prev) => (prev === id ? prev : id));
   };
+
+  useEffect(() => {
+    if (params.get(SEARCH_PARAM_KEYS.SEARCH_CATEGORY)) {
+      setSelectedCategory(
+        Number(params.get(SEARCH_PARAM_KEYS.SEARCH_CATEGORY))
+      );
+    }
+  }, [params]);
 
   return (
     <>

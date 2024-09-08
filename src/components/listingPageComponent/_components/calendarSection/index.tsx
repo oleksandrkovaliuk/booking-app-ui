@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { toast } from "sonner";
 import { getLocalTimeZone, today } from "@internationalized/date";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { DateValue, RangeCalendar, RangeValue } from "@nextui-org/calendar";
 
 import {
@@ -8,18 +9,21 @@ import {
   DateFormatingMonthDay,
   isDateValueEqual,
 } from "@/helpers/dateManagment";
+import { updateAndStoreQueryParams } from "@/helpers/paramsManagment";
 
+import { SEARCH_PARAM_KEYS } from "@/layout/header/_lib/enums";
 import { CalendarSelectionProps } from "../../_lib/type";
 
 import styles from "./calendarSection.module.scss";
-import { SEARCH_PARAM_KEYS } from "@/layout/header/lib/enums";
 
 export const CalendarSection: React.FC<CalendarSelectionProps> = ({
   title,
   disabledDates,
   userDateSelection,
-  setUserDateSelection,
 }) => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const params = useSearchParams();
   const [triggeredSelection, setTriggeredSelection] = useState<
     "checkIn" | "checkOut" | "both"
   >("checkIn");
@@ -42,9 +46,13 @@ export const CalendarSection: React.FC<CalendarSelectionProps> = ({
 
   const handleSetDateSelection = (value: RangeValue<DateValue>) => {
     if (value.start.toString() !== value.end.toString()) {
-      setUserDateSelection({
-        start: value.start,
-        end: value.end,
+      updateAndStoreQueryParams({
+        updatedParams: {
+          [SEARCH_PARAM_KEYS.SEARCH_DATE]: JSON.stringify(value),
+        },
+        pathname,
+        params,
+        router,
       });
 
       localStorage.setItem(
@@ -62,9 +70,16 @@ export const CalendarSection: React.FC<CalendarSelectionProps> = ({
         </div>
       );
       localStorage.removeItem("userDateSelection");
-      setUserDateSelection({
-        start: today(getLocalTimeZone()),
-        end: today(getLocalTimeZone()).add({ weeks: 1 }),
+      updateAndStoreQueryParams({
+        updatedParams: {
+          [SEARCH_PARAM_KEYS.SEARCH_DATE]: JSON.stringify({
+            start: today(getLocalTimeZone()),
+            end: today(getLocalTimeZone()).add({ weeks: 1 }),
+          }),
+        },
+        pathname,
+        params,
+        router,
       });
     }
   };

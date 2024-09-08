@@ -12,6 +12,7 @@ import {
 import { CalendarSelectionProps } from "../../_lib/type";
 
 import styles from "./calendarSection.module.scss";
+import { SEARCH_PARAM_KEYS } from "@/layout/header/lib/enums";
 
 export const CalendarSection: React.FC<CalendarSelectionProps> = ({
   title,
@@ -47,7 +48,7 @@ export const CalendarSection: React.FC<CalendarSelectionProps> = ({
       });
 
       localStorage.setItem(
-        "userDateSelection",
+        SEARCH_PARAM_KEYS.SEARCH_DATE,
         JSON.stringify({
           start: value.start,
           end: value.end,

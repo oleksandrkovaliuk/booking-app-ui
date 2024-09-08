@@ -109,7 +109,7 @@
   display: flex;
 }
 .show_case_wrap {
-  max-width: 60dvw;
+  max-width: 60%;
   margin: auto;
   padding: 0px;
 
@@ -118,8 +118,7 @@
     flex-wrap: wrap;
     gap: 10px;
     .show_case_image {
-      width: 49%;
-
+      width: calc(50% - 5px);
       object-fit: cover;
       &.everythird {
         width: 100%;

@@ -11,7 +11,7 @@ import { Logo } from "@/svgs/Logo";
 import { AddHouseIcon } from "@/svgs/AddHouseIcon";
 import { Search } from "@/svgs/Search";
 
-import { CenterNavigationMenuProps, RightNavigationMenuProps } from "./types";
+import { CenterNavigationMenuProps, RightNavigationMenuProps } from "./lib/types";
 
 import styles from "./header.module.scss";
 

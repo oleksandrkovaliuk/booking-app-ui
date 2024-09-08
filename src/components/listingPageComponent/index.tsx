@@ -14,18 +14,20 @@ import { GoogleMapComponent } from "../googleMap/googleMap";
 import { DescriptionSection } from "./_components/descriptionSection";
 import { CalendarSection } from "./_components/calendarSection";
 import { ReserveListingBlock } from "./_components/reserveListingBlock";
-import { formattedAddressComponent } from "@/helpers/address/formattedAddressVariants";
 
 import { Logo } from "@/svgs/Logo";
 import super_host from "@/assets/medal-of-honor.png";
 import super_host_black from "@/assets/medal-of-honor-black.png";
 import regular_host from "@/assets/renter.png";
 
+import { ParseLocalStorageDates } from "@/helpers/dateManagment";
+import { formattedAddressComponent } from "@/helpers/address/formattedAddressVariants";
+
 import { ShowCaseUser } from "@/_utilities/interfaces";
 import { ListingPageComponentProps } from "./_lib/type";
+import { SEARCH_PARAM_KEYS } from "@/layout/header/lib/enums";
 
 import styles from "./listing.module.scss";
-import { ParseLocalStorageDates } from "@/helpers/dateManagment";
 
 export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
   id,
@@ -33,7 +35,6 @@ export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
 }) => {
   const { data: listing } = useGetCurrentListingQuery({ id: Number(id) });
 
-  const [isMobile, setIsMobile] = useState<boolean>(false);
   const [userDateSelection, setUserDateSelection] = useState<
     RangeValue<DateValue>
   >({
@@ -75,7 +76,7 @@ export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
   }, [listing?.host_email, listing?.host_name]);
 
   useEffect(() => {
-    const storedDates = localStorage.getItem("userDateSelection");
+    const storedDates = localStorage.getItem(SEARCH_PARAM_KEYS.SEARCH_DATE);
     if (!storedDates) return;
     setUserDateSelection(ParseLocalStorageDates(storedDates));
   }, []);

@@ -65,9 +65,9 @@ export const authConfig: AuthOptions = {
             provider: account?.provider,
           });
 
-          if (res.role) {
-            account.role = res.role as Roles;
-            account.jwt = res.jwt as string;
+          if (res.user.role) {
+            account.role = res.user.role as Roles;
+            account.jwt = res.user.jwt as string;
             return true;
           } else {
             return false;

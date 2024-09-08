@@ -1,6 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import {
   Button,
@@ -16,9 +17,16 @@ import { useGetListingsCategoriesQuery } from "@/store/api/endpoints/listings/ge
 import { FilterIcon } from "@/svgs/FilterIcon";
 import { skeletonData } from "@/information/data";
 
+import { SEARCH_PARAM_KEYS } from "../lib/enums";
+import { updateAndStoreQueryParams } from "@/helpers/updateAndStoreQueryParams";
+
 import styles from "./categoryBar.module.scss";
 
 const Categories: React.FC = () => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const params = useSearchParams();
+
   const { data: categories, isLoading } = useGetListingsCategoriesQuery();
 
   const [selectedCategory, setSelectedCategory] = React.useState<number | null>(
@@ -45,7 +53,19 @@ const Categories: React.FC = () => {
             <button
               key={category.id}
               className={styles.category}
-              onClick={() => selectCategory(category.id)}
+              onClick={() => {
+                selectCategory(category.id);
+                updateAndStoreQueryParams({
+                  updatedParams: {
+                    [SEARCH_PARAM_KEYS.SEARCH_CATEGORY]: JSON.stringify(
+                      category.id
+                    ),
+                  },
+                  pathname,
+                  params,
+                  router,
+                });
+              }}
               data-selected={selectedCategory === category.id}
             >
               <Image

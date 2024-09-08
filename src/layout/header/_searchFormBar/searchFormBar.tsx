@@ -1,10 +1,11 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Checkbox } from "@nextui-org/react";
-import { today, getLocalTimeZone } from "@internationalized/date";
+import { today, getLocalTimeZone, parseDate } from "@internationalized/date";
 import { DateValue, RangeCalendar, RangeValue } from "@nextui-org/calendar";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { Location } from "@/svgs/Location";
 import { Search } from "@/svgs/Search";
@@ -14,16 +15,24 @@ import { useDebounce } from "@/hooks/useDebounce";
 
 import { ModalPanel } from "@/components/modalPanel";
 import { Counter } from "@/components/counter";
-import { getCountriesByRequest } from "./getCountriesByRequest";
 
 import {
   DateFormatingMonthDay,
   isDateValueEqual,
   ParseLocalStorageDates,
 } from "@/helpers/dateManagment";
+import { getSearchSelection } from "../lib/getSearchSelection";
+import { getCountriesByRequest } from "../lib/getCountriesByRequest";
+import { updateAndStoreQueryParams } from "@/helpers/updateAndStoreQueryParams";
 import { regions } from "@/information/data";
+
+import {
+  regionResponceType,
+  regionsType,
+  SearchFormBarProps,
+} from "../lib/types";
+import { SEARCH_PARAM_KEYS } from "../lib/enums";
 import { TypesOfSelections } from "@/_utilities/enums";
-import { regionResponceType, regionsType, SearchFormBarProps } from "../types";
 
 import styles from "./search_form_bar.module.scss";
 
@@ -36,6 +45,10 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
   onCloseCallBack,
 }) => {
   const searchBarRef = useRef<HTMLFormElement | null>(null);
+
+  const router = useRouter();
+  const pathname = usePathname();
+  const params = useSearchParams();
 
   const [triggeredSelection, setTriggeredSelection] =
     useState<TypesOfSelections>(TypesOfSelections.UNSELECTED);
@@ -68,17 +81,15 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
     triggeredSelection === TypesOfSelections.DATE_EXPERIENCES_CHECKOUT;
 
   const isRegions = regions.some((region) => region.region === regionSelection);
-  const isSearchSettedUp =
-    regionSelection.length ||
-    userDateSelection.start ||
-    userDateSelection.end ||
-    amoutOfGuests ||
-    includePets;
 
   const handleClearAllTriggeredSelections = () => {
     setTriggeredSelection(TypesOfSelections.UNSELECTED);
   };
 
+  // const cachedUpdateAndStoreQueryParams = useCallback(() => {
+  //   updateAndStoreQueryParams({
+  //     updatedParams: {
+  // },[])
   const handlePopUpMenuOpening = (
     e: React.MouseEvent,
     type: TypesOfSelections
@@ -91,6 +102,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
   const getData = async () => {
     try {
       const res = await getCountriesByRequest(regionSelection);
+      console.log(res.data);
       setResponseForRegion(res.data);
     } catch (error) {
       setRegionSelection("");
@@ -101,6 +113,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
   const getRegionSelectionValue = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value) {
       delaiedDataResponse();
+
       setRegionSelection(e.target.value);
     } else {
       setRegionSelection("");
@@ -127,13 +140,14 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
         start: value.start,
       });
     } else if (value.start.toString() !== value.end.toString()) {
-      localStorage.setItem(
-        "userDateSelection",
-        JSON.stringify({
-          start: value.start,
-          end: value.end,
-        })
-      );
+      updateAndStoreQueryParams({
+        updatedParams: {
+          [SEARCH_PARAM_KEYS.SEARCH_DATE]: JSON.stringify(value),
+        },
+        pathname,
+        params,
+        router,
+      });
       setUserDateSelection({
         ...userDateSelection,
         end: value.end,
@@ -158,12 +172,11 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
 
   const requestSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (isSearchSettedUp) {
-      setTriggeredSelection(TypesOfSelections.UNSELECTED);
-      onCloseCallBack && onCloseCallBack();
-    } else {
-      // console.log("Search not setted up");
-    }
+
+    setTriggeredSelection(TypesOfSelections.UNSELECTED);
+    onCloseCallBack && onCloseCallBack();
+    const searchSelection = getSearchSelection(params, SEARCH_PARAM_KEYS);
+    console.log(searchSelection[SEARCH_PARAM_KEYS.SEARCH_DATE]);
   };
   useEffect(() => {
     if (
@@ -181,10 +194,72 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
   ]);
 
   useEffect(() => {
-    const storedDates = localStorage.getItem("userDateSelection");
-    if (!storedDates) return;
-    setIsNewDateSelected(true);
-    setUserDateSelection(ParseLocalStorageDates(storedDates));
+    if (amoutOfGuests) {
+      updateAndStoreQueryParams({
+        updatedParams: {
+          [SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS]:
+            JSON.stringify(amoutOfGuests),
+        },
+        pathname,
+        params,
+        router,
+      });
+    }
+  }, [amoutOfGuests]);
+
+  useEffect(() => {
+    if (includePets) {
+      updateAndStoreQueryParams({
+        updatedParams: { pets: JSON.stringify(includePets) },
+        pathname,
+        params,
+        router,
+      });
+    }
+  }, [includePets]);
+
+  useEffect(() => {
+    Object.values(SEARCH_PARAM_KEYS).forEach((key) => {
+      const storedValue = localStorage.getItem(key);
+      const storedParams = params.get(key);
+
+      if (storedValue || storedParams) {
+        switch (key) {
+          case SEARCH_PARAM_KEYS.SEARCH_REGION: {
+            setRegionSelection(
+              JSON.parse(storedValue ? storedValue : storedParams!)
+            );
+            break;
+          }
+          case SEARCH_PARAM_KEYS.SEARCH_DATE: {
+            setIsNewDateSelected(true);
+            setUserDateSelection({
+              start: ParseLocalStorageDates(
+                storedValue ? storedValue : storedParams!
+              ).start,
+              end: ParseLocalStorageDates(
+                storedValue ? storedValue : storedParams!
+              ).end,
+            });
+            break;
+          }
+          case SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS: {
+            setAmoutOfGuests(
+              JSON.parse(storedValue ? storedValue : storedParams!)
+            );
+            break;
+          }
+          case SEARCH_PARAM_KEYS.SEARCH_INCLUDE_PETS: {
+            setIncludePets(
+              JSON.parse(storedValue ? storedValue : storedParams!)
+            );
+            break;
+          }
+        }
+      } else {
+        return;
+      }
+    });
   }, []);
 
   return (
@@ -249,6 +324,15 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                                 );
                                 const value = region.region;
                                 if (prev !== value) {
+                                  updateAndStoreQueryParams({
+                                    updatedParams: {
+                                      [SEARCH_PARAM_KEYS.SEARCH_REGION]:
+                                        JSON.stringify(value),
+                                    },
+                                    pathname,
+                                    params,
+                                    router,
+                                  });
                                   return value;
                                 }
                                 return prev;
@@ -296,7 +380,17 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                                       );
                                       const value = formattedValue;
                                       if (prev !== value) {
-                                        return formattedValue;
+                                        updateAndStoreQueryParams({
+                                          updatedParams: {
+                                            [SEARCH_PARAM_KEYS.SEARCH_REGION]:
+                                              JSON.stringify(value),
+                                          },
+                                          pathname,
+                                          params,
+                                          router,
+                                        });
+
+                                        return value;
                                       }
                                       return prev;
                                     })
@@ -511,6 +605,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                       isSelected={includePets}
                       onValueChange={setIncludePets}
                       isDisabled={amoutOfGuests === 0}
+                      className={styles.modal_menu_pets_checkbox_input}
                     />
                   </div>
                 </div>

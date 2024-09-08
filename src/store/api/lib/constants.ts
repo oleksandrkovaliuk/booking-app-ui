@@ -3,11 +3,11 @@ import { ApiTags } from "./enums";
 export const ApiUrls = {
   getUser: "/user/get",
   auth_acces_user: "/auth/accessUser",
-  auth_oauth_user: "/auth/oauthUser",
+  auth_oauth_user: "auth/oauthUser",
   check_auth_type: "/auth/checkAuthType",
 
   getListings: "/listings/listings",
-  getUserListings: "/listings/get/user",
+  getUserListings: "/listings/get/users",
   getCurrentListing: "/listings/get/current",
   getVerifiedListings: "/listings/verified",
   getListingsCategories: "/listings/categories",

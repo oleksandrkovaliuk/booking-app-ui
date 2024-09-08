@@ -27,7 +27,6 @@ interface CalendarPageContentProps {
 export const CalendarPageContent: React.FC<CalendarPageContentProps> = ({
   params,
 }) => {
-  const dispatch = useDispatch();
   const localizer = momentLocalizer(moment);
 
   const { data: listing } = useGetCurrentListingQuery({

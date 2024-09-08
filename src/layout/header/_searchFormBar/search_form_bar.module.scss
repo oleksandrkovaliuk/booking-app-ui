@@ -87,6 +87,13 @@
       }
     }
   }
+  .modal_menu_pets_checkbox_input {
+    span {
+      svg {
+        z-index: 10 !important;
+      }
+    }
+  }
 }
 .search_results_selections_container {
   .countrie_responce_block {
@@ -329,6 +336,7 @@
     }
   }
 }
+
 .search_bar_button {
   position: absolute;
   right: 8px;

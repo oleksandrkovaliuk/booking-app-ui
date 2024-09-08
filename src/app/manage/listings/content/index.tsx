@@ -23,14 +23,7 @@ import styles from "./listings.module.scss";
 export const ListingsPage: React.FC = () => {
   const { data: session } = useSession();
 
-  const {
-    data: listings,
-    isLoading,
-    refetch,
-  } = useGetUserListingsQuery({
-    user_name: session?.user?.name!,
-    user_email: session?.user?.email!,
-  });
+  const { data: listings, isLoading } = useGetUserListingsQuery();
 
   const [listingInProccess, setListingInProgress] = useState<FormState | null>(
     null

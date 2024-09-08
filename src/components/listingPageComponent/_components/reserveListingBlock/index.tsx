@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { DateValue, RangeCalendar, RangeValue } from "@nextui-org/calendar";
 import { today, getLocalTimeZone } from "@internationalized/date";
+import { Modal, ModalBody, ModalContent } from "@nextui-org/react";
+import { DateValue, RangeCalendar, RangeValue } from "@nextui-org/calendar";
 
 import {
   CountNights,
@@ -15,21 +16,21 @@ import {
   DateInputConrainerProps,
   ReserveListingBlockProps,
 } from "../../_lib/type";
+import { SEARCH_PARAM_KEYS } from "@/layout/header/lib/enums";
 
 import styles from "./reserveListing.module.scss";
 import "./additionalStyles.scss";
-import { Modal, ModalBody, ModalContent } from "@nextui-org/react";
 
 const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
   disabledDates,
   inputSelection,
   userDateSelection,
-
   setInputSelection,
   setUserDateSelection,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isMobile, setIsMobile] = useState<boolean>(false);
+
   const ModalComponent = (
     <div className={styles.modal} data-is-mobile={isMobile}>
       <button
@@ -111,7 +112,7 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
         end: value.end,
       });
       localStorage.setItem(
-        "userDateSelection",
+        SEARCH_PARAM_KEYS.SEARCH_DATE,
         JSON.stringify({
           start: value.start,
           end: value.end,

@@ -1,4 +1,5 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { toast } from "sonner";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -13,12 +14,16 @@ import {
 } from "@nextui-org/react";
 
 import { useGetListingsCategoriesQuery } from "@/store/api/endpoints/listings/getCategories";
+import { useRequestListingSearchMutation } from "@/store/api/endpoints/listings/getVerifiedListings";
 
 import { FilterIcon } from "@/svgs/FilterIcon";
 import { skeletonData } from "@/information/data";
+import your_search from "@/assets/loan.png";
 
 import { SEARCH_PARAM_KEYS } from "../_lib/enums";
-import { updateAndStoreQueryParams } from "@/helpers/paramsManagment";
+import { ErrorHandler } from "@/helpers/errorHandler";
+import { getSearchSelection } from "../_lib/getSearchSelection";
+import { AssignNewQueryParams } from "@/helpers/paramsManagment";
 
 import styles from "./categoryBar.module.scss";
 
@@ -27,22 +32,62 @@ const Categories: React.FC = () => {
   const pathname = usePathname();
   const params = useSearchParams();
 
+  const [requestListingSearch] = useRequestListingSearchMutation();
   const { data: categories, isLoading } = useGetListingsCategoriesQuery();
 
-  const [selectedCategory, setSelectedCategory] = React.useState<number | null>(
-    null
-  );
-  const selectCategory = (id: number) => {
-    setSelectedCategory((prev) => (prev === id ? prev : id));
-  };
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  const requestSearchBySelectedCategory = async (id: number, name: string) => {
+    try {
+      const searchSelection = getSearchSelection(params, SEARCH_PARAM_KEYS);
 
-  useEffect(() => {
-    if (params.get(SEARCH_PARAM_KEYS.SEARCH_CATEGORY)) {
-      setSelectedCategory(
-        Number(params.get(SEARCH_PARAM_KEYS.SEARCH_CATEGORY))
+      const { data: res, error } = await requestListingSearch({
+        search_place: searchSelection[SEARCH_PARAM_KEYS.SEARCH_PLACE]
+          ? {
+              city: "",
+              country: JSON.parse(
+                searchSelection[SEARCH_PARAM_KEYS.SEARCH_PLACE]
+              ).country,
+            }
+          : null,
+        search_date: null,
+        search_amountOfGuests: null,
+        search_includePets: null,
+        search_category_id: id,
+      });
+
+      setSelectedCategory((prev) => (prev === id ? prev : id));
+      AssignNewQueryParams({
+        updatedParams: {
+          [SEARCH_PARAM_KEYS.SEARCH_CATEGORY_ID]: JSON.stringify(id),
+        },
+        params,
+        router,
+        pathname,
+      });
+
+      if (error || !res) ErrorHandler(error as Error);
+    } catch (error) {
+      toast(
+        `🫣 We couldn't find any listings for category - ${name} in your area. `,
+        {
+          position: "bottom-center",
+          action: {
+            label: "Close",
+            onClick: () => {},
+          },
+        }
       );
+      setSelectedCategory(null);
+      AssignNewQueryParams({
+        updatedParams: {
+          [SEARCH_PARAM_KEYS.SEARCH_CATEGORY_ID]: JSON.stringify(null),
+        },
+        params,
+        router,
+        pathname,
+      });
     }
-  }, [params]);
+  };
 
   return (
     <>
@@ -61,19 +106,12 @@ const Categories: React.FC = () => {
             <button
               key={category.id}
               className={styles.category}
-              onClick={() => {
-                selectCategory(category.id);
-                updateAndStoreQueryParams({
-                  updatedParams: {
-                    [SEARCH_PARAM_KEYS.SEARCH_CATEGORY]: JSON.stringify(
-                      category.id
-                    ),
-                  },
-                  pathname,
-                  params,
-                  router,
-                });
-              }}
+              onClick={() =>
+                requestSearchBySelectedCategory(
+                  category.id,
+                  category.category_name
+                )
+              }
               data-selected={selectedCategory === category.id}
             >
               <Image
@@ -93,6 +131,8 @@ const Categories: React.FC = () => {
 };
 
 export const CategoryBar = ({ scrolled }: { scrolled: boolean }) => {
+  const params = useSearchParams();
+
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   return (
@@ -136,6 +176,20 @@ export const CategoryBar = ({ scrolled }: { scrolled: boolean }) => {
           orientation="horizontal"
           className={styles.category_wrap}
         >
+          {!params.get(SEARCH_PARAM_KEYS.SEARCH_CATEGORY_ID) &&
+            params.get(SEARCH_PARAM_KEYS.SEARCH_PLACE) && (
+              <div className={`${styles.category} ${styles.search}`}>
+                <Image
+                  src={your_search}
+                  alt="your search"
+                  width={24}
+                  height={24}
+                  className={styles.category_img}
+                />
+                <span className={styles.category_text}>Your search</span>
+              </div>
+            )}
+
           <Categories />
         </ScrollShadow>
         <Button

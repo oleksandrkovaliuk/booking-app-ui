@@ -78,7 +78,7 @@ export const PreviewModal: React.FC<ModalProps> = ({
               <div className="modal_info_title">Location</div>
               <p className="modal_info_description">
                 {formattedAddressComponent({
-                  address: address?.detailedAddressComponent,
+                  detailedAddressComponent: address?.detailedAddressComponent,
                   variant: "neighboorhoodStateCountry",
                 })}
               </p>

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { skeletonData } from "@/information/data";
 
@@ -15,13 +15,14 @@ export const HomeContent: React.FC = () => {
   const {
     isFetching,
     isLoading,
+    isUninitialized,
     data: listings,
   } = useGetVerifiedListingsQuery();
 
   return (
     <div className={styles.home_container}>
       <div className={styles.listings_container}>
-        {isFetching || isLoading || !listings?.length
+        {isUninitialized || isFetching || isLoading || !listings?.length
           ? skeletonData.map((item) => (
               <SkeletonListingCard key={item} item={item} size="sm" />
             ))

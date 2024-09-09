@@ -2,14 +2,13 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Checkbox } from "@nextui-org/react";
-import { today, getLocalTimeZone, parseDate } from "@internationalized/date";
+import { Checkbox, Spinner } from "@nextui-org/react";
+import { today, getLocalTimeZone } from "@internationalized/date";
 import { DateValue, RangeCalendar, RangeValue } from "@nextui-org/calendar";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { store } from "@/store";
-import { getVerifiedListings } from "@/store/api/endpoints/listings/getVerifiedListings";
-import { requestListingSearch } from "@/store/api/endpoints/listings/requestListingSearch";
+import { useRequestListingSearchMutation } from "@/store/api/endpoints/listings/getVerifiedListings";
 
 import { Location } from "@/svgs/Location";
 import { Search } from "@/svgs/Search";
@@ -28,7 +27,7 @@ import {
 import { ErrorHandler } from "@/helpers/errorHandler";
 import { getSearchSelection } from "../_lib/getSearchSelection";
 import { getCountriesByRequest } from "../_lib/getCountriesByRequest";
-import { updateAndStoreQueryParams } from "@/helpers/paramsManagment";
+import { AssignNewQueryParams } from "@/helpers/paramsManagment";
 import { regions } from "@/information/data";
 
 import {
@@ -49,11 +48,14 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
   isMobile,
   onCloseCallBack,
 }) => {
-  const searchBarRef = useRef<HTMLFormElement | null>(null);
-
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
+
+  const searchBarRef = useRef<HTMLFormElement | null>(null);
+
+  const [requestListingSearch, { isLoading }] =
+    useRequestListingSearchMutation();
 
   const [triggeredSelection, setTriggeredSelection] =
     useState<TypesOfSelections>(TypesOfSelections.UNSELECTED);
@@ -129,7 +131,8 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
       });
     }
   };
-  const delaiedDataResponse = useDebounce(getData, 500);
+
+  const delaiedDataResponse = useDebounce(getData, 600);
 
   const getRegionSelectionValue = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value) {
@@ -145,6 +148,18 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
         value: null,
         country: null,
         city: null,
+      });
+      AssignNewQueryParams({
+        updatedParams: {
+          [SEARCH_PARAM_KEYS.SEARCH_PLACE]: JSON.stringify({
+            value: null,
+            country: null,
+            city: null,
+          }),
+        },
+        pathname,
+        params,
+        router,
       });
     }
   };
@@ -169,7 +184,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
         start: value.start,
       });
     } else if (value.start.toString() !== value.end.toString()) {
-      updateAndStoreQueryParams({
+      AssignNewQueryParams({
         updatedParams: {
           [SEARCH_PARAM_KEYS.SEARCH_DATE]: JSON.stringify(value),
         },
@@ -202,49 +217,61 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
     e.preventDefault();
     try {
       const searchSelection = getSearchSelection(params, SEARCH_PARAM_KEYS);
-      console.log(searchSelection, "searchSelection");
-      const { data: res, error } = await store.dispatch(
-        requestListingSearch.initiate({
-          search_place: searchSelection[SEARCH_PARAM_KEYS.SEARCH_PLACE]
-            ? JSON.parse(searchSelection[SEARCH_PARAM_KEYS.SEARCH_PLACE])
-            : null,
-          search_date: searchSelection[SEARCH_PARAM_KEYS.SEARCH_DATE]
-            ? ParseLocalStorageDates(
-                searchSelection[SEARCH_PARAM_KEYS.SEARCH_DATE]
-              )
-            : null,
-          search_amountOfGuests: searchSelection[
-            SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS
-          ]
-            ? JSON.parse(
-                searchSelection[SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS]
-              )
-            : null,
-          search_includePets: searchSelection[
-            SEARCH_PARAM_KEYS.SEARCH_INCLUDE_PETS
-          ]
-            ? JSON.parse(searchSelection[SEARCH_PARAM_KEYS.SEARCH_INCLUDE_PETS])
-            : null,
-          search_category: searchSelection[SEARCH_PARAM_KEYS.SEARCH_CATEGORY]
-            ? JSON.parse(searchSelection[SEARCH_PARAM_KEYS.SEARCH_CATEGORY])
-            : null,
-        })
-      );
+
+      const { data: res, error } = await requestListingSearch({
+        search_place: searchSelection[SEARCH_PARAM_KEYS.SEARCH_PLACE]
+          ? JSON.parse(searchSelection[SEARCH_PARAM_KEYS.SEARCH_PLACE])
+          : null,
+        search_date: searchSelection[SEARCH_PARAM_KEYS.SEARCH_DATE]
+          ? ParseLocalStorageDates(
+              searchSelection[SEARCH_PARAM_KEYS.SEARCH_DATE]
+            )
+          : null,
+        search_amountOfGuests: searchSelection[
+          SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS
+        ]
+          ? JSON.parse(
+              searchSelection[SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS]
+            )
+          : null,
+        search_includePets: searchSelection[
+          SEARCH_PARAM_KEYS.SEARCH_INCLUDE_PETS
+        ]
+          ? JSON.parse(searchSelection[SEARCH_PARAM_KEYS.SEARCH_INCLUDE_PETS])
+          : null,
+      });
+
+      AssignNewQueryParams({
+        updatedParams: { [SEARCH_PARAM_KEYS.SEARCH_CATEGORY_ID]: null },
+        pathname,
+        params,
+        router,
+      });
 
       if (error || !res) ErrorHandler(error as Error);
 
       setTriggeredSelection(TypesOfSelections.UNSELECTED);
       onCloseCallBack && onCloseCallBack();
     } catch (error) {
-      await store.dispatch(getVerifiedListings.initiate());
-      toast.error("We couldn't process your request. Please try again", {
-        action: {
-          label: "Try again",
-          onClick: (e) => requestSearch(e),
-        },
+      AssignNewQueryParams({
+        updatedParams: { [SEARCH_PARAM_KEYS.SEARCH_CATEGORY_ID]: null },
+        pathname,
+        params,
+        router,
       });
+      toast(
+        "🫣 We apologize. But we couldn't find any listings by your request.",
+        {
+          position: "bottom-center",
+          action: {
+            label: "Close",
+            onClick: () => {},
+          },
+        }
+      );
     }
   };
+
   useEffect(() => {
     if (
       isDateExperiencesSelectionCheckIn ||
@@ -262,7 +289,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
 
   useEffect(() => {
     if (amoutOfGuests) {
-      updateAndStoreQueryParams({
+      AssignNewQueryParams({
         updatedParams: {
           [SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS]:
             JSON.stringify(amoutOfGuests),
@@ -276,7 +303,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
 
   useEffect(() => {
     if (includePets) {
-      updateAndStoreQueryParams({
+      AssignNewQueryParams({
         updatedParams: { pets: JSON.stringify(includePets) },
         pathname,
         params,
@@ -290,6 +317,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
       const storedParams = params.get(key);
 
       if (!storedParams) return;
+
       switch (key) {
         case SEARCH_PARAM_KEYS.SEARCH_PLACE: {
           setRegionSelection({
@@ -380,7 +408,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                                 );
                                 const value = region.region;
                                 if (prev.value !== value) {
-                                  updateAndStoreQueryParams({
+                                  AssignNewQueryParams({
                                     updatedParams: {
                                       [SEARCH_PARAM_KEYS.SEARCH_PLACE]:
                                         JSON.stringify({ value: value }),
@@ -441,7 +469,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
                                       const value = formattedValue;
 
                                       if (prev.value !== value) {
-                                        updateAndStoreQueryParams({
+                                        AssignNewQueryParams({
                                           updatedParams: {
                                             [SEARCH_PARAM_KEYS.SEARCH_PLACE]:
                                               JSON.stringify({
@@ -500,7 +528,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
             htmlFor="searchRegionInput"
             className={styles.search_bar_label}
           >
-            Which City you heading?
+            Where
           </label>
         </div>
 
@@ -706,9 +734,21 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
               ? { maxWidth: "110px", gap: "7.5px" }
               : { maxWidth: "50px", gap: "15px" }
           }
-          onClick={requestSearch}
+          onClick={
+            triggeredSelection !== ""
+              ? requestSearch
+              : (e) => {
+                  e.preventDefault();
+                  setTriggeredSelection(TypesOfSelections.UNSELECTED);
+                }
+          }
         >
-          <Search className={styles.search_icon} />
+          {isLoading ? (
+            <Spinner size="sm" color="white" />
+          ) : (
+            <Search className={styles.search_icon} />
+          )}
+
           <span className={styles.search_text}>search</span>
         </motion.button>
       </motion.form>

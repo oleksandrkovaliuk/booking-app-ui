@@ -99,7 +99,8 @@ export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
             <h2 className={styles.sub_title_text}>
               {listing.type?.type_name} in{" "}
               {formattedAddressComponent({
-                address: listing?.address?.detailedAddressComponent,
+                detailedAddressComponent:
+                  listing?.address?.detailedAddressComponent,
                 variant: "cityStateCountry",
               })}
             </h2>

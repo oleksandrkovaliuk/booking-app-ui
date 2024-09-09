@@ -1,7 +1,6 @@
-import { SEARCH_PARAM_KEYS } from "@/layout/header/_lib/enums";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
-export const updateAndStoreQueryParams = ({
+export const AssignNewQueryParams = ({
   updatedParams,
   pathname,
   params,
@@ -13,16 +12,16 @@ export const updateAndStoreQueryParams = ({
   params: URLSearchParams;
   router: AppRouterInstance;
 }) => {
-  const newparams = new URLSearchParams(params);
+  const existingParams = new URLSearchParams(params);
   Object.entries(updatedParams).forEach(([key, value]) => {
     if (value) {
-      newparams.set(key, value);
+      existingParams.set(key, value);
     } else {
-      newparams.delete(key);
+      existingParams.delete(key);
     }
   });
 
-  router.replace(`${pathname}?${newparams.toString()}&`);
+  router.replace(`${pathname}?${existingParams.toString()}&`);
 };
 
 export const ExtractAvailableQueryParams = (params: URLSearchParams) => {

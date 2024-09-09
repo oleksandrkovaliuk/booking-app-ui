@@ -171,7 +171,6 @@ export const ListingCard: React.FC<ListingCardProps> = ({
               <div key={image.url} className={styles.slider_content}>
                 <div
                   className={styles.slider_image}
-                  onLoadedDataCapture={() => console.log("loading")}
                   style={{ backgroundImage: `url(${image.url})` }}
                 />
               </div>
@@ -203,7 +202,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
         <div className={styles.listing_info}>
           <div className={styles.location}>
             {formattedAddressComponent({
-              address: address?.detailedAddressComponent,
+              detailedAddressComponent: address?.detailedAddressComponent,
               variant: "neighboorhoodStateCountry",
             })}
           </div>

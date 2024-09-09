@@ -66,8 +66,6 @@ export const Images: React.FC<ContentProps> = ({
     isImagesReady: images?.length! >= 1 ? true : false,
   });
 
-  console.log(uploadedImages.images, "images");
-
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handelModalOpening = (e: React.FormEvent) => {

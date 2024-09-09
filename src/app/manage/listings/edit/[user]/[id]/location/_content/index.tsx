@@ -41,11 +41,6 @@ export const LocationContent: React.FC<ContentProps> = ({ params }) => {
   const selectedAddress = watch("edit_address");
 
   const handleCordinatesChange = (cordinates: GoogleMapProps["cordinates"]) => {
-    console.log(
-      cordinates,
-      cordinates.address?.address_components,
-      "address_components"
-    );
     const detailedAddressComponent =
       cordinates.address?.address_components?.reduce<
         google.maps.places.PlaceResult["address_components"]

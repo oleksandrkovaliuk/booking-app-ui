@@ -12,7 +12,7 @@ import {
   DateFormatingMonthDay,
   isDateValueEqual,
 } from "@/helpers/dateManagment";
-import { updateAndStoreQueryParams } from "@/helpers/paramsManagment";
+import { AssignNewQueryParams } from "@/helpers/paramsManagment";
 
 import { Procantages } from "@/_utilities/enums";
 import {
@@ -85,7 +85,7 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
           <button
             className={`${styles.modal_button} ${styles.clear_button}`}
             onClick={() => {
-              updateAndStoreQueryParams({
+              AssignNewQueryParams({
                 updatedParams: {
                   [SEARCH_PARAM_KEYS.SEARCH_DATE]: JSON.stringify({
                     start: today(getLocalTimeZone()),
@@ -120,7 +120,7 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
 
   const handleSetDateSelection = (value: RangeValue<DateValue>) => {
     if (value.start.toString() !== value.end.toString()) {
-      updateAndStoreQueryParams({
+      AssignNewQueryParams({
         updatedParams: {
           [SEARCH_PARAM_KEYS.SEARCH_DATE]: JSON.stringify(value),
         },
@@ -136,7 +136,7 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
         </div>
       );
 
-      updateAndStoreQueryParams({
+      AssignNewQueryParams({
         updatedParams: {
           [SEARCH_PARAM_KEYS.SEARCH_DATE]: JSON.stringify({
             start: today(getLocalTimeZone()),

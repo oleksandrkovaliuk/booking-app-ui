@@ -9,7 +9,7 @@ import {
   DateFormatingMonthDay,
   isDateValueEqual,
 } from "@/helpers/dateManagment";
-import { updateAndStoreQueryParams } from "@/helpers/paramsManagment";
+import { AssignNewQueryParams } from "@/helpers/paramsManagment";
 
 import { SEARCH_PARAM_KEYS } from "@/layout/header/_lib/enums";
 import { CalendarSelectionProps } from "../../_lib/type";
@@ -46,7 +46,7 @@ export const CalendarSection: React.FC<CalendarSelectionProps> = ({
 
   const handleSetDateSelection = (value: RangeValue<DateValue>) => {
     if (value.start.toString() !== value.end.toString()) {
-      updateAndStoreQueryParams({
+      AssignNewQueryParams({
         updatedParams: {
           [SEARCH_PARAM_KEYS.SEARCH_DATE]: JSON.stringify(value),
         },
@@ -70,7 +70,7 @@ export const CalendarSection: React.FC<CalendarSelectionProps> = ({
         </div>
       );
       localStorage.removeItem("userDateSelection");
-      updateAndStoreQueryParams({
+      AssignNewQueryParams({
         updatedParams: {
           [SEARCH_PARAM_KEYS.SEARCH_DATE]: JSON.stringify({
             start: today(getLocalTimeZone()),

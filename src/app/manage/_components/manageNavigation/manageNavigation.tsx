@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React from "react";
 import Link from "next/link";
@@ -49,7 +49,7 @@ export const ManageNavigation: React.FC<ManageNavigationProps> = ({
             </Link>
           </motion.div>
         )}
-        <UserMenu />
+        <UserMenu showArrow={false} />
       </motion.nav>
     </header>
   );

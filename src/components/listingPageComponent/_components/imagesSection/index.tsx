@@ -5,16 +5,14 @@ import {
   ModalBody,
   ModalContent,
   ModalHeader,
-  ScrollShadow,
   useDisclosure,
 } from "@nextui-org/react";
 import Image from "next/image";
-import { motion } from "framer-motion";
 
 import { Arrow } from "@/svgs/RightArrow";
+import { ShowMoreIcon } from "@/svgs/ShowMoreIcon";
 
 import styles from "./imagesSection.module.scss";
-import { ShowMoreIcon } from "@/svgs/ShowMoreIcon";
 
 export const ImagesSection: React.FC<{
   images: { url: string }[];

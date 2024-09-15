@@ -20,6 +20,7 @@ export interface ContentProps {
   selectedAdress?: {
     formattedAddress: string;
     shorterAddress: string;
+    detailedAddressComponent: google.maps.places.PlaceResult["address_components"];
   };
   selectedGuests?: number;
   key?: CreateListingSteps;

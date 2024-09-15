@@ -11,4 +11,5 @@ export interface ListingCardProps
   isInProccess?: boolean;
   typeOfPlace?: string;
   isComplete?: boolean;
+  calculated_nights?: number | null;
 }

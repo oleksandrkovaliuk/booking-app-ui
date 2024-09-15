@@ -10,11 +10,11 @@ import { Counter } from "@/components/counter";
 import {
   CountNights,
   DateFormatingMonthDay,
-  isDateValueEqual,
+  ParseLocalStorageDates,
 } from "@/helpers/dateManagment";
 import { AssignNewQueryParams } from "@/helpers/paramsManagment";
+import { CalculatePriceIncludingTax } from "@/helpers/priceManagment";
 
-import { Procantages } from "@/_utilities/enums";
 import {
   DateInputConrainerProps,
   ReserveListingBlockProps,
@@ -27,7 +27,6 @@ import "./additionalStyles.scss";
 const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
   disabledDates,
   inputSelection,
-  userDateSelection,
   setInputSelection,
 }) => {
   const router = useRouter();
@@ -36,6 +35,39 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isMobile, setIsMobile] = useState<boolean>(false);
+
+  const extractedDateParams = params.get(SEARCH_PARAM_KEYS.SEARCH_DATE)
+    ? ParseLocalStorageDates(params.get(SEARCH_PARAM_KEYS.SEARCH_DATE)!)
+    : {
+        start: today(getLocalTimeZone()),
+        end: today(getLocalTimeZone()).add({ weeks: 1 }),
+      };
+
+  const handleSetDateSelection = (value: RangeValue<DateValue>) => {
+    if (value.start.toString() !== value.end.toString()) {
+      AssignNewQueryParams({
+        updatedParams: {
+          [SEARCH_PARAM_KEYS.SEARCH_DATE]: JSON.stringify(value),
+        },
+        pathname,
+        params,
+        router,
+      });
+      setInputSelection("checkOut");
+    } else {
+      toast(
+        <div className="toast ">
+          🫣 Selected dates cannot be the same. The minimum stay is one night.
+        </div>
+      );
+
+      localStorage.removeItem("userDateSelection");
+    }
+  };
+
+  useEffect(() => {
+    if (window && window.innerWidth <= 1280) setIsMobile(true);
+  }, []);
 
   const ModalComponent = (
     <div className={styles.modal} data-is-mobile={isMobile}>
@@ -56,20 +88,20 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
             {inputSelection === "checkIn"
               ? "Minimum stay of 1 night"
               : `${DateFormatingMonthDay(
-                  userDateSelection.start
-                )} - ${DateFormatingMonthDay(userDateSelection.end)}`}
+                  extractedDateParams.start
+                )} - ${DateFormatingMonthDay(extractedDateParams.end)}`}
           </p>
         </div>
         <div className={styles.calendar_container}>
           <RangeCalendar
             aria-label="Booking dates"
             visibleMonths={3}
-            onChange={(value: RangeValue<DateValue>) =>
-              handleSetDateSelection(value)
-            }
+            onChange={(value: RangeValue<DateValue>) => {
+              handleSetDateSelection(value);
+            }}
             color="primary"
             minValue={today(getLocalTimeZone())}
-            value={userDateSelection}
+            defaultValue={extractedDateParams}
             isDateUnavailable={(date: DateValue) => {
               if (!date) return false;
               return disabledDates?.some(
@@ -118,43 +150,6 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
     </div>
   );
 
-  const handleSetDateSelection = (value: RangeValue<DateValue>) => {
-    if (value.start.toString() !== value.end.toString()) {
-      AssignNewQueryParams({
-        updatedParams: {
-          [SEARCH_PARAM_KEYS.SEARCH_DATE]: JSON.stringify(value),
-        },
-        pathname,
-        params,
-        router,
-      });
-      setInputSelection("checkOut");
-    } else {
-      toast(
-        <div className="toast ">
-          🫣 Selected dates cannot be the same. The minimum stay is one night.
-        </div>
-      );
-
-      AssignNewQueryParams({
-        updatedParams: {
-          [SEARCH_PARAM_KEYS.SEARCH_DATE]: JSON.stringify({
-            start: today(getLocalTimeZone()),
-            end: today(getLocalTimeZone()).add({ weeks: 1 }),
-          }),
-        },
-        pathname,
-        params,
-        router,
-      });
-      localStorage.removeItem("userDateSelection");
-    }
-  };
-
-  useEffect(() => {
-    if (window && window.innerWidth <= 1280) setIsMobile(true);
-  }, []);
-
   return (
     <>
       {isModalOpen && !isMobile ? (
@@ -191,7 +186,7 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
             id="dateInputCheckIn"
             className={styles.date_input}
             placeholder="Add dates"
-            value={DateFormatingMonthDay(userDateSelection.start)}
+            value={DateFormatingMonthDay(extractedDateParams.start)}
             readOnly
           />
         </div>
@@ -208,7 +203,7 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
             id="dateInputCheckOut"
             className={styles.date_input}
             placeholder="Add dates"
-            value={DateFormatingMonthDay(userDateSelection.end)}
+            value={DateFormatingMonthDay(extractedDateParams.end)}
             readOnly
           />
         </div>
@@ -220,26 +215,26 @@ export const ReserveListingBlock: React.FC<ReserveListingBlockProps> = ({
   price,
   isPublic,
   guests_limit,
-  userDateSelection,
   disabledDates,
 }) => {
+  const params = useSearchParams();
+
+  const extractedDateParams = params.get(SEARCH_PARAM_KEYS.SEARCH_DATE)
+    ? ParseLocalStorageDates(params.get(SEARCH_PARAM_KEYS.SEARCH_DATE)!)
+    : {
+        start: today(getLocalTimeZone()),
+        end: today(getLocalTimeZone()).add({ weeks: 1 }),
+      };
+
   const [guestsAmount, setGuestsAmount] = useState(1);
 
   const [inputSelection, setInputSelection] = useState<
     "checkIn" | "checkOut" | "guests" | "none"
   >("none");
 
-  const isDefaultDate = isDateValueEqual(userDateSelection);
-
   const calculationOfPrice =
     Number(Number(price).toLocaleString().split(",").join("")) *
-    CountNights(userDateSelection.start, userDateSelection.end);
-
-  const calculateTaxes = Math.round(calculationOfPrice * Procantages.TAXES);
-  const cleaningFee = Math.round(calculationOfPrice * Procantages.CLEANING_FEE);
-  const serviceFee = Math.round(calculationOfPrice * Procantages.SPACER_FEE);
-
-  const total = calculationOfPrice + cleaningFee + serviceFee + calculateTaxes;
+    CountNights(extractedDateParams.start, extractedDateParams.end);
 
   return (
     <div className={styles.reserve_listing_container}>
@@ -253,7 +248,6 @@ export const ReserveListingBlock: React.FC<ReserveListingBlockProps> = ({
           disabledDates={disabledDates}
           inputSelection={inputSelection}
           setInputSelection={setInputSelection}
-          userDateSelection={userDateSelection}
         />
         <div
           className={styles.guest_block}
@@ -278,12 +272,12 @@ export const ReserveListingBlock: React.FC<ReserveListingBlockProps> = ({
         <p className={styles.reserve_text}>You will not be charged yet.</p>
       </div>
 
-      {!isDefaultDate && inputSelection !== "checkIn" && (
+      {inputSelection !== "checkIn" && (
         <div className={styles.price_calculator}>
           <div className={styles.calculate_price_block}>
             <span className={styles.price_label}>
               ${Number(price).toLocaleString()} x{" "}
-              {CountNights(userDateSelection.start, userDateSelection.end)}{" "}
+              {CountNights(extractedDateParams.start, extractedDateParams.end)}{" "}
               night
             </span>
             <span className={styles.price_result}>
@@ -294,28 +288,40 @@ export const ReserveListingBlock: React.FC<ReserveListingBlockProps> = ({
           <div className={styles.calculate_price_block}>
             <span className={styles.price_label}>Cleaning fee</span>
             <span className={styles.price_result}>
-              ${cleaningFee.toLocaleString()}
+              $
+              {CalculatePriceIncludingTax(
+                calculationOfPrice
+              ).with_cleaning_fee.toLocaleString()}
             </span>
           </div>
 
           <div className={styles.calculate_price_block}>
             <span className={styles.price_label}>Spacer fee</span>
             <span className={styles.price_result}>
-              ${serviceFee.toLocaleString()}
+              $
+              {CalculatePriceIncludingTax(
+                calculationOfPrice
+              ).with_service_fee.toLocaleString()}
             </span>
           </div>
 
           <div className={styles.calculate_price_block}>
             <span className={styles.price_label}>Taxes</span>
             <span className={styles.price_result}>
-              ${calculateTaxes.toLocaleString()}
+              $
+              {CalculatePriceIncludingTax(
+                calculationOfPrice
+              ).with_taxes.toLocaleString()}
             </span>
           </div>
 
           <div className={styles.calculate_total_block}>
             <span className={styles.price_label}>Total</span>
             <span className={styles.price_result}>
-              ${total.toLocaleString()}
+              $
+              {CalculatePriceIncludingTax(
+                calculationOfPrice
+              ).total_price.toLocaleString()}
             </span>
           </div>
         </div>

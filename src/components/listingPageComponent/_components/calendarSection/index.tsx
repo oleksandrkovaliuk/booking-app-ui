@@ -8,6 +8,7 @@ import {
   CountNights,
   DateFormatingMonthDay,
   isDateValueEqual,
+  ParseLocalStorageDates,
 } from "@/helpers/dateManagment";
 import { AssignNewQueryParams } from "@/helpers/paramsManagment";
 
@@ -19,18 +20,25 @@ import styles from "./calendarSection.module.scss";
 export const CalendarSection: React.FC<CalendarSelectionProps> = ({
   title,
   disabledDates,
-  userDateSelection,
 }) => {
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
+
+  const extractedDateParams = params.get(SEARCH_PARAM_KEYS.SEARCH_DATE)
+    ? ParseLocalStorageDates(params.get(SEARCH_PARAM_KEYS.SEARCH_DATE)!)
+    : {
+        start: today(getLocalTimeZone()),
+        end: today(getLocalTimeZone()).add({ weeks: 1 }),
+      };
+
   const [triggeredSelection, setTriggeredSelection] = useState<
     "checkIn" | "checkOut" | "both"
   >("checkIn");
 
   // CONDITIONS
   const isDefaultDate =
-    isDateValueEqual(userDateSelection) && triggeredSelection !== "both";
+    isDateValueEqual(extractedDateParams) && triggeredSelection !== "both";
 
   const checkInOrOutText =
     triggeredSelection === "checkIn"
@@ -40,8 +48,8 @@ export const CalendarSection: React.FC<CalendarSelectionProps> = ({
   const textContentBasedOnSelection = isDefaultDate
     ? checkInOrOutText
     : `${CountNights(
-        userDateSelection.start,
-        userDateSelection.end
+        extractedDateParams.start,
+        extractedDateParams.end
       )} nights in ${title}`;
 
   const handleSetDateSelection = (value: RangeValue<DateValue>) => {
@@ -93,8 +101,8 @@ export const CalendarSection: React.FC<CalendarSelectionProps> = ({
         {isDefaultDate
           ? "Minimum stay of 1 night"
           : `${DateFormatingMonthDay(
-              userDateSelection.start
-            )} - ${DateFormatingMonthDay(userDateSelection.end)}`}
+              extractedDateParams.start
+            )} - ${DateFormatingMonthDay(extractedDateParams.end)}`}
       </div>
       <div className={styles.calendar_container}>
         <RangeCalendar
@@ -108,7 +116,7 @@ export const CalendarSection: React.FC<CalendarSelectionProps> = ({
           }}
           color="primary"
           minValue={today(getLocalTimeZone())}
-          value={userDateSelection}
+          defaultValue={extractedDateParams}
           isDateUnavailable={(date: DateValue) => {
             if (!date) return false;
             return disabledDates?.some(

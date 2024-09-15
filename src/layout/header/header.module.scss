@@ -38,37 +38,44 @@
       }
     }
   }
+}
 
-  .mobile_search_button {
-    display: flex;
-    gap: 15px;
-    align-items: center;
-    overflow: hidden;
-    border-radius: 70px;
-    padding: 15px;
-    background-color: var(--booking-app-coral-color);
-    z-index: 4;
-    transition: scale 0.3s ease-in-out;
-    width: 100%;
-    &:hover {
-      scale: 1.02;
-    }
-    .mobile_search_text {
-      color: var(--booking-app-white-color);
-      font-size: 15px;
-      font-family: var(--booking-app-Nunito-Sans-font);
-      font-weight: 700;
-    }
-    .mobile_search_icon {
-      width: 20px;
-      height: 20px;
-      flex-shrink: 0;
-      path {
-        fill: var(--booking-app-white-color);
-      }
+.mobile_search_button {
+  padding: 15px;
+
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  width: 100%;
+  overflow: hidden;
+
+  border-radius: 70px;
+  background-color: var(--booking-app-coral-color);
+
+  z-index: 4;
+
+  transition: scale 0.3s ease-in-out;
+
+  &:hover {
+    scale: 1.02;
+  }
+  .mobile_search_text {
+    color: var(--booking-app-white-color);
+    font-size: 15px;
+    font-family: var(--booking-app-Nunito-Sans-font);
+    font-weight: 700;
+  }
+  .mobile_search_icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    path {
+      fill: var(--booking-app-white-color);
     }
   }
 }
+
 .center_nagivation_menu {
   max-width: 854px;
   margin: auto;
@@ -137,21 +144,6 @@
   justify-content: flex-end;
   min-width: clamp(110px, 5vw, 180px);
 
-  &[data-is-mobile="true"] {
-    justify-content: space-between;
-    position: fixed;
-    left: 50%;
-    transform: translateX(-50%);
-    border-radius: 30px;
-    background-color: var(--booking-app-white-color);
-    padding: 5px 15px;
-    border-top: 1px solid var(--booking-app-lightgrey-color);
-    box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.2);
-    z-index: 4;
-    .right_navigation_button {
-      padding: 8px;
-    }
-  }
   .add_house_icon {
     width: 30px;
     height: 30px;
@@ -200,14 +192,30 @@
   }
 }
 @media (width <= 1080px) {
+  .navigation {
+    .logo {
+      display: none;
+    }
+  }
+
   .center_nagivation_menu {
     padding: 25px;
     max-width: unset;
     z-index: -1;
   }
-  .navigation {
-    .logo {
-      display: none;
+  .right_navigation_menu {
+    justify-content: space-between;
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 30px;
+    background-color: var(--booking-app-white-color);
+    padding: 5px 15px;
+    border-top: 1px solid var(--booking-app-lightgrey-color);
+    box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.2);
+    z-index: 4;
+    .right_navigation_button {
+      padding: 8px;
     }
   }
 }

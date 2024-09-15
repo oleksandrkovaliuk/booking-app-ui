@@ -21,7 +21,9 @@ export const AssignNewQueryParams = ({
     }
   });
 
-  router.replace(`${pathname}?${existingParams.toString()}&`);
+  router.replace(`${pathname}?${existingParams.toString()}&`, {
+    scroll: false,
+  });
 };
 
 export const ExtractAvailableQueryParams = (params: URLSearchParams) => {

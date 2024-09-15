@@ -10,44 +10,42 @@ import { StatusBadge } from "../statusBadge";
 import { ManageModal } from "./components/modals/manage";
 import { PreviewModal } from "./components/modals/preview";
 
+import {
+  ExtractAvailableQueryParams,
+  PrepareExtractedQueryParams,
+} from "@/helpers/paramsManagment";
+import { CalculatePriceIncludingTax } from "@/helpers/priceManagment";
 import { formattedAddressComponent } from "@/helpers/address/formattedAddressVariants";
 
 import { ListingCardProps } from "./type";
-import { SEARCH_PARAM_KEYS } from "@/layout/header/_lib/enums";
 
 import "./additional.scss";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import styles from "./listingCard.module.scss";
-import {
-  ExtractAvailableQueryParams,
-  PrepareExtractedQueryParams,
-} from "@/helpers/paramsManagment";
 
 export const ListingCard: React.FC<ListingCardProps> = ({
   id,
-  images,
-  title,
-  address,
-  aboutplace,
   type,
-  pets_allowed,
-  accesable,
-  guests,
+  title,
   price,
-  isPreview,
-  isComplete,
-  isManagable,
+  guests,
+  images,
+  address,
   isPublic,
+  isPreview,
+  accesable,
+  isComplete,
+  aboutplace,
+  isManagable,
   isInProccess,
+  pets_allowed,
+  calculated_nights,
 }) => {
-  const sliderRef = useRef<Slider | null>(null);
   const params = useSearchParams();
-  const preparedRedirectParams = params
-    ? `/listing/${address?.shorterAddress}/${id}?${PrepareExtractedQueryParams({
-        searchParamsResult: ExtractAvailableQueryParams(params),
-      })}`
-    : `/listing/${address?.shorterAddress}/${id}`;
+
+  const sliderRef = useRef<Slider | null>(null);
+  const SliderContainerRef = useRef<HTMLDivElement | null>(null);
 
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
 
@@ -65,6 +63,12 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   // CONDITIONS
   const isLastSlider = currentSlide === images?.length - 1;
   const isFirstSlider = currentSlide === 0;
+
+  const preparedRedirectParams = params
+    ? `/listing/${address?.shorterAddress}/${id}?${PrepareExtractedQueryParams({
+        searchParamsResult: ExtractAvailableQueryParams(params),
+      })}`
+    : `/listing/${address?.shorterAddress}/${id}`;
 
   const mainHref = !isPreview
     ? !isPublic && isInProccess
@@ -87,10 +91,24 @@ export const ListingCard: React.FC<ListingCardProps> = ({
     afterChange: (current: number) => setCurrentSlide(current),
   };
 
-  const handleWhellScroll = (e: React.WheelEvent) => {
+  const handleWheelScroll = (e: React.WheelEvent) => {
     if (e.deltaX > 10) sliderRef.current?.slickNext();
     else if (e.deltaX < -10) sliderRef.current?.slickPrev();
   };
+
+  useEffect(() => {
+    const sliderContainer = sliderRef.current?.innerSlider?.list;
+
+    const handleWheelEvent = (e: WheelEvent) =>
+      e.deltaX !== 0 && e.preventDefault();
+
+    sliderContainer?.addEventListener("wheel", handleWheelEvent, {
+      passive: false,
+    });
+    return () => {
+      sliderContainer?.removeEventListener("wheel", handleWheelEvent);
+    };
+  }, []);
 
   useEffect(() => {
     const unsavedData = localStorage.getItem(`${id}`);
@@ -149,7 +167,11 @@ export const ListingCard: React.FC<ListingCardProps> = ({
         target={isPublic ? "_blank" : "_self"}
         onClick={onOpen}
       >
-        <div className={styles.slider_container} onWheel={handleWhellScroll}>
+        <div
+          ref={SliderContainerRef}
+          className={styles.slider_container}
+          onWheel={handleWheelScroll}
+        >
           {isInProccess && <StatusBadge status="In progress" color="#ffa836" />}
           {!isComplete && !isInProccess && !isPublic && !isPreview && (
             <StatusBadge
@@ -209,9 +231,20 @@ export const ListingCard: React.FC<ListingCardProps> = ({
 
           <h5 className={styles.title}>{title}</h5>
           {!isManagable && (
-            <span className={styles.price}>
-              <b>${Number(price).toLocaleString()}</b> night
-            </span>
+            <div className={styles.price}>
+              <span>
+                <b>${Number(price).toLocaleString()}</b> night
+              </span>
+              {calculated_nights && (
+                <span className={styles.total}>
+                  $
+                  {CalculatePriceIncludingTax(
+                    Number(price) * calculated_nights
+                  ).total_price.toLocaleString()}{" "}
+                  total
+                </span>
+              )}
+            </div>
           )}
         </div>
       </Link>

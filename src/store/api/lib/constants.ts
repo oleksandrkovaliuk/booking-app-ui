@@ -6,7 +6,6 @@ export const ApiUrls = {
   auth_oauth_user: "auth/oauthUser",
   check_auth_type: "/auth/checkAuthType",
 
-  getListings: "/listings/listings",
   getUserListings: "/listings/get/users",
   getCurrentListing: "/listings/get/current",
   getVerifiedListings: "/listings/verified",
@@ -19,6 +18,8 @@ export const ApiUrls = {
   requestCreateListing: "/listings/listing/create",
   requestUpdateCalendar: "/listings/calendar/update",
   requestDeleteUserListingImages: "/listings/images/delete",
+  requestUpdateExistingListings: "/listings/request/update/existing",
+  requestAvailableCategories: "/listings/request/available/categories",
   requestDeleteIndividualListingImage: "/listings/images/delete/individual",
 
   uploadListingImages: "/listings/images/upload",

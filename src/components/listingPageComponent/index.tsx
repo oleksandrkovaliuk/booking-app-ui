@@ -2,7 +2,8 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { DateValue, RangeValue, Tooltip } from "@nextui-org/react";
+import { useSearchParams } from "next/navigation";
+import { Spinner, Tooltip } from "@nextui-org/react";
 import { today, getLocalTimeZone } from "@internationalized/date";
 
 import { store } from "@/store";
@@ -15,7 +16,6 @@ import { DescriptionSection } from "./_components/descriptionSection";
 import { CalendarSection } from "./_components/calendarSection";
 import { ReserveListingBlock } from "./_components/reserveListingBlock";
 
-import { Logo } from "@/svgs/Logo";
 import super_host from "@/assets/medal-of-honor.png";
 import super_host_black from "@/assets/medal-of-honor-black.png";
 import regular_host from "@/assets/renter.png";
@@ -28,8 +28,6 @@ import { ListingPageComponentProps } from "./_lib/type";
 import { SEARCH_PARAM_KEYS } from "@/layout/header/_lib/enums";
 
 import styles from "./listing.module.scss";
-import { useSearchParams } from "next/navigation";
-import { ExtractAvailableQueryParams } from "@/helpers/paramsManagment";
 
 export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
   id,
@@ -37,15 +35,6 @@ export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
 }) => {
   const { data: listing } = useGetCurrentListingQuery({ id: Number(id) });
 
-  const params = useSearchParams();
-  const extractedDateParams = params.get(SEARCH_PARAM_KEYS.SEARCH_DATE);
-
-  const userDateSelection = extractedDateParams
-    ? ParseLocalStorageDates(extractedDateParams)
-    : {
-        start: today(getLocalTimeZone()),
-        end: today(getLocalTimeZone()).add({ weeks: 1 }),
-      };
   const [host, setHost] = useState<ShowCaseUser>({
     user_name: "",
     email: "",
@@ -82,7 +71,7 @@ export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
   return (
     <div className={styles.listing_container}>
       {!listing || !host ? (
-        <Logo className={styles.loader} />
+        <Spinner size="md" color="primary" className={styles.loader} />
       ) : (
         <div className={styles.listing_content}>
           <section className={styles.title_text_content}>
@@ -265,7 +254,6 @@ export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
 
               <CalendarSection
                 title={listing?.title}
-                userDateSelection={userDateSelection}
                 disabledDates={listing?.disabled_dates!}
               />
             </div>
@@ -273,9 +261,8 @@ export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
               <ReserveListingBlock
                 price={listing?.price}
                 isPublic={isPublic || false}
-                userDateSelection={userDateSelection}
-                disabledDates={listing?.disabled_dates!}
                 guests_limit={listing?.guests}
+                disabledDates={listing?.disabled_dates!}
               />
             </div>
           </div>

@@ -1,15 +1,14 @@
 import React from "react";
-
-import styles from "./descriptionSection.module.scss";
-
-import { ListingState } from "@/store/api/lib/type";
-
 import {
   Modal,
   ModalBody,
   ModalContent,
   useDisclosure,
 } from "@nextui-org/react";
+
+import { ListingState } from "@/store/api/lib/type";
+
+import styles from "./descriptionSection.module.scss";
 
 export const DescriptionSection: React.FC<{
   aboutplace: ListingState["aboutplace"];

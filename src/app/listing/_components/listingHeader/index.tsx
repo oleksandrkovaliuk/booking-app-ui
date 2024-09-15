@@ -22,7 +22,7 @@ export const ListingHeader: React.FC = () => {
           <Logo className={styles.logo} />
         </Link>
 
-        <UserMenu />
+        <UserMenu showArrow={false} />
       </nav>
     </header>
   );

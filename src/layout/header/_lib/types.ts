@@ -7,14 +7,11 @@ export interface CenterNavigationMenuProps {
 }
 
 export interface RightNavigationMenuProps
-  extends Omit<CenterNavigationMenuProps, "onCloseCallBack"> {
+  extends Omit<CenterNavigationMenuProps, "onCloseCallBack" | "mobile"> {
   windowIsScrolledToTop: boolean;
 }
 
 export interface SearchFormBarProps {
-  staysButtonState: boolean;
-  isCategoryChanged: boolean;
-  setIsCategoryChanged: React.Dispatch<React.SetStateAction<boolean>>;
   trackScrolled: boolean;
   isMobile: boolean;
   onCloseCallBack?: () => void;

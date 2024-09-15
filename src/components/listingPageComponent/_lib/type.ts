@@ -9,19 +9,17 @@ export interface ListingPageComponentProps {
 export interface CalendarSelectionProps {
   title: string;
   disabledDates: DateValue[];
-  userDateSelection: RangeValue<DateValue>;
 }
 export interface ReserveListingBlockProps {
   price: string;
   isPublic: boolean;
   guests_limit: number;
   disabledDates: DateValue[];
-  userDateSelection: RangeValue<DateValue>;
 }
 
 export interface DateInputConrainerProps {
   disabledDates: DateValue[];
-  userDateSelection: RangeValue<DateValue>;
+
   inputSelection: "checkIn" | "checkOut" | "guests" | "none";
 
   setInputSelection: React.Dispatch<

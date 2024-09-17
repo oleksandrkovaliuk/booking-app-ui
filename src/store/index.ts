@@ -6,9 +6,14 @@ import {
 
 import { api } from "./api/api";
 
+import isSearchTriggeredReducer from "./slices/listings/isSearchTriggeredSlice";
+import listingSearchResponseReducer from "./slices/listings/listingSearchResponseSlice";
+
 export const store = configureStore({
   reducer: {
     [api.reducerPath]: api.reducer,
+    isSearchTriggered: isSearchTriggeredReducer,
+    listingSearchResponse: listingSearchResponseReducer,
   },
   middleware: (getDefaultMiddleware) =>
     // adding the api middleware enables caching, invalidation, polling and other features of `rtk-query`

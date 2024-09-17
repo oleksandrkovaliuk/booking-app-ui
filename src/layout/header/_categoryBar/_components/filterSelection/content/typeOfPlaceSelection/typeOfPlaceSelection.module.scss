@@ -1,5 +1,3 @@
-.type_of_place_container {
-}
 .type_of_place_tabs_container {
   display: block;
   div {
@@ -10,7 +8,8 @@
       border: 1px solid var(--booking-app-lightgrey-color);
     }
   }
-  .type_of_place_tab {
+  .type_of_place_tab,
+  .skeleton_tabs {
     padding: 20px;
     transition: background-color 0.3s ease;
     &:hover {
@@ -33,6 +32,11 @@
       &:hover {
         opacity: 1;
       }
+    }
+  }
+  .skeleton_tabs {
+    div {
+      width: 100%;
     }
   }
 }

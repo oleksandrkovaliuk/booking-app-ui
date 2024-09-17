@@ -1,10 +1,13 @@
 import React, { memo, useEffect, useState } from "react";
 import { toast } from "sonner";
+import Image from "next/image";
+import { useDispatch } from "react-redux";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+
+import { setFetch } from "@/store/slices/listings/isSearchTriggeredSlice";
 
 import { Location } from "@/svgs/Location";
 import boat_with_people from "@/assets/boat_with_people.webp";
-import topPeekH from "@/assets/topPeekH.webp";
 
 import { useDebounce } from "@/hooks/useDebounce";
 import { ModalPanel } from "@/components/modalPanel";
@@ -26,7 +29,6 @@ import { regionResponceType } from "../../_lib/types";
 import { getCountriesByRequest } from "../../_lib/getCountriesByRequest";
 
 import styles from "../search_form_bar.module.scss";
-import Image from "next/image";
 
 const RegionSelection: React.FC<SelectionComponentsProps> = ({
   searchBarRef,
@@ -34,6 +36,7 @@ const RegionSelection: React.FC<SelectionComponentsProps> = ({
 }) => {
   const router = useRouter();
   const pathname = usePathname();
+  const dispatch = useDispatch();
   const params = useSearchParams();
 
   const { staysButtonState } = useStaysButtonContextData();
@@ -78,15 +81,7 @@ const RegionSelection: React.FC<SelectionComponentsProps> = ({
         country: null,
         city: null,
       });
-
-      AssignNewQueryParams({
-        updatedParams: {
-          [SEARCH_PARAM_KEYS.SEARCH_CATEGORY_ID]: null,
-        },
-        params,
-        router,
-        pathname,
-      });
+      dispatch(setFetch(false));
     } else {
       AssignNewQueryParams({
         updatedParams: {
@@ -124,6 +119,7 @@ const RegionSelection: React.FC<SelectionComponentsProps> = ({
       params,
       router,
     });
+    dispatch(setFetch(false));
   };
 
   useEffect(() => {

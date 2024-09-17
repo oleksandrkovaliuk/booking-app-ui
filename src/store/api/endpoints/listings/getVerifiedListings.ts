@@ -1,17 +1,28 @@
+import { DateValue, RangeValue } from "@nextui-org/calendar";
+
 import { api } from "../../api";
+
 import { ApiTags } from "../../lib/enums";
 import { ApiUrls } from "../../lib/constants";
 import { ListingState, TypeOfPlace } from "../../lib/type";
 import { SEARCH_PARAM_KEYS } from "@/layout/header/_lib/enums";
-import { DateValue, RangeValue } from "@nextui-org/calendar";
 
 const getVerifiedListingsApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    getVerifiedListings: builder.query<ListingState[], void>({
-      query: () => ({
-        url: ApiUrls.getVerifiedListings,
+    getVerifiedListingByParams: builder.query<
+      ListingState[],
+      {
+        options: {
+          [key: string]: string | null | boolean;
+        };
+      }
+    >({
+      query: ({ options }) => ({
+        url: `${ApiUrls.getVerifiedListingByParams}?options=${JSON.stringify(
+          options
+        )}`,
       }),
-      providesTags: [ApiTags.VERIFIED_LISTINGS],
+      providesTags: [ApiTags.VERIFIED_LISTINGS_BY_PARAMS],
     }),
 
     requestListingSearch: builder.mutation<
@@ -24,6 +35,15 @@ const getVerifiedListingsApi = api.injectEndpoints({
         [SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS]: number | null;
         [SEARCH_PARAM_KEYS.SEARCH_INCLUDE_PETS]: boolean | null;
         [SEARCH_PARAM_KEYS.SEARCH_CATEGORY_ID]?: number | null;
+
+        accesable?: boolean | null;
+        shared_room?: boolean | null;
+        price_range?: number[] | null;
+        returnFiltered?: boolean | null;
+        type_of_place?: TypeOfPlace | null;
+        options: {
+          [key: string]: string | null;
+        };
       }
     >({
       query: ({
@@ -32,6 +52,13 @@ const getVerifiedListingsApi = api.injectEndpoints({
         search_amountOfGuests,
         search_includePets,
         search_category_id,
+
+        accesable,
+        shared_room,
+        price_range,
+        type_of_place,
+        returnFiltered,
+        options,
       }) => ({
         url: ApiUrls.requestListingSearch,
         method: "POST",
@@ -41,57 +68,22 @@ const getVerifiedListingsApi = api.injectEndpoints({
           search_amountOfGuests,
           search_includePets,
           search_category_id,
-        },
-      }),
-      async onQueryStarted(_, { dispatch, queryFulfilled }) {
-        try {
-          const { data: updatedListings } = await queryFulfilled;
-          dispatch(
-            api.util.updateQueryData(
-              "getVerifiedListings" as never,
-              undefined as never,
-              () => updatedListings
-            )
-          );
-        } catch {
-          return;
-        }
-      },
-    }),
-    requestUpdateExistingListings: builder.mutation<
-      ListingState[],
-      {
-        listings: ListingState[] | null;
-        type_of_place: TypeOfPlace | null;
-        price_range: number[] | null;
-        accesable: boolean | null;
-        shared_room: boolean | null;
-      }
-    >({
-      query: ({
-        listings,
-        type_of_place,
-        price_range,
-        accesable,
-        shared_room,
-      }) => ({
-        url: ApiUrls.requestUpdateExistingListings,
-        method: "POST",
-        body: {
-          listings,
-          type_of_place,
-          price_range,
+
           accesable,
+          price_range,
           shared_room,
+          type_of_place,
+          returnFiltered,
         },
       }),
-      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+      async onQueryStarted({ options }, { dispatch, queryFulfilled }) {
         try {
           const { data: updatedListings } = await queryFulfilled;
+
           dispatch(
             api.util.updateQueryData(
-              "getVerifiedListings" as never,
-              undefined as never,
+              "getVerifiedListingByParams" as never,
+              { options } as never,
               () => updatedListings
             )
           );
@@ -105,12 +97,8 @@ const getVerifiedListingsApi = api.injectEndpoints({
 });
 
 export const {
-  useGetVerifiedListingsQuery,
   useRequestListingSearchMutation,
-  useRequestUpdateExistingListingsMutation,
+  useGetVerifiedListingByParamsQuery,
 } = getVerifiedListingsApi;
-export const {
-  getVerifiedListings,
-  requestListingSearch,
-  requestUpdateExistingListings,
-} = getVerifiedListingsApi.endpoints;
+export const { requestListingSearch, getVerifiedListingByParams } =
+  getVerifiedListingsApi.endpoints;

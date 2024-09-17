@@ -51,6 +51,12 @@
       font-size: 15px;
       font-weight: 500;
       line-height: 100%;
+      &[data-loader="true"] {
+        margin: unset;
+        border-radius: 5px;
+        width: 33px;
+        height: 26px;
+      }
     }
     .price_range_preview_input {
       position: relative;

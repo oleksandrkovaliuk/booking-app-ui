@@ -1,115 +1,52 @@
 "use client";
 
-import React, {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useState,
-} from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useDispatch } from "react-redux";
 import { useSearchParams } from "next/navigation";
-import { skeletonData } from "@/information/data";
 
-import { store } from "@/store";
-import {
-  requestListingSearch,
-  useGetVerifiedListingsQuery,
-} from "@/store/api/endpoints/listings/getVerifiedListings";
+import { useSelector } from "@/store";
+import { setListings } from "@/store/slices/listings/listingSearchResponseSlice";
+
+import { useGetVerifiedListingByParamsQuery } from "@/store/api/endpoints/listings/getVerifiedListings";
 
 import { ListingCard } from "@/components/listingCard";
 import { SkeletonListingCard } from "@/components/listingCard/components/skeleton";
 
-import { SEARCH_PARAM_KEYS } from "@/layout/header/_lib/enums";
-import { CountNights, ParseLocalStorageDates } from "@/helpers/dateManagment";
+import { ExtractAvailableQueryParams } from "@/helpers/paramsManagment";
+
+import { skeletonData } from "@/information/data";
 
 import styles from "./homeContent.module.scss";
-import { ExtractAvailableQueryParams } from "@/helpers/paramsManagment";
-import {
-  useIsSearchTriggeredApi,
-  useIsSearchTriggeredData,
-} from "@/app/_lib/context";
-import { ErrorHandler } from "@/helpers/errorHandler";
-import { useRequestAvailableCategoriesMutation } from "@/store/api/endpoints/listings/getCategories";
 
 export const HomeContent: React.FC = () => {
+  const dispatch = useDispatch();
   const params = useSearchParams();
 
-  const {
-    isFetching,
-    isLoading,
-    data: listings,
-  } = useGetVerifiedListingsQuery();
-  const [requestAvailableCategories] = useRequestAvailableCategoriesMutation();
-  const { isSearchTriggered } = useIsSearchTriggeredData();
-  const { setIsSearchTriggered } = useIsSearchTriggeredApi();
+  const { isFetched } = useSelector((state) => state.isSearchTriggered);
+  const [initParams, setInitParams] = useState<{
+    [key: string]: string | null;
+  }>(ExtractAvailableQueryParams(params));
 
-  const [countNights, setCountNights] = useState<number | null>(null);
+  const { data: listings, refetch } = useGetVerifiedListingByParamsQuery({
+    options: initParams,
+  });
 
-  const requestInitListingSearch = useCallback(async () => {
-    try {
-      const extractedParams = ExtractAvailableQueryParams(params);
-      const { data: res, error } = await store.dispatch(
-        requestListingSearch.initiate({
-          search_place: extractedParams[SEARCH_PARAM_KEYS.SEARCH_PLACE]
-            ? JSON.parse(extractedParams[SEARCH_PARAM_KEYS.SEARCH_PLACE])
-            : null,
-          search_date: extractedParams[SEARCH_PARAM_KEYS.SEARCH_DATE]
-            ? ParseLocalStorageDates(
-                extractedParams[SEARCH_PARAM_KEYS.SEARCH_DATE]
-              )
-            : null,
-          search_amountOfGuests: extractedParams[
-            SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS
-          ]
-            ? JSON.parse(
-                extractedParams[SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS]
-              )
-            : null,
-          search_includePets: extractedParams[
-            SEARCH_PARAM_KEYS.SEARCH_INCLUDE_PETS
-          ]
-            ? JSON.parse(extractedParams[SEARCH_PARAM_KEYS.SEARCH_INCLUDE_PETS])
-            : null,
-        })
-      );
-
-      if (error || !res.length) ErrorHandler(error as Error);
-
-      await requestAvailableCategories(res!);
-
-      setIsSearchTriggered(true);
-    } catch (error) {
-      return;
+  useEffect(() => {
+    if (isFetched) {
+      setInitParams(ExtractAvailableQueryParams(params));
+      refetch();
     }
-  }, [params, requestAvailableCategories, setIsSearchTriggered]);
+  }, [isFetched, params, refetch]);
 
-  useLayoutEffect(() => {
-    const extractedParams = ExtractAvailableQueryParams(params);
-
-    if (Object.keys(extractedParams).length) {
-      if (extractedParams[SEARCH_PARAM_KEYS.SEARCH_DATE] && isSearchTriggered) {
-        setCountNights(
-          CountNights(
-            ParseLocalStorageDates(
-              extractedParams[SEARCH_PARAM_KEYS.SEARCH_DATE]
-            ).start,
-            ParseLocalStorageDates(
-              extractedParams[SEARCH_PARAM_KEYS.SEARCH_DATE]
-            ).end
-          )
-        );
-      }
-
-      // if (!isSearchTriggered) {
-      //   requestInitListingSearch();
-      // }
-    }
-  }, [isSearchTriggered, params, requestInitListingSearch]);
+  useEffect(() => {
+    dispatch(setListings(listings));
+  }, [dispatch, listings]);
 
   return (
     <div className={styles.home_container}>
       <div className={styles.listings_container}>
-        {isFetching || isLoading || !listings?.length
+        {!listings
           ? skeletonData.map((item) => (
               <SkeletonListingCard key={item} item={item} size="sm" />
             ))
@@ -130,7 +67,7 @@ export const HomeContent: React.FC = () => {
                   images={listing.images}
                   address={listing.address}
                   accesable={listing.accesable}
-                  calculated_nights={countNights}
+                  // calculated_nights={countNights}
                   aboutplace={listing.description}
                   pets_allowed={listing.pets_allowed}
                 />

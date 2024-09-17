@@ -1,8 +1,11 @@
 import React, { memo, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useDispatch } from "react-redux";
 import { today, getLocalTimeZone } from "@internationalized/date";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { DateValue, RangeCalendar, RangeValue } from "@nextui-org/calendar";
+
+import { setFetch } from "@/store/slices/listings/isSearchTriggeredSlice";
 
 import {
   useStaysButtonContextApi,
@@ -33,6 +36,7 @@ const DatesSelection: React.FC<SelectionComponentsProps> = ({
 }) => {
   const router = useRouter();
   const pathname = usePathname();
+  const dispatch = useDispatch();
   const params = useSearchParams();
 
   const { setTriggeredSelection } = useTriggeredSelectionApi();
@@ -79,6 +83,7 @@ const DatesSelection: React.FC<SelectionComponentsProps> = ({
         start: date,
       });
       setTriggeredSelection(TypesOfSelections.DATE_EXPERIENCES_CHECKOUT);
+      dispatch(setFetch(false));
     }
   };
 
@@ -97,10 +102,12 @@ const DatesSelection: React.FC<SelectionComponentsProps> = ({
         params,
         router,
       });
+
       setUserDateSelection({
         ...userDateSelection,
         end: value.end,
       });
+
       setIsNewDateSelected(true);
 
       setTriggeredSelection(TypesOfSelections.GUEST);
@@ -116,6 +123,7 @@ const DatesSelection: React.FC<SelectionComponentsProps> = ({
         end: today(getLocalTimeZone()).add({ weeks: 1 }),
       });
     }
+    dispatch(setFetch(false));
 
     return null;
   };
@@ -178,6 +186,7 @@ const DatesSelection: React.FC<SelectionComponentsProps> = ({
         end: today(getLocalTimeZone()).add({ weeks: 1 }),
       });
     }
+    dispatch(setFetch(false));
   };
 
   useEffect(() => {

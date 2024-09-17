@@ -1,6 +1,9 @@
 import React, { memo, useEffect, useState } from "react";
 import { Checkbox } from "@nextui-org/react";
+import { useDispatch } from "react-redux";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+
+import { setFetch } from "@/store/slices/listings/isSearchTriggeredSlice";
 
 import { Counter } from "@/components/counter";
 import { ModalPanel } from "@/components/modalPanel";
@@ -20,6 +23,7 @@ const GuestsSelection: React.FC<SelectionComponentsProps> = ({
 }) => {
   const router = useRouter();
   const pathname = usePathname();
+  const dispatch = useDispatch();
   const params = useSearchParams();
 
   const { triggeredSelection } = useTriggeredSelectionData();
@@ -48,7 +52,8 @@ const GuestsSelection: React.FC<SelectionComponentsProps> = ({
         router,
       });
     }
-  }, [amoutOfGuests, params, pathname, router]);
+    dispatch(setFetch(false));
+  }, [amoutOfGuests, dispatch, params, pathname, router]);
 
   useEffect(() => {
     if (includePets) {
@@ -66,7 +71,8 @@ const GuestsSelection: React.FC<SelectionComponentsProps> = ({
         router,
       });
     }
-  }, [includePets, params, pathname, router]);
+    dispatch(setFetch(false));
+  }, [dispatch, includePets, params, pathname, router]);
 
   useEffect(() => {
     const guests = JSON.parse(

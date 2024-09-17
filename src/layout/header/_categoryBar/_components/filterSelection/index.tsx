@@ -10,13 +10,16 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import { toast } from "sonner";
+import { useDispatch } from "react-redux";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
+import { useSelector } from "@/store";
 import {
-  useGetVerifiedListingsQuery,
-  useRequestListingSearchMutation,
-  useRequestUpdateExistingListingsMutation,
-} from "@/store/api/endpoints/listings/getVerifiedListings";
+  setFetch,
+  setIsSearchTriggered,
+} from "@/store/slices/listings/isSearchTriggeredSlice";
+import { setListings } from "@/store/slices/listings/listingSearchResponseSlice";
+import { useRequestListingSearchMutation } from "@/store/api/endpoints/listings/getVerifiedListings";
 import { useRequestAvailableCategoriesMutation } from "@/store/api/endpoints/listings/getCategories";
 
 import { OptionSelection } from "./content/optionSelection";
@@ -40,18 +43,15 @@ import styles from "./filterSelection.module.scss";
 export const FilterSelection: React.FC = () => {
   const router = useRouter();
   const pathname = usePathname();
+  const dispatch = useDispatch();
   const params = useSearchParams();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { data: listings } = useGetVerifiedListingsQuery();
 
-  const [
-    requestUpdateExistingListings,
-    { isLoading: isLoadinFilteredListings },
-  ] = useRequestUpdateExistingListingsMutation();
-  const [requestListingSearch, { isLoading: isLoadingSearch }] =
-    useRequestListingSearchMutation();
-  const [requestAvailableCategories, { isLoading: isLoadingCategories }] =
+  const { listings } = useSelector((state) => state.listingSearchResponse);
+
+  const [requestListingSearch] = useRequestListingSearchMutation();
+  const [_, { isLoading: isLoadingCategories }] =
     useRequestAvailableCategoriesMutation();
 
   const [previewCountOfResults, setPreviewCountOfResults] = useState<
@@ -60,6 +60,7 @@ export const FilterSelection: React.FC = () => {
 
   const previewNumberOfResults = useCallback(() => {
     const applyiedFilters = ExtractAvailableQueryParams(params);
+
     if (!applyiedFilters || !listings!?.length) return;
     const {
       [SEARCH_PARAM_KEYS.SEARCH_PRICE_RANGE]: priceRange,
@@ -82,7 +83,7 @@ export const FilterSelection: React.FC = () => {
 
         const matchedTypeOfPlace =
           !parsedSharedRoomOption && parsedTypeOfPlace
-            ? parsedTypeOfPlace.id === listing.type!.id
+            ? parsedTypeOfPlace === listing.type!.id
             : parsedSharedRoomOption
             ? listing.type?.type_name === "A shared room"
             : true;
@@ -129,33 +130,66 @@ export const FilterSelection: React.FC = () => {
       search_includePets: searchSelection[SEARCH_PARAM_KEYS.SEARCH_INCLUDE_PETS]
         ? JSON.parse(searchSelection[SEARCH_PARAM_KEYS.SEARCH_INCLUDE_PETS])
         : null,
+      options: ExtractAvailableQueryParams(params),
     });
 
-    if (error || !res.length) ErrorHandler(error as Error);
+    if (error) ErrorHandler(error as Error);
 
-    await requestAvailableCategories(res!);
+    dispatch(setFetch(true));
+    dispatch(setListings(res!));
+    dispatch(setIsSearchTriggered(false));
   };
 
   const handleApplyFilterSelections = async () => {
     try {
-      const applyiedFilters = ExtractAvailableQueryParams(params);
+      const availableSearchOptions = ExtractAvailableQueryParams(params);
       const {
         [SEARCH_PARAM_KEYS.SEARCH_PRICE_RANGE]: priceRange,
         [SEARCH_PARAM_KEYS.SEARCH_TYPE_OF_PLACE]: typeOfPlace,
         [SEARCH_PARAM_KEYS.SEARCH_ACCESABLE]: accesable,
         [SEARCH_PARAM_KEYS.SEARCH_SHARED_ROOM]: sharedRoom,
-      } = applyiedFilters;
+      } = availableSearchOptions;
 
-      const { data: res, error } = await requestUpdateExistingListings({
-        listings: listings!,
-        type_of_place: typeOfPlace ? JSON.parse(typeOfPlace) : null,
-        price_range: priceRange ? JSON.parse(priceRange) : null,
+      const { data: res, error } = await requestListingSearch({
+        search_place: availableSearchOptions[SEARCH_PARAM_KEYS.SEARCH_PLACE]
+          ? JSON.parse(availableSearchOptions[SEARCH_PARAM_KEYS.SEARCH_PLACE])
+          : null,
+        search_date: availableSearchOptions[SEARCH_PARAM_KEYS.SEARCH_DATE]
+          ? ParseLocalStorageDates(
+              availableSearchOptions[SEARCH_PARAM_KEYS.SEARCH_DATE]
+            )
+          : null,
+        search_amountOfGuests: availableSearchOptions[
+          SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS
+        ]
+          ? JSON.parse(
+              availableSearchOptions[SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS]
+            )
+          : null,
+        search_includePets: availableSearchOptions[
+          SEARCH_PARAM_KEYS.SEARCH_INCLUDE_PETS
+        ]
+          ? JSON.parse(
+              availableSearchOptions[SEARCH_PARAM_KEYS.SEARCH_INCLUDE_PETS]
+            )
+          : null,
+        search_category_id: null,
+
+        returnFiltered: true,
         accesable: accesable ? JSON.parse(accesable) : null,
         shared_room: sharedRoom ? JSON.parse(sharedRoom) : null,
+        price_range: priceRange ? JSON.parse(priceRange) : null,
+        type_of_place: typeOfPlace ? JSON.parse(typeOfPlace) : null,
+
+        options: ExtractAvailableQueryParams(params),
       });
 
       if (!res && error) ErrorHandler(error);
 
+      dispatch(setListings(res!));
+
+      dispatch(setFetch(true));
+      dispatch(setIsSearchTriggered(false));
       onClose();
     } catch (error) {
       toast(
@@ -227,10 +261,11 @@ export const FilterSelection: React.FC = () => {
             <Button
               size="md"
               variant="light"
+              isDisabled={!listings?.length}
               onClick={handleClearFilterSelection}
               className={styles.clear_btn}
             >
-              {isLoadingSearch || isLoadingCategories ? (
+              {isLoadingCategories ? (
                 <Spinner size="sm" color="default" />
               ) : (
                 "Clear all"
@@ -239,15 +274,13 @@ export const FilterSelection: React.FC = () => {
             <Button
               size="md"
               className={styles.apply_btn}
-              isDisabled={
-                previewCountOfResults === 0 || listings!?.length === 1
-              }
+              isDisabled={previewCountOfResults === 0 || !listings!?.length}
               onClick={handleApplyFilterSelections}
             >
-              {isLoadinFilteredListings ? (
+              {!listings?.length ? (
                 <Spinner size="sm" color="default" />
               ) : (
-                `Show ${previewCountOfResults} results`
+                `Show ${!listings!?.length ? 0 : previewCountOfResults} results`
               )}{" "}
             </Button>
           </ModalFooter>

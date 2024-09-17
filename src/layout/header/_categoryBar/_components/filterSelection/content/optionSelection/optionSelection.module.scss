@@ -50,6 +50,11 @@
       }
     }
 
+    &[data-loader="true"] {
+      min-width: 154px;
+      min-height: 41px;
+    }
+
     &:hover {
       border-color: var(--booking-app-black-color);
     }

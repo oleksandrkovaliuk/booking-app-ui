@@ -2,9 +2,18 @@ import React, { useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { Spinner } from "@nextui-org/react";
+import { useDispatch } from "react-redux";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-import { useRequestListingSearchMutation } from "@/store/api/endpoints/listings/getVerifiedListings";
+import {
+  setFetch,
+  setIsSearchTriggered,
+} from "@/store/slices/listings/isSearchTriggeredSlice";
+import {
+  useGetVerifiedListingByParamsQuery,
+  useRequestListingSearchMutation,
+} from "@/store/api/endpoints/listings/getVerifiedListings";
+import { setListings } from "@/store/slices/listings/listingSearchResponseSlice";
 import { useRequestAvailableCategoriesMutation } from "@/store/api/endpoints/listings/getCategories";
 
 import { Search } from "@/svgs/Search";
@@ -15,7 +24,10 @@ import { RegionSelectionComponent } from "./_components/regionSelection";
 
 import { ErrorHandler } from "@/helpers/errorHandler";
 import { ParseLocalStorageDates } from "@/helpers/dateManagment";
-import { AssignNewQueryParams } from "@/helpers/paramsManagment";
+import {
+  AssignNewQueryParams,
+  ExtractAvailableQueryParams,
+} from "@/helpers/paramsManagment";
 import { getSearchSelection } from "../_lib/getSearchSelections";
 import {
   TriggeredSelectionApi,
@@ -27,7 +39,6 @@ import { SEARCH_PARAM_KEYS } from "../_lib/enums";
 import { SearchFormBarProps } from "../_lib/types";
 import { TypesOfSelections } from "@/_utilities/enums";
 import { HandlePopUpMenuOpening } from "./_components/type";
-import { useIsSearchTriggeredApi } from "@/app/_lib/context";
 
 import styles from "./search_form_bar.module.scss";
 
@@ -36,17 +47,19 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
   trackScrolled,
   onCloseCallBack,
 }) => {
+  const dispatch = useDispatch();
+
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
 
   const searchBarRef = useRef<HTMLFormElement | null>(null);
 
+  const { isLoading } = useGetVerifiedListingByParamsQuery({
+    options: ExtractAvailableQueryParams(params),
+  });
   const { setIsCategoryChanged } = useStaysButtonContextApi();
-  const { setIsSearchTriggered } = useIsSearchTriggeredApi();
-
-  const [requestListingSearch, { isLoading }] =
-    useRequestListingSearchMutation();
+  const [requestListingSearch] = useRequestListingSearchMutation();
   const [requestAvailableCategories] = useRequestAvailableCategoriesMutation();
 
   const [triggeredSelection, setTriggeredSelection] =
@@ -64,6 +77,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
       triggeredSelection,
     };
   }, [triggeredSelection]);
+
   // CONDITIONS
 
   const handleClearAllTriggeredSelections = () => {
@@ -83,54 +97,51 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
     try {
       const searchSelection = getSearchSelection(params, SEARCH_PARAM_KEYS);
 
-      if (Object.keys(searchSelection).length) {
-        const { data: res, error } = await requestListingSearch({
-          search_place: searchSelection[SEARCH_PARAM_KEYS.SEARCH_PLACE]
-            ? JSON.parse(searchSelection[SEARCH_PARAM_KEYS.SEARCH_PLACE])
-            : null,
-          search_date: searchSelection[SEARCH_PARAM_KEYS.SEARCH_DATE]
-            ? ParseLocalStorageDates(
-                searchSelection[SEARCH_PARAM_KEYS.SEARCH_DATE]
-              )
-            : null,
-          search_amountOfGuests: searchSelection[
-            SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS
-          ]
-            ? JSON.parse(
-                searchSelection[SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS]
-              )
-            : null,
-          search_includePets: searchSelection[
-            SEARCH_PARAM_KEYS.SEARCH_INCLUDE_PETS
-          ]
-            ? JSON.parse(searchSelection[SEARCH_PARAM_KEYS.SEARCH_INCLUDE_PETS])
-            : null,
-        });
+      const { data: res, error } = await requestListingSearch({
+        search_place: searchSelection[SEARCH_PARAM_KEYS.SEARCH_PLACE]
+          ? JSON.parse(searchSelection[SEARCH_PARAM_KEYS.SEARCH_PLACE])
+          : null,
+        search_date: searchSelection[SEARCH_PARAM_KEYS.SEARCH_DATE]
+          ? ParseLocalStorageDates(
+              searchSelection[SEARCH_PARAM_KEYS.SEARCH_DATE]
+            )
+          : null,
+        search_amountOfGuests: searchSelection[
+          SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS
+        ]
+          ? JSON.parse(
+              searchSelection[SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS]
+            )
+          : null,
+        search_includePets: searchSelection[
+          SEARCH_PARAM_KEYS.SEARCH_INCLUDE_PETS
+        ]
+          ? JSON.parse(searchSelection[SEARCH_PARAM_KEYS.SEARCH_INCLUDE_PETS])
+          : null,
+        search_category_id: null,
+        options: ExtractAvailableQueryParams(params),
+      });
 
-        if (error || !res.length) ErrorHandler(error as Error);
+      if (error || !res?.length) ErrorHandler(error as Error);
 
-        await requestAvailableCategories(res!);
-
-        AssignNewQueryParams({
-          updatedParams: {
-            [SEARCH_PARAM_KEYS.SEARCH_CATEGORY_ID]: null,
-          },
-          pathname,
-          params,
-          router,
-        });
-
-        setIsSearchTriggered(true);
-        setTriggeredSelection(TypesOfSelections.UNSELECTED);
-        onCloseCallBack && onCloseCallBack();
-      }
-    } catch (error) {
       AssignNewQueryParams({
-        updatedParams: { [SEARCH_PARAM_KEYS.SEARCH_CATEGORY_ID]: null },
+        updatedParams: {
+          [SEARCH_PARAM_KEYS.SEARCH_CATEGORY_ID]: null,
+        },
         pathname,
         params,
         router,
       });
+
+      requestAvailableCategories(res!);
+      dispatch(setListings(res!));
+
+      dispatch(setFetch(true));
+      dispatch(setIsSearchTriggered(true));
+
+      setTriggeredSelection(TypesOfSelections.UNSELECTED);
+      onCloseCallBack && onCloseCallBack();
+    } catch (error) {
       toast(
         "🫣 We apologize. But we couldn't find any listings by your request.",
         {

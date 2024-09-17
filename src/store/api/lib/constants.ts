@@ -2,15 +2,15 @@ import { ApiTags } from "./enums";
 
 export const ApiUrls = {
   getUser: "/user/get",
-  auth_acces_user: "/auth/accessUser",
   auth_oauth_user: "auth/oauthUser",
+  auth_acces_user: "auth/accessUser",
   check_auth_type: "/auth/checkAuthType",
 
   getUserListings: "/listings/get/users",
   getCurrentListing: "/listings/get/current",
-  getVerifiedListings: "/listings/verified",
   getListingsCategories: "/listings/categories",
   getListingsTypeOfPlace: "/listings/typeofplace",
+  getVerifiedListingByParams: "/listings/verified/by/params",
 
   requestListingSearch: "/listings/request/search",
   requestUpdateListing: "/listings/request/update",
@@ -18,7 +18,6 @@ export const ApiUrls = {
   requestCreateListing: "/listings/listing/create",
   requestUpdateCalendar: "/listings/calendar/update",
   requestDeleteUserListingImages: "/listings/images/delete",
-  requestUpdateExistingListings: "/listings/request/update/existing",
   requestAvailableCategories: "/listings/request/available/categories",
   requestDeleteIndividualListingImage: "/listings/images/delete/individual",
 
@@ -34,4 +33,5 @@ export const ApiTagsTypes = [
   ApiTags.VERIFIED_LISTINGS,
   ApiTags.LISTING,
   ApiTags.USER_LISTINGS,
+  ApiTags.VERIFIED_LISTINGS_BY_PARAMS,
 ];

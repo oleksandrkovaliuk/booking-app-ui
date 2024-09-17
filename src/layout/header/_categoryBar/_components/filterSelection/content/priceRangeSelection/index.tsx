@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Slider } from "@nextui-org/react";
+import { useDispatch } from "react-redux";
+import { Skeleton, Slider } from "@nextui-org/react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-import { useGetVerifiedListingsQuery } from "@/store/api/endpoints/listings/getVerifiedListings";
+import { useSelector } from "@/store";
+import { setFetch } from "@/store/slices/listings/isSearchTriggeredSlice";
 
 import { AssignNewQueryParams } from "@/helpers/paramsManagment";
 
@@ -15,23 +17,22 @@ import styles from "./priceRangeSelection.module.scss";
 export const PriceRangeSelection: React.FC = () => {
   const router = useRouter();
   const pathname = usePathname();
+  const dispatch = useDispatch();
   const params = useSearchParams();
 
-  const { data: listings, isSuccess } = useGetVerifiedListingsQuery();
+  const { listings } = useSelector((state) => state.listingSearchResponse);
 
-  const priceMinRange =
-    isSuccess &&
-    listings
-      ?.map((listing) => listing.price)
-      .sort((a, b) => Number(a) - Number(b))[0];
-
-  const priceMaxRange =
-    isSuccess &&
-    Number(
-      listings
+  const priceMinRange = !listings?.length
+    ? 0
+    : listings
         ?.map((listing) => listing.price)
-        .sort((a, b) => Number(b) - Number(a))[0]
-    );
+        .sort((a, b) => Number(a) - Number(b))[0];
+
+  const priceMaxRange = !listings?.length
+    ? 200
+    : listings
+        ?.map((listing) => listing.price)
+        .sort((a, b) => Number(b) - Number(a))[0];
 
   const [priceRangeValue, setPriceRangeValue] = useState<number[]>([
     Number(priceMinRange),
@@ -48,7 +49,9 @@ export const PriceRangeSelection: React.FC = () => {
       params,
       router,
     });
+    dispatch(setFetch(false));
   };
+
   const handlePriceRangeManualChange = (
     type: "min" | "max",
     e: React.ChangeEvent<HTMLInputElement>
@@ -104,6 +107,7 @@ export const PriceRangeSelection: React.FC = () => {
         router,
       });
     }
+    dispatch(setFetch(false));
   };
 
   useEffect(() => {
@@ -111,10 +115,11 @@ export const PriceRangeSelection: React.FC = () => {
     if (savedPriceRange) {
       const [min, max] = JSON.parse(savedPriceRange);
       setPriceRangeValue([Number(min), Number(max)]);
-    } else if (isSuccess && !savedPriceRange) {
+    } else if (!savedPriceRange) {
       setPriceRangeValue([Number(priceMinRange), Number(priceMaxRange)]);
     }
-  }, [isSuccess, params, priceMaxRange, priceMinRange]);
+  }, [params, priceMaxRange, priceMinRange]);
+
   return (
     <div className={styles.filter_price_range}>
       <Slider
@@ -125,7 +130,8 @@ export const PriceRangeSelection: React.FC = () => {
           priceRangeValue[0] === priceRangeValue[1] ||
           !priceRangeValue[0] ||
           !priceRangeValue[1] ||
-          listings!.length === 1
+          listings!?.length === 1 ||
+          !listings?.length
         }
         color="primary"
         minValue={Number(priceMinRange)}
@@ -151,19 +157,28 @@ export const PriceRangeSelection: React.FC = () => {
             Minimun
           </label>
           <div className={styles.price_range_preview_input_wrap}>
-            <span className={styles.price_range_preview_currency}>$</span>
-            <input
-              type="text"
-              aria-label="price_min"
-              inputMode="numeric"
-              id="price_min"
-              style={{
-                maxWidth: `${priceRangeValue[0].toLocaleString().length}ch`,
-              }}
-              className={styles.price_range_preview_input}
-              value={Number(priceRangeValue[0]).toLocaleString()}
-              onChange={(e) => handlePriceRangeManualChange("min", e)}
-            />
+            {!listings?.length ? (
+              <Skeleton
+                data-loader={true}
+                className={styles.price_range_preview_input}
+              />
+            ) : (
+              <>
+                <span className={styles.price_range_preview_currency}>$</span>
+                <input
+                  type="text"
+                  aria-label="price_min"
+                  inputMode="numeric"
+                  id="price_min"
+                  style={{
+                    maxWidth: `${priceRangeValue[0].toLocaleString().length}ch`,
+                  }}
+                  className={styles.price_range_preview_input}
+                  value={Number(priceRangeValue[0]).toLocaleString()}
+                  onChange={(e) => handlePriceRangeManualChange("min", e)}
+                />
+              </>
+            )}
           </div>
         </div>
         <div className={styles.price_range_preview_block}>
@@ -174,19 +189,28 @@ export const PriceRangeSelection: React.FC = () => {
             Maximum
           </label>
           <div className={styles.price_range_preview_input_wrap}>
-            <span className={styles.price_range_preview_currency}>$</span>
-            <input
-              type="text"
-              aria-label="price_max"
-              inputMode="numeric"
-              id="price_max"
-              className={styles.price_range_preview_input}
-              style={{
-                maxWidth: `${priceRangeValue[1].toLocaleString().length}ch`,
-              }}
-              value={Number(priceRangeValue[1]).toLocaleString()}
-              onChange={(e) => handlePriceRangeManualChange("max", e)}
-            />
+            {!listings?.length ? (
+              <Skeleton
+                data-loader={true}
+                className={styles.price_range_preview_input}
+              />
+            ) : (
+              <>
+                <span className={styles.price_range_preview_currency}>$</span>
+                <input
+                  type="text"
+                  aria-label="price_max"
+                  inputMode="numeric"
+                  id="price_max"
+                  className={styles.price_range_preview_input}
+                  style={{
+                    maxWidth: `${priceRangeValue[1].toLocaleString().length}ch`,
+                  }}
+                  value={Number(priceRangeValue[1]).toLocaleString()}
+                  onChange={(e) => handlePriceRangeManualChange("max", e)}
+                />
+              </>
+            )}
           </div>
         </div>
       </div>

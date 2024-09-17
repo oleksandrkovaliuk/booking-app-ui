@@ -23,7 +23,10 @@ import { GoogleIcon } from "@/svgs/GoogleIcon";
 import { FaceBookIcon } from "@/svgs/FacebookIcon";
 
 import { ReactEvent } from "@/_utilities/type";
-import { EmailValidation } from "@/validation/emailValidation";
+import {
+  EmailValidation,
+  PasswordValidation,
+} from "@/validation/emailValidation";
 import { ErrorHandler } from "@/helpers/errorHandler";
 
 import styles from "./authorization.module.scss";
@@ -36,6 +39,7 @@ export const LoginModal = () => {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [emailValid, setEmailValid] = useState(false);
+  const [passValid, setPassValid] = useState(false);
 
   const router = useRouter();
   const searchParam = useSearchParams();
@@ -184,9 +188,11 @@ export const LoginModal = () => {
             <div className={styles.authorization_input_wrap}>
               <input
                 ref={emailRef}
-                onChange={() => (emailValid ? setEmailValid(false) : null)}
                 type="email"
                 id="email"
+                onChange={() => {
+                  setEmailValid(false);
+                }}
                 placeholder="Enter your email address..."
                 className={styles.authorization_input}
               />
@@ -203,9 +209,19 @@ export const LoginModal = () => {
             {emailValid && (
               <div className={styles.authorization_input_wrap}>
                 <input
+                  id="password"
                   ref={passRef}
                   type="password"
-                  id="password"
+                  onChange={(e) => {
+                    if (
+                      e.target.value.length > 0 &&
+                      PasswordValidation(e.target.value)
+                    ) {
+                      setPassValid(true);
+                    } else {
+                      setPassValid(false);
+                    }
+                  }}
                   placeholder="Enter your password here..."
                   className={styles.authorization_input}
                 />
@@ -222,7 +238,7 @@ export const LoginModal = () => {
             )}
 
             <button
-              disabled={!passRef.current?.value.length && emailValid}
+              disabled={!passValid && emailValid}
               className={styles.authorization_submit_button}
               onClick={!emailValid ? emailValidation : submitCredentials}
             >

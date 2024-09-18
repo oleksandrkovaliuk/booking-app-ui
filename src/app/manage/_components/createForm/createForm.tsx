@@ -23,7 +23,6 @@ import { GoogleMapProps } from "@/components/googleMap/type";
 
 import { requirmentForAddressComponent } from "@/helpers/address/formattedAddressVariants";
 import { handleUpdateFormAndLocalStorage } from "@/helpers/updateFormAndStorageStates";
-import { ErrorHandler } from "@/helpers/errorHandler";
 
 import {
   motion_transition,
@@ -159,14 +158,18 @@ export const CreateForm: React.FC = () => {
   };
 
   const handleClearForm = async () => {
-    clearAllStorage();
-    const { error } = await store.dispatch(
-      requestDeleteUserListingImages.initiate({
-        user_email: session?.user?.email || "",
-        location: selectedAddress.formattedAddress!,
-      })
-    );
-    if (error) ErrorHandler(error);
+    try {
+      clearAllStorage();
+      const { error } = await store.dispatch(
+        requestDeleteUserListingImages.initiate({
+          user_email: session?.user?.email || "",
+          location: selectedAddress.formattedAddress!,
+        })
+      );
+      if (error) throw new Error();
+    } catch (error) {
+      return;
+    }
   };
 
   // LEAVE THE FORM
@@ -243,7 +246,7 @@ export const CreateForm: React.FC = () => {
         })
       );
 
-      if (error && !res) ErrorHandler(error);
+      if (error && !res) throw new Error();
 
       toast(
         <div className="toast success">
@@ -253,7 +256,15 @@ export const CreateForm: React.FC = () => {
       clearAllStorage();
       router.push("/manage/listings");
     } catch (error) {
-      toast.error((error as Error).message);
+      toast(
+        "🫣 We apologize. Something went wrong with submiting your listing. Please try to refresh the page and try again.",
+        {
+          action: {
+            label: "Close",
+            onClick: () => {},
+          },
+        }
+      );
     }
   };
 

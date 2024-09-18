@@ -90,6 +90,7 @@ const Categories: React.FC = () => {
       toast(
         `🫣 We couldn't find any listings for this specific category in your area. `,
         {
+          position: "top-center",
           action: {
             label: "Close",
             onClick: () => {},

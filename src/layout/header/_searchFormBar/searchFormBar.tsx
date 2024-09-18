@@ -22,7 +22,6 @@ import { DatesSelectionComponent } from "./_components/datesSelection";
 import { GuestsSelectionComponent } from "./_components/guestSelection";
 import { RegionSelectionComponent } from "./_components/regionSelection";
 
-import { ErrorHandler } from "@/helpers/errorHandler";
 import { ParseLocalStorageDates } from "@/helpers/dateManagment";
 import {
   AssignNewQueryParams,
@@ -34,6 +33,7 @@ import {
   TriggeredSelectionData,
   useStaysButtonContextApi,
 } from "../_lib/context/context";
+import { today, getLocalTimeZone } from "@internationalized/date";
 
 import { SEARCH_PARAM_KEYS } from "../_lib/enums";
 import { SearchFormBarProps } from "../_lib/types";
@@ -95,34 +95,54 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
   const requestSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const searchSelection = getSearchSelection(params, SEARCH_PARAM_KEYS);
+      const availableSearchOptions = getSearchSelection(
+        params,
+        SEARCH_PARAM_KEYS
+      );
+
+      const {
+        [SEARCH_PARAM_KEYS.SEARCH_PRICE_RANGE]: priceRange,
+        [SEARCH_PARAM_KEYS.SEARCH_TYPE_OF_PLACE]: typeOfPlace,
+        [SEARCH_PARAM_KEYS.SEARCH_ACCESABLE]: accesable,
+        [SEARCH_PARAM_KEYS.SEARCH_SHARED_ROOM]: sharedRoom,
+      } = availableSearchOptions;
 
       const { data: res, error } = await requestListingSearch({
-        search_place: searchSelection[SEARCH_PARAM_KEYS.SEARCH_PLACE]
-          ? JSON.parse(searchSelection[SEARCH_PARAM_KEYS.SEARCH_PLACE])
+        search_place: availableSearchOptions[SEARCH_PARAM_KEYS.SEARCH_PLACE]
+          ? JSON.parse(availableSearchOptions[SEARCH_PARAM_KEYS.SEARCH_PLACE])
           : null,
-        search_date: searchSelection[SEARCH_PARAM_KEYS.SEARCH_DATE]
+        search_date: availableSearchOptions[SEARCH_PARAM_KEYS.SEARCH_DATE]
           ? ParseLocalStorageDates(
-              searchSelection[SEARCH_PARAM_KEYS.SEARCH_DATE]
+              availableSearchOptions[SEARCH_PARAM_KEYS.SEARCH_DATE]
             )
           : null,
-        search_amountOfGuests: searchSelection[
+        search_amountOfGuests: availableSearchOptions[
           SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS
         ]
           ? JSON.parse(
-              searchSelection[SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS]
+              availableSearchOptions[SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS]
             )
           : null,
-        search_includePets: searchSelection[
+        search_includePets: availableSearchOptions[
           SEARCH_PARAM_KEYS.SEARCH_INCLUDE_PETS
         ]
-          ? JSON.parse(searchSelection[SEARCH_PARAM_KEYS.SEARCH_INCLUDE_PETS])
+          ? JSON.parse(
+              availableSearchOptions[SEARCH_PARAM_KEYS.SEARCH_INCLUDE_PETS]
+            )
           : null,
         search_category_id: null,
+
+        returnFiltered:
+          accesable || sharedRoom || priceRange || typeOfPlace ? true : false,
+        accesable: accesable ? JSON.parse(accesable) : null,
+        shared_room: sharedRoom ? JSON.parse(sharedRoom) : null,
+        price_range: priceRange ? JSON.parse(priceRange) : null,
+        type_of_place: typeOfPlace ? JSON.parse(typeOfPlace) : null,
+
         options: ExtractAvailableQueryParams(params),
       });
 
-      if (error || !res?.length) ErrorHandler(error as Error);
+      if (error || !res?.length) throw new Error();
 
       AssignNewQueryParams({
         updatedParams: {

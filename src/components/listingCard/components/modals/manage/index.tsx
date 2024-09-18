@@ -12,7 +12,6 @@ import { requestDeleteListing } from "@/store/api/endpoints/listings/requestDele
 import { EditIcon } from "@/svgs/EditIcon";
 import { CalendarIcon } from "@/svgs/CalendarIcon";
 
-import { ErrorHandler } from "@/helpers/errorHandler";
 import { ModalProps } from "../type";
 
 export const ManageModal: React.FC<ModalProps> = ({
@@ -42,12 +41,20 @@ export const ManageModal: React.FC<ModalProps> = ({
           location: address?.formattedAddress!,
         })
       );
-      if (error) ErrorHandler(error);
+      if (error) throw new Error();
 
       toast.info("Listing deleted successfully");
       onClose();
     } catch (error) {
-      toast.error((error as Error).message);
+      toast.error(
+        (error as Error).message || "Something went wrong, please try again.",
+        {
+          action: {
+            label: "Close",
+            onClick: () => {},
+          },
+        }
+      );
     }
   };
 

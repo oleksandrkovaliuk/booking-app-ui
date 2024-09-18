@@ -18,12 +18,15 @@ import { ExtractAvailableQueryParams } from "@/helpers/paramsManagment";
 import { skeletonData } from "@/information/data";
 
 import styles from "./homeContent.module.scss";
+import { setIsSearchTriggered } from "@/store/slices/listings/isSearchTriggeredSlice";
+import { SEARCH_PARAM_KEYS } from "@/layout/header/_lib/enums";
 
 export const HomeContent: React.FC = () => {
   const dispatch = useDispatch();
   const params = useSearchParams();
 
   const { isFetched } = useSelector((state) => state.isSearchTriggered);
+
   const [initParams, setInitParams] = useState<{
     [key: string]: string | null;
   }>(ExtractAvailableQueryParams(params));
@@ -32,12 +35,28 @@ export const HomeContent: React.FC = () => {
     options: initParams,
   });
 
+  // CONDITIONS
+
   useEffect(() => {
+    const isSearchSelectionClear =
+      !params.get(SEARCH_PARAM_KEYS.SEARCH_PLACE) &&
+      !params.get(SEARCH_PARAM_KEYS.SEARCH_DATE) &&
+      !params.get(SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS);
+
+    console.log(
+      params.get(SEARCH_PARAM_KEYS.SEARCH_PLACE),
+      params.get(SEARCH_PARAM_KEYS.SEARCH_DATE),
+      params.get(SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS)
+    );
     if (isFetched) {
       setInitParams(ExtractAvailableQueryParams(params));
       refetch();
+      if (isSearchSelectionClear) {
+        console.log("isSearchSelectionClear");
+        dispatch(setIsSearchTriggered(false));
+      }
     }
-  }, [isFetched, params, refetch]);
+  }, [dispatch, isFetched, params, refetch]);
 
   useEffect(() => {
     dispatch(setListings(listings));

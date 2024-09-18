@@ -1,5 +1,4 @@
 export enum SEARCH_PARAM_KEYS {
-  SEARCHED = "searched",
   SEARCH_PLACE = "search_place",
   SEARCH_DATE = "search_date",
   SEARCH_AMOUNT_OF_GUESTS = "search_amountOfGuests",

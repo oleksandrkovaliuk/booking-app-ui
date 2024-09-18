@@ -27,7 +27,6 @@ import {
   EmailValidation,
   PasswordValidation,
 } from "@/validation/emailValidation";
-import { ErrorHandler } from "@/helpers/errorHandler";
 
 import styles from "./authorization.module.scss";
 
@@ -60,22 +59,28 @@ export const LoginModal = () => {
     e.preventDefault();
     const emailValue = (emailRef.current as HTMLInputElement).value;
     try {
-      if (EmailValidation(emailValue)) {
-        const { data: res, error } = await store.dispatch(
-          checkAuthType.initiate({ email: btoa(emailValue) })
-        );
-        if (!error && res) {
-          setEmailValid(true);
-        } else {
-          ErrorHandler(error as FetchBaseQueryError);
-        }
-      } else throw Error("Email is not valid. Please try again");
+      if (!EmailValidation(emailValue)) {
+        throw new Error("Email is not valid. Please try again");
+      }
+      const { data: res, error } = await store.dispatch(
+        checkAuthType.initiate({ email: btoa(emailValue) })
+      );
+
+      if (!error && res) {
+        setEmailValid(true);
+        throw new Error("Failed with move on. Please try again.");
+      }
     } catch (error) {
       if (emailRef.current) {
         emailRef.current.value = " ";
         setEmailValid(false);
       }
-      toast.error((error as Error).message);
+      toast.error((error as Error).message, {
+        action: {
+          label: "Close",
+          onClick: () => {},
+        },
+      });
     }
   };
 

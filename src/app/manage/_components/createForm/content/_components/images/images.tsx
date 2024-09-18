@@ -32,8 +32,6 @@ import {
   ImagesStoreType,
 } from "@/app/manage/_components/createForm/content/type";
 
-import { ErrorHandler } from "@/helpers/errorHandler";
-
 import { ImagesCard } from "./card";
 import { LoadingValue } from "./type";
 import { AddIcon } from "@/svgs/Addicon";
@@ -147,8 +145,8 @@ export const Images: React.FC<ContentProps> = ({
       );
 
       if (error && !res) {
-        ErrorHandler(error);
         setIsLoading({ ...isLoading, uploadingImgs: false });
+        throw new Error();
       }
       setIsLoading({ ...isLoading, uploadingImgs: false });
 
@@ -183,7 +181,7 @@ export const Images: React.FC<ContentProps> = ({
         })
       );
 
-      if (error) ErrorHandler(error);
+      if (error) throw new Error();
 
       setUploadedImages({
         ...uploadedImages,
@@ -202,7 +200,15 @@ export const Images: React.FC<ContentProps> = ({
       });
       onClose();
     } catch (error) {
-      toast.error("Something went wrong");
+      toast.error(
+        "Something went wrong with canceling your operetion. Please try again.",
+        {
+          action: {
+            label: "Close",
+            onClick: () => {},
+          },
+        }
+      );
     }
   };
 
@@ -224,7 +230,7 @@ export const Images: React.FC<ContentProps> = ({
         })
       );
 
-      if (error || !res) ErrorHandler(error);
+      if (error || !res) throw new Error();
 
       setIsLoading({
         ...isLoading,
@@ -264,7 +270,15 @@ export const Images: React.FC<ContentProps> = ({
         </div>
       );
     } catch (error) {
-      toast.error("Something went wrong . Please try again");
+      toast.error(
+        "Something went wrong with deleting this image. Please try again.",
+        {
+          action: {
+            label: "Close",
+            onClick: () => {},
+          },
+        }
+      );
     }
   };
 
@@ -284,7 +298,12 @@ export const Images: React.FC<ContentProps> = ({
         );
       }
     } else {
-      toast.error("Please upload at least one image");
+      toast.info("It is required to upload at least five images. Thanks", {
+        action: {
+          label: "Close",
+          onClick: () => {},
+        },
+      });
     }
   };
 

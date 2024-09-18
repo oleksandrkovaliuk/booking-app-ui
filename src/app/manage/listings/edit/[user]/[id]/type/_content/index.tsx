@@ -12,7 +12,6 @@ import { ConfirmationButton } from "@/components/confirmationButton";
 
 import { TypeOfPlace } from "@/app/manage/_components/createForm/content/_components/typeOfPlace";
 
-import { ErrorHandler } from "@/helpers/errorHandler";
 import { handleUpdateFormAndLocalStorage } from "@/helpers/updateFormAndStorageStates";
 
 import { ContentProps, EditFormValues } from "../../type";
@@ -49,7 +48,7 @@ export const TypeContent: React.FC<ContentProps> = ({ params }) => {
         })
       );
 
-      if (error) return ErrorHandler(error);
+      if (error) throw new Error();
 
       toast.success("Successfully updated.", {
         action: {
@@ -60,8 +59,14 @@ export const TypeContent: React.FC<ContentProps> = ({ params }) => {
       setEnableConfirmationButton(false);
       localStorage.removeItem("edit_type");
     } catch (error) {
-      return toast.error(
-        (error as Error).message || "Something went wrong, please try again."
+      toast.error(
+        (error as Error).message || "Something went wrong, please try again.",
+        {
+          action: {
+            label: "Close",
+            onClick: () => {},
+          },
+        }
       );
     }
   };

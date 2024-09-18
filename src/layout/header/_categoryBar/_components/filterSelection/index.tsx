@@ -32,7 +32,7 @@ import {
   AssignNewQueryParams,
   ExtractAvailableQueryParams,
 } from "@/helpers/paramsManagment";
-import { ErrorHandler } from "@/helpers/errorHandler";
+
 import { ParseLocalStorageDates } from "@/helpers/dateManagment";
 
 import { SEARCH_PARAM_KEYS } from "@/layout/header/_lib/enums";
@@ -50,13 +50,14 @@ export const FilterSelection: React.FC = () => {
 
   const { listings } = useSelector((state) => state.listingSearchResponse);
 
-  const [requestListingSearch] = useRequestListingSearchMutation();
   const [_, { isLoading: isLoadingCategories }] =
     useRequestAvailableCategoriesMutation();
+  const [requestListingSearch] = useRequestListingSearchMutation();
 
   const [previewCountOfResults, setPreviewCountOfResults] = useState<
     number | null
   >(null);
+  const [isListingRequested, setIsListingRequested] = useState<boolean>(false);
 
   const previewNumberOfResults = useCallback(() => {
     const applyiedFilters = ExtractAvailableQueryParams(params);
@@ -100,48 +101,74 @@ export const FilterSelection: React.FC = () => {
   }, [listings, params]);
 
   const handleClearFilterSelection = async () => {
-    const searchSelection = getSearchSelection(params, SEARCH_PARAM_KEYS);
+    try {
+      setIsListingRequested(true);
 
-    AssignNewQueryParams({
-      updatedParams: {
-        [SEARCH_PARAM_KEYS.SEARCH_PRICE_RANGE]: null,
-        [SEARCH_PARAM_KEYS.SEARCH_TYPE_OF_PLACE]: null,
-        [SEARCH_PARAM_KEYS.SEARCH_ACCESABLE]: null,
-        [SEARCH_PARAM_KEYS.SEARCH_SHARED_ROOM]: null,
-        [SEARCH_PARAM_KEYS.SEARCH_CATEGORY_ID]: null,
-      },
-      params,
-      router,
-      pathname,
-    });
+      const searchSelection = getSearchSelection(params, SEARCH_PARAM_KEYS);
 
-    const { data: res, error } = await requestListingSearch({
-      search_place: searchSelection[SEARCH_PARAM_KEYS.SEARCH_PLACE]
-        ? JSON.parse(searchSelection[SEARCH_PARAM_KEYS.SEARCH_PLACE])
-        : null,
-      search_date: searchSelection[SEARCH_PARAM_KEYS.SEARCH_DATE]
-        ? ParseLocalStorageDates(searchSelection[SEARCH_PARAM_KEYS.SEARCH_DATE])
-        : null,
-      search_amountOfGuests: searchSelection[
-        SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS
-      ]
-        ? JSON.parse(searchSelection[SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS])
-        : null,
-      search_includePets: searchSelection[SEARCH_PARAM_KEYS.SEARCH_INCLUDE_PETS]
-        ? JSON.parse(searchSelection[SEARCH_PARAM_KEYS.SEARCH_INCLUDE_PETS])
-        : null,
-      options: ExtractAvailableQueryParams(params),
-    });
+      AssignNewQueryParams({
+        updatedParams: {
+          [SEARCH_PARAM_KEYS.SEARCH_PRICE_RANGE]: null,
+          [SEARCH_PARAM_KEYS.SEARCH_TYPE_OF_PLACE]: null,
+          [SEARCH_PARAM_KEYS.SEARCH_ACCESABLE]: null,
+          [SEARCH_PARAM_KEYS.SEARCH_SHARED_ROOM]: null,
+          [SEARCH_PARAM_KEYS.SEARCH_CATEGORY_ID]: null,
+        },
+        params,
+        router,
+        pathname,
+      });
 
-    if (error) ErrorHandler(error as Error);
+      const { data: res, error } = await requestListingSearch({
+        search_place: searchSelection[SEARCH_PARAM_KEYS.SEARCH_PLACE]
+          ? JSON.parse(searchSelection[SEARCH_PARAM_KEYS.SEARCH_PLACE])
+          : null,
+        search_date: searchSelection[SEARCH_PARAM_KEYS.SEARCH_DATE]
+          ? ParseLocalStorageDates(
+              searchSelection[SEARCH_PARAM_KEYS.SEARCH_DATE]
+            )
+          : null,
+        search_amountOfGuests: searchSelection[
+          SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS
+        ]
+          ? JSON.parse(
+              searchSelection[SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS]
+            )
+          : null,
+        search_includePets: searchSelection[
+          SEARCH_PARAM_KEYS.SEARCH_INCLUDE_PETS
+        ]
+          ? JSON.parse(searchSelection[SEARCH_PARAM_KEYS.SEARCH_INCLUDE_PETS])
+          : null,
+        options: ExtractAvailableQueryParams(params),
+      });
 
-    dispatch(setFetch(true));
-    dispatch(setListings(res!));
-    dispatch(setIsSearchTriggered(false));
+      if (error) throw new Error();
+
+      dispatch(setFetch(true));
+      dispatch(setListings(res!));
+      dispatch(setIsSearchTriggered(false));
+
+      setIsListingRequested(false);
+    } catch (error) {
+      setIsListingRequested(false);
+      toast(
+        `We couldn't clear your filter selection. Try to change your search selections.`,
+        {
+          position: "top-center",
+          action: {
+            label: "Close",
+            onClick: () => {},
+          },
+        }
+      );
+    }
   };
 
   const handleApplyFilterSelections = async () => {
     try {
+      setIsListingRequested(true);
+
       const availableSearchOptions = ExtractAvailableQueryParams(params);
       const {
         [SEARCH_PARAM_KEYS.SEARCH_PRICE_RANGE]: priceRange,
@@ -184,16 +211,19 @@ export const FilterSelection: React.FC = () => {
         options: ExtractAvailableQueryParams(params),
       });
 
-      if (!res && error) ErrorHandler(error);
+      if (!res && error) throw new Error();
 
       dispatch(setListings(res!));
 
       dispatch(setFetch(true));
       dispatch(setIsSearchTriggered(false));
+
+      setIsListingRequested(false);
       onClose();
     } catch (error) {
+      setIsListingRequested(false);
       toast(
-        `Something went wrong while processing your request. Please try again. `,
+        `We couldn't filter your search. Please try again or chose another options.`,
         {
           position: "top-center",
           action: {
@@ -265,7 +295,7 @@ export const FilterSelection: React.FC = () => {
               onClick={handleClearFilterSelection}
               className={styles.clear_btn}
             >
-              {isLoadingCategories ? (
+              {isLoadingCategories || isListingRequested ? (
                 <Spinner size="sm" color="default" />
               ) : (
                 "Clear all"
@@ -277,7 +307,7 @@ export const FilterSelection: React.FC = () => {
               isDisabled={previewCountOfResults === 0 || !listings!?.length}
               onClick={handleApplyFilterSelections}
             >
-              {!listings?.length ? (
+              {!listings?.length || isListingRequested ? (
                 <Spinner size="sm" color="default" />
               ) : (
                 `Show ${!listings!?.length ? 0 : previewCountOfResults} results`

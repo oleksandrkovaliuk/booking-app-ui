@@ -66,10 +66,10 @@ export const LoginModal = () => {
         checkAuthType.initiate({ email: btoa(emailValue) })
       );
 
-      if (!error && res) {
-        setEmailValid(true);
+      if (!error && !res) {
         throw new Error("Failed with move on. Please try again.");
       }
+      setEmailValid(true);
     } catch (error) {
       if (emailRef.current) {
         emailRef.current.value = " ";

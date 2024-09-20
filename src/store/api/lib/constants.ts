@@ -6,6 +6,7 @@ export const ApiUrlsListings = {
   getListingsCategories: "/listings/categories",
   getListingsTypeOfPlace: "/listings/typeofplace",
   getVerifiedListingByParams: "/listings/verified/by/params",
+  getFullListOfListingCategories: "/listings/categories/all",
 
   requestListingSearch: "/listings/request/search",
   requestUpdateListing: "/listings/request/update",

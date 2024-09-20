@@ -276,8 +276,8 @@ const RegionSelection: React.FC<SelectionComponentsProps> = ({
                 )}
 
               {!isResponseLoading &&
-                userSearchRegionHistory?.length &&
                 !isUserSearchRegionHistoryLoading &&
+                !regionSelection.value &&
                 !responseForRegion.length && (
                   <div
                     className={styles.region_preview_container}

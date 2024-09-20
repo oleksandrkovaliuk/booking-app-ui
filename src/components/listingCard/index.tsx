@@ -233,7 +233,13 @@ export const ListingCard: React.FC<ListingCardProps> = ({
           {!isManagable && (
             <div className={styles.price}>
               <span>
-                <b>${Number(price).toLocaleString()}</b> night
+                <b>
+                  $
+                  {isNaN(Number(price))
+                    ? Number(price.split(",").join("")).toLocaleString()
+                    : price.toLocaleString()}
+                </b>{" "}
+                night
               </span>
               {calculated_nights && (
                 <span className={styles.total}>

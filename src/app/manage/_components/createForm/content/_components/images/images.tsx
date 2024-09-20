@@ -97,11 +97,7 @@ export const Images: React.FC<ContentProps> = ({
 
   const handleSetHeadImageDown = (image: string, i: number) => {
     let copyOfImages = [...uploadedImages.images];
-    let underHeadImage = {
-      ...copyOfImages[i + 1],
-      url: copyOfImages[i + 1].url,
-    };
-    if (!underHeadImage) {
+    if (!copyOfImages[i + 1]) {
       toast.info(
         <div className="toast">
           🫣 Oops! You’ve reached the end of your list.
@@ -109,6 +105,10 @@ export const Images: React.FC<ContentProps> = ({
       );
       return;
     } else {
+      let underHeadImage = {
+        ...copyOfImages[i + 1],
+        url: copyOfImages[i + 1].url,
+      };
       copyOfImages[i + 1] = {
         ...copyOfImages[i],
         url: image,

@@ -15,7 +15,7 @@ import { useForm, UseFormSetValue } from "react-hook-form";
 
 import { store } from "@/store";
 import { requestCreateListing } from "@/store/api/endpoints/listings/requestCreateListing";
-import { useGetListingsCategoriesQuery } from "@/store/api/endpoints/listings/getCategories";
+import { useGetFullCategoriesListQuery } from "@/store/api/endpoints/listings/getCategories";
 import { useGetListingsTypeOfPlaceQuery } from "@/store/api/endpoints/listings/getTypeOfPlace";
 import { requestDeleteUserListingImages } from "@/store/api/endpoints/listings/requestDeleteUserListingImages";
 
@@ -58,7 +58,7 @@ export const CreateForm: React.FC = () => {
   const router = useRouter();
   const { data: session } = useSession();
 
-  const { data: categories } = useGetListingsCategoriesQuery();
+  const { data: categories } = useGetFullCategoriesListQuery();
   const { data: typeOfPlace } = useGetListingsTypeOfPlaceQuery();
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();

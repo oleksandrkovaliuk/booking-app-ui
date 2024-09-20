@@ -6,6 +6,12 @@ import { Category, ListingState } from "../../lib/type";
 
 const getListingsCategoriesApi = api.injectEndpoints({
   endpoints: (builder) => ({
+    getFullCategoriesList: builder.query<Category[], void>({
+      query: () => ({
+        url: ApiUrlsListings.getFullListOfListingCategories,
+      }),
+      providesTags: [ApiTags.FULL_CATEGORIES_LIST],
+    }),
     getListingsCategories: builder.query<Category[], void>({
       query: () => ({
         url: ApiUrlsListings.getListingsCategories,
@@ -39,7 +45,11 @@ const getListingsCategoriesApi = api.injectEndpoints({
 
 export const {
   useGetListingsCategoriesQuery,
+  useGetFullCategoriesListQuery,
   useRequestAvailableCategoriesMutation,
 } = getListingsCategoriesApi;
-export const { getListingsCategories, requestAvailableCategories } =
-  getListingsCategoriesApi.endpoints;
+export const {
+  getListingsCategories,
+  requestAvailableCategories,
+  getFullCategoriesList,
+} = getListingsCategoriesApi.endpoints;

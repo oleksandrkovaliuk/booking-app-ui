@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { Tooltip } from "@nextui-org/react";
@@ -82,7 +82,7 @@ export const Price: React.FC<ContentProps> = ({
     );
   };
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     setInputWidth(selectedPrice!.split("").length);
   }, [selectedPrice]);
 

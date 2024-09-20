@@ -1,12 +1,12 @@
 import { api } from "../../api";
 import { ApiTags } from "../../lib/enums";
-import { ApiUrls } from "../../lib/constants";
+import { ApiUrlsListings } from "../../lib/constants";
 
 const requestDeleteListingApi = api.injectEndpoints({
   endpoints: (builder) => ({
     requestDeleteListing: builder.mutation<{ id: number }, { id: number }>({
       query: ({ id }: { id: number }) => ({
-        url: ApiUrls.requestDeleteListing,
+        url: ApiUrlsListings.requestDeleteListing,
         method: "POST",
         body: { id },
       }),

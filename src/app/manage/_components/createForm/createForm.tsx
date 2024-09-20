@@ -160,13 +160,12 @@ export const CreateForm: React.FC = () => {
   const handleClearForm = async () => {
     try {
       clearAllStorage();
-      const { error } = await store.dispatch(
+      await store.dispatch(
         requestDeleteUserListingImages.initiate({
           user_email: session?.user?.email || "",
           location: selectedAddress.formattedAddress!,
         })
       );
-      if (error) throw new Error();
     } catch (error) {
       return;
     }

@@ -43,16 +43,10 @@ export const HomeContent: React.FC = () => {
       !params.get(SEARCH_PARAM_KEYS.SEARCH_DATE) &&
       !params.get(SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS);
 
-    console.log(
-      params.get(SEARCH_PARAM_KEYS.SEARCH_PLACE),
-      params.get(SEARCH_PARAM_KEYS.SEARCH_DATE),
-      params.get(SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS)
-    );
     if (isFetched) {
       setInitParams(ExtractAvailableQueryParams(params));
       refetch();
       if (isSearchSelectionClear) {
-        console.log("isSearchSelectionClear");
         dispatch(setIsSearchTriggered(false));
       }
     }

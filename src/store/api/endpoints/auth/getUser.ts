@@ -1,6 +1,6 @@
 import { api } from "../../api";
 import { ApiTags } from "../../lib/enums";
-import { ApiUrls } from "../../lib/constants";
+import { ApiUrlsAuth } from "../../lib/constants";
 
 const GetUser = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -12,7 +12,7 @@ const GetUser = api.injectEndpoints({
         user_name: string;
         user_email: string;
       }) => ({
-        url: `${ApiUrls.getUser}/${user_email}/${user_name}`,
+        url: `${ApiUrlsAuth.getUser}/${user_email}/${user_name}`,
       }),
       providesTags: [ApiTags.CURRENT_USER],
     }),

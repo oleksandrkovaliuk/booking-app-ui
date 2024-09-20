@@ -1,6 +1,7 @@
 import { DateValue } from "@nextui-org/calendar";
 
 import { FormState } from "@/app/manage/_components/type";
+import { regionResponceType } from "@/layout/header/_lib/types";
 
 export interface Category {
   id: number;
@@ -23,4 +24,11 @@ export interface ListingState extends FormState {
   iscomplete?: boolean;
   disabled_dates?: DateValue[];
   [key: string]: any;
+}
+
+export interface UserSearchRegionHistory {
+  id: number;
+  requestedAt: string;
+  region: regionResponceType;
+  formattedValue: string;
 }

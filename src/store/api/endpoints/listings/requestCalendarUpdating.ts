@@ -2,7 +2,7 @@ import { DateValue } from "@nextui-org/calendar";
 
 import { api } from "../../api";
 import { ApiTags } from "../../lib/enums";
-import { ApiUrls } from "../../lib/constants";
+import { ApiUrlsListings } from "../../lib/constants";
 
 const requestCalendarUpdatingApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -17,7 +17,7 @@ const requestCalendarUpdatingApi = api.injectEndpoints({
         disabledDates: DateValue[];
         id: number;
       }) => ({
-        url: ApiUrls.requestUpdateCalendar,
+        url: ApiUrlsListings.requestUpdateCalendar,
         method: "POST",
         body: { disabledDates, id },
       }),

@@ -3,7 +3,7 @@ import { DateValue, RangeValue } from "@nextui-org/calendar";
 import { api } from "../../api";
 
 import { ApiTags } from "../../lib/enums";
-import { ApiUrls } from "../../lib/constants";
+import { ApiUrlsListings } from "../../lib/constants";
 import { ListingState, TypeOfPlace } from "../../lib/type";
 import { SEARCH_PARAM_KEYS } from "@/layout/header/_lib/enums";
 
@@ -18,7 +18,7 @@ const getVerifiedListingsApi = api.injectEndpoints({
       }
     >({
       query: ({ options }) => ({
-        url: `${ApiUrls.getVerifiedListingByParams}?options=${JSON.stringify(
+        url: `${ApiUrlsListings.getVerifiedListingByParams}?options=${JSON.stringify(
           options
         )}`,
       }),
@@ -60,7 +60,7 @@ const getVerifiedListingsApi = api.injectEndpoints({
         returnFiltered,
         options,
       }) => ({
-        url: ApiUrls.requestListingSearch,
+        url: ApiUrlsListings.requestListingSearch,
         method: "POST",
         body: {
           search_place,

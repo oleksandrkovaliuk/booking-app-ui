@@ -27,8 +27,6 @@ import { getSearchSelection } from "../_lib/getSearchSelections";
 import styles from "./categoryBar.module.scss";
 
 const Categories: React.FC = () => {
-  const router = useRouter();
-  const pathname = usePathname();
   const dispatch = useDispatch();
   const params = useSearchParams();
 

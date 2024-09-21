@@ -1,5 +1,22 @@
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
+export const assignNewQueryParams2 = ({
+  updatedParams,
+  params,
+}: {
+  updatedParams: { [key: string]: string | null };
+  params: URLSearchParams;
+}) => {
+  const existingParams = new URLSearchParams(params);
+  Object.entries(updatedParams).forEach(([key, value]) => {
+    if (value || value === '0') {
+      existingParams.set(key, value);
+    }
+  });
+
+  return existingParams.toString();
+};
+
 export const AssignNewQueryParams = ({
   updatedParams,
   pathname,
@@ -21,7 +38,7 @@ export const AssignNewQueryParams = ({
     }
   });
 
-  router.replace(`${pathname}?${existingParams.toString()}&`, {
+  router.replace(`${pathname}?${existingParams.toString()}`, {
     scroll: false,
   });
 };
@@ -39,12 +56,13 @@ export const PrepareExtractedQueryParams = ({
 }: {
   searchParamsResult: { [key: string]: string | null };
 }) => {
-  let query: string = "";
+  const searchParams = new URLSearchParams();
+
   Object.keys(searchParamsResult).forEach((key) => {
     if (key) {
-      query += `${key}=${searchParamsResult[key]}&`;
+      searchParams.append(key, searchParamsResult[key]!);
     }
   });
 
-  return query;
+  return searchParams.toString();
 };

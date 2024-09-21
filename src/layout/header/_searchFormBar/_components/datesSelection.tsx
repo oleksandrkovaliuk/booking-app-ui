@@ -21,7 +21,10 @@ import {
   isDateValueEqual,
   ParseLocalStorageDates,
 } from "@/helpers/dateManagment";
-import { AssignNewQueryParams } from "@/helpers/paramsManagment";
+import {
+  AssignNewQueryParams,
+  assignNewQueryParams2,
+} from "@/helpers/paramsManagment";
 import { ClearInputSelectionButton } from "./clearInputSelection";
 
 import { SelectionComponentsProps } from "./type";
@@ -94,14 +97,14 @@ const DatesSelection: React.FC<SelectionComponentsProps> = ({
         start: value.start,
       });
     } else if (value.start.toString() !== value.end.toString()) {
-      AssignNewQueryParams({
+      const searchParams = assignNewQueryParams2({
         updatedParams: {
           [SEARCH_PARAM_KEYS.SEARCH_DATE]: JSON.stringify(value),
         },
-        pathname,
         params,
-        router,
       });
+
+      router.replace(`${pathname}?${searchParams}`, { scroll: false });
 
       setUserDateSelection({
         ...userDateSelection,

@@ -2,7 +2,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { Modal, ModalContent, useDisclosure } from "@nextui-org/react";
 
 import { Logo } from "@/svgs/Logo";
@@ -106,6 +106,7 @@ const RightNavigationMenu = ({
 };
 
 export const Header = () => {
+  const params = useSearchParams();
   const headerRef = useRef<HTMLDivElement>(null);
   const [windowIsScrolled, setWindowIsScrolled] = useState<boolean>(false);
   const [windowIsScrolledToTop, setWindowIsScrolledToTop] =
@@ -116,6 +117,8 @@ export const Header = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const isHomePage = usePathname() === "/";
+
+  const preparedParams = params.toString();
 
   useEffect(() => {
     let prevScroll = window.scrollY;
@@ -152,7 +155,7 @@ export const Header = () => {
       data-track={windowIsScrolled}
     >
       <motion.nav className={styles.navigation}>
-        <Link href={"/"} className={styles.logo}>
+        <Link href={`/?${preparedParams}`} className={styles.logo}>
           <Logo />
         </Link>
 

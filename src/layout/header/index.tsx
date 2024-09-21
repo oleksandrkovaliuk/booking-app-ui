@@ -1,31 +1,44 @@
 "use client";
-
-import { Modal, ModalContent, useDisclosure } from "@nextui-org/react";
-import React, { useEffect, useRef, useState } from "react";
-
-import { motion } from "framer-motion";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
+import { usePathname } from "next/navigation";
+import { Modal, ModalContent, useDisclosure } from "@nextui-org/react";
 
-import { SearchFormBar } from "./_searchFormBar/searchFormBar";
 import { Logo } from "@/svgs/Logo";
 import { AddHouseIcon } from "@/svgs/AddHouseIcon";
 import { Search } from "@/svgs/Search";
 
-import { CenterNavigationMenuProps, RightNavigationMenuProps } from "./types";
+import { UserMenu } from "@/components/userMenu";
+import { SearchFormBar } from "./_searchFormBar/searchFormBar";
+import { CategoryBar } from "@/layout/header/_categoryBar/categoryBar";
+
+import {
+  StaysButtonContextApi,
+  StaysButtonContextData,
+} from "./_lib/context/context";
+
+import { RightNavigationMenuProps } from "./_lib/types";
 
 import styles from "./header.module.scss";
 
-import { CategoryBar } from "@/layout/header/_categoryBar/categoryBar";
-import { usePathname } from "next/navigation";
-import { UserMenu } from "@/components/userMenu";
-
-const CenterNavigationMenu = ({
-  windowIsScrolled,
-  mobile,
-  onCloseCallBack,
-}: CenterNavigationMenuProps) => {
+const CenterNavigationMenu = ({ children }: { children: React.ReactNode }) => {
   const [staysButtonState, setStaysButtonState] = useState<boolean>(true);
   const [isCategoryChanged, setIsCategoryChanged] = useState<boolean>(false);
+
+  const staysButtonContextData = useMemo(() => {
+    return {
+      staysButtonState: staysButtonState,
+      isCategoryChanged: isCategoryChanged,
+    };
+  }, [staysButtonState, isCategoryChanged]);
+
+  const staysButtonContextApi = useMemo(() => {
+    return {
+      setIsCategoryChanged: setIsCategoryChanged,
+      setStaysButtonState: setStaysButtonState,
+    };
+  }, [setIsCategoryChanged, setStaysButtonState]);
 
   const handleClickOnExperienceButton = () => {
     setStaysButtonState(false);
@@ -35,45 +48,41 @@ const CenterNavigationMenu = ({
     setStaysButtonState(true);
     setIsCategoryChanged(true);
   };
+
   return (
-    <div className={styles.center_nagivation_menu}>
-      <div className={styles.center_nagivation_menu_buttons}>
-        <button
-          className={styles.center_nagivation_menu_button}
-          onClick={handleClickOnStaysButton}
-          data-state={staysButtonState}
-        >
-          Stays
-        </button>
-        <button
-          className={styles.center_nagivation_menu_button}
-          onClick={handleClickOnExperienceButton}
-          data-state={staysButtonState}
-        >
-          Experiences
-        </button>
-      </div>
-      <SearchFormBar
-        staysButtonState={staysButtonState}
-        isCategoryChanged={isCategoryChanged}
-        setIsCategoryChanged={setIsCategoryChanged}
-        trackScrolled={windowIsScrolled}
-        isMobile={mobile}
-        onCloseCallBack={onCloseCallBack}
-      />
-    </div>
+    <StaysButtonContextData.Provider value={staysButtonContextData}>
+      <StaysButtonContextApi.Provider value={staysButtonContextApi}>
+        <div className={styles.center_nagivation_menu}>
+          <div className={styles.center_nagivation_menu_buttons}>
+            <button
+              className={styles.center_nagivation_menu_button}
+              onClick={handleClickOnStaysButton}
+              data-state={staysButtonState}
+            >
+              Stays
+            </button>
+            <button
+              className={styles.center_nagivation_menu_button}
+              onClick={handleClickOnExperienceButton}
+              data-state={staysButtonState}
+            >
+              Experiences
+            </button>
+          </div>
+          {children}
+        </div>
+      </StaysButtonContextApi.Provider>
+    </StaysButtonContextData.Provider>
   );
 };
 
 const RightNavigationMenu = ({
-  mobile,
   windowIsScrolledToTop,
   windowIsScrolled,
 }: RightNavigationMenuProps) => {
   return (
     <motion.div
       className={styles.right_navigation_menu}
-      data-is-mobile={mobile}
       initial={
         !windowIsScrolledToTop && windowIsScrolled
           ? { bottom: "-20dvh" }
@@ -91,15 +100,17 @@ const RightNavigationMenu = ({
           <AddHouseIcon className={styles.add_house_icon} />
         </motion.button>
       </Link>
-      <UserMenu />
+      <UserMenu showArrow />
     </motion.div>
   );
 };
+
 export const Header = () => {
   const headerRef = useRef<HTMLDivElement>(null);
   const [windowIsScrolled, setWindowIsScrolled] = useState<boolean>(false);
   const [windowIsScrolledToTop, setWindowIsScrolledToTop] =
     useState<boolean>(false);
+
   const [mobile, setMobile] = useState<boolean>(false);
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -135,53 +146,51 @@ export const Header = () => {
   }, []);
 
   return (
-    <>
-      <header
-        ref={headerRef}
-        className={styles.header_container}
-        data-track={windowIsScrolled}
-      >
-        <motion.nav className={styles.navigation}>
-          <Link href={"/"} className={styles.logo}>
-            <Logo />
-          </Link>
-          {mobile ? (
-            <>
-              <button onClick={onOpen} className={styles.mobile_search_button}>
-                <Search className={styles.mobile_search_icon} />{" "}
-                <span className={styles.mobile_search_text}>
-                  Where do we go?
-                </span>
-              </button>
-              <Modal
-                isOpen={isOpen}
-                onClose={onOpenChange}
-                backdrop="blur"
-                size="full"
-              >
-                <ModalContent>
-                  <CenterNavigationMenu
-                    windowIsScrolled={windowIsScrolled}
-                    mobile={mobile}
+    <header
+      ref={headerRef}
+      className={styles.header_container}
+      data-track={windowIsScrolled}
+    >
+      <motion.nav className={styles.navigation}>
+        <Link href={"/"} className={styles.logo}>
+          <Logo />
+        </Link>
+
+        {mobile ? (
+          <>
+            <button onClick={onOpen} className={styles.mobile_search_button}>
+              <Search className={styles.mobile_search_icon} />{" "}
+              <span className={styles.mobile_search_text}>Where do we go?</span>
+            </button>
+            <Modal
+              isOpen={isOpen}
+              onClose={onOpenChange}
+              backdrop="blur"
+              size="full"
+            >
+              <ModalContent>
+                <CenterNavigationMenu>
+                  <SearchFormBar
+                    isMobile={mobile}
+                    trackScrolled={windowIsScrolled}
                     onCloseCallBack={onOpenChange}
                   />
-                </ModalContent>
-              </Modal>
-            </>
-          ) : (
-            <CenterNavigationMenu
-              windowIsScrolled={windowIsScrolled}
-              mobile={mobile}
-            />
-          )}
-          <RightNavigationMenu
-            mobile={mobile}
-            windowIsScrolledToTop={windowIsScrolledToTop}
-            windowIsScrolled={windowIsScrolled}
-          />
-        </motion.nav>
-        {isHomePage && <CategoryBar scrolled={windowIsScrolled} />}
-      </header>
-    </>
+                </CenterNavigationMenu>
+              </ModalContent>
+            </Modal>
+          </>
+        ) : (
+          <CenterNavigationMenu>
+            <SearchFormBar isMobile={mobile} trackScrolled={windowIsScrolled} />
+          </CenterNavigationMenu>
+        )}
+
+        <RightNavigationMenu
+          windowIsScrolledToTop={windowIsScrolledToTop}
+          windowIsScrolled={windowIsScrolled}
+        />
+      </motion.nav>
+      {isHomePage && <CategoryBar scrolled={windowIsScrolled} />}
+    </header>
   );
 };

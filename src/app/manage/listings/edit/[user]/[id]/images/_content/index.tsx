@@ -10,7 +10,6 @@ import { useGetCurrentListingQuery } from "@/store/api/endpoints/listings/getCur
 import { Images } from "@/app/manage/_components/createForm/content/_components/images/images";
 import { ConfirmationButton } from "@/components/confirmationButton";
 
-import { ErrorHandler } from "@/helpers/errorHandler";
 import { handleUpdateFormAndLocalStorage } from "@/helpers/updateFormAndStorageStates";
 
 import { ContentProps, EditFormValues } from "../../type";
@@ -47,7 +46,7 @@ export const ImagesContent: React.FC<ContentProps> = ({ params }) => {
         })
       );
 
-      if (error) ErrorHandler(error);
+      if (error) throw new Error();
 
       toast.success("Successfully updated.", {
         action: {

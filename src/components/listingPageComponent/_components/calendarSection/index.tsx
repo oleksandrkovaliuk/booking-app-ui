@@ -1,14 +1,18 @@
 import React, { useState } from "react";
 import { toast } from "sonner";
 import { getLocalTimeZone, today } from "@internationalized/date";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { DateValue, RangeCalendar, RangeValue } from "@nextui-org/calendar";
 
 import {
   CountNights,
   DateFormatingMonthDay,
   isDateValueEqual,
+  ParseLocalStorageDates,
 } from "@/helpers/dateManagment";
+import { AssignNewQueryParams } from "@/helpers/paramsManagment";
 
+import { SEARCH_PARAM_KEYS } from "@/layout/header/_lib/enums";
 import { CalendarSelectionProps } from "../../_lib/type";
 
 import styles from "./calendarSection.module.scss";
@@ -16,16 +20,25 @@ import styles from "./calendarSection.module.scss";
 export const CalendarSection: React.FC<CalendarSelectionProps> = ({
   title,
   disabledDates,
-  userDateSelection,
-  setUserDateSelection,
 }) => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const params = useSearchParams();
+
+  const extractedDateParams = params.get(SEARCH_PARAM_KEYS.SEARCH_DATE)
+    ? ParseLocalStorageDates(params.get(SEARCH_PARAM_KEYS.SEARCH_DATE)!)
+    : {
+        start: today(getLocalTimeZone()),
+        end: today(getLocalTimeZone()).add({ weeks: 1 }),
+      };
+
   const [triggeredSelection, setTriggeredSelection] = useState<
     "checkIn" | "checkOut" | "both"
   >("checkIn");
 
   // CONDITIONS
   const isDefaultDate =
-    isDateValueEqual(userDateSelection) && triggeredSelection !== "both";
+    isDateValueEqual(extractedDateParams) && triggeredSelection !== "both";
 
   const checkInOrOutText =
     triggeredSelection === "checkIn"
@@ -35,19 +48,23 @@ export const CalendarSection: React.FC<CalendarSelectionProps> = ({
   const textContentBasedOnSelection = isDefaultDate
     ? checkInOrOutText
     : `${CountNights(
-        userDateSelection.start,
-        userDateSelection.end
+        extractedDateParams.start,
+        extractedDateParams.end
       )} nights in ${title}`;
 
   const handleSetDateSelection = (value: RangeValue<DateValue>) => {
     if (value.start.toString() !== value.end.toString()) {
-      setUserDateSelection({
-        start: value.start,
-        end: value.end,
+      AssignNewQueryParams({
+        updatedParams: {
+          [SEARCH_PARAM_KEYS.SEARCH_DATE]: JSON.stringify(value),
+        },
+        pathname,
+        params,
+        router,
       });
 
       localStorage.setItem(
-        "userDateSelection",
+        SEARCH_PARAM_KEYS.SEARCH_DATE,
         JSON.stringify({
           start: value.start,
           end: value.end,
@@ -61,9 +78,16 @@ export const CalendarSection: React.FC<CalendarSelectionProps> = ({
         </div>
       );
       localStorage.removeItem("userDateSelection");
-      setUserDateSelection({
-        start: today(getLocalTimeZone()),
-        end: today(getLocalTimeZone()).add({ weeks: 1 }),
+      AssignNewQueryParams({
+        updatedParams: {
+          [SEARCH_PARAM_KEYS.SEARCH_DATE]: JSON.stringify({
+            start: today(getLocalTimeZone()),
+            end: today(getLocalTimeZone()).add({ weeks: 1 }),
+          }),
+        },
+        pathname,
+        params,
+        router,
       });
     }
   };
@@ -77,8 +101,8 @@ export const CalendarSection: React.FC<CalendarSelectionProps> = ({
         {isDefaultDate
           ? "Minimum stay of 1 night"
           : `${DateFormatingMonthDay(
-              userDateSelection.start
-            )} - ${DateFormatingMonthDay(userDateSelection.end)}`}
+              extractedDateParams.start
+            )} - ${DateFormatingMonthDay(extractedDateParams.end)}`}
       </div>
       <div className={styles.calendar_container}>
         <RangeCalendar
@@ -92,7 +116,7 @@ export const CalendarSection: React.FC<CalendarSelectionProps> = ({
           }}
           color="primary"
           minValue={today(getLocalTimeZone())}
-          value={userDateSelection}
+          defaultValue={extractedDateParams}
           isDateUnavailable={(date: DateValue) => {
             if (!date) return false;
             return disabledDates?.some(

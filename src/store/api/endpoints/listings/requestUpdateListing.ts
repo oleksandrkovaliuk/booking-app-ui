@@ -1,6 +1,6 @@
 import { api } from "../../api";
 import { ApiTags } from "../../lib/enums";
-import { ApiUrls } from "../../lib/constants";
+import { ApiUrlsListings } from "../../lib/constants";
 import { FormState } from "@/app/manage/_components/type";
 
 const requestUpdateListingApi = api.injectEndpoints({
@@ -22,7 +22,7 @@ const requestUpdateListingApi = api.injectEndpoints({
         data: FormState[keyof FormState];
         id: number;
       }) => ({
-        url: ApiUrls.requestUpdateListing,
+        url: ApiUrlsListings.requestUpdateListing,
         method: "POST",
         body: {
           column,

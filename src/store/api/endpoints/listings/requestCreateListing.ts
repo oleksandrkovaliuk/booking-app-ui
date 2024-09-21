@@ -1,6 +1,6 @@
 import { api } from "../../api";
 import { ApiTags } from "../../lib/enums";
-import { ApiUrls } from "../../lib/constants";
+import { ApiUrlsListings } from "../../lib/constants";
 import { ListingState } from "../../lib/type";
 
 const requestCreateListingApi = api.injectEndpoints({
@@ -23,7 +23,7 @@ const requestCreateListingApi = api.injectEndpoints({
         notes,
         price,
       }) => ({
-        url: ApiUrls.requestCreateListing,
+        url: ApiUrlsListings.requestCreateListing,
         method: "POST",
         body: {
           host_name,

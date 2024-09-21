@@ -40,7 +40,6 @@ export const authConfig: AuthOptions = {
 
         if (res.status === "authorized" && res.user) {
           return {
-            ...res.user,
             jwt: res.user.jwt,
             email: res.user?.email,
             role: (res.user.role as Roles) || (Roles.USER as Roles),
@@ -52,7 +51,7 @@ export const authConfig: AuthOptions = {
     }),
   ],
   callbacks: {
-    async signIn({ account, profile }: any) {
+    async signIn({ user, account, profile, credentials }: any) {
       if (account?.provider === "google" || account?.provider === "facebook") {
         try {
           const res = await AccesOAuthUser({
@@ -65,9 +64,9 @@ export const authConfig: AuthOptions = {
             provider: account?.provider,
           });
 
-          if (res.role) {
-            account.role = res.role as Roles;
-            account.jwt = res.jwt as string;
+          if (res.user.role) {
+            account.role = res.user.role as Roles;
+            account.jwt = res.user.jwt as string;
             return true;
           } else {
             return false;
@@ -76,8 +75,13 @@ export const authConfig: AuthOptions = {
           toast.error((error as Error).message);
           return false;
         }
+      } else if (user) {
+        account.role = user.role as Roles;
+        account.jwt = user.jwt as string;
+        return true;
+      } else {
+        return false;
       }
-      return true;
     },
 
     async jwt({ token, account, user }) {

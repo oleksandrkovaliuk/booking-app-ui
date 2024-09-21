@@ -1,0 +1,70 @@
+.filter_price_range {
+  .price_range_slider {
+    margin-bottom: 10px;
+  }
+  .price_range_preview_container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .price_range_preview_block {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    &:first-of-type {
+      .price_range_preview_input {
+        margin-left: 0.5ch;
+      }
+    }
+
+    &:last-of-type {
+      align-items: flex-end;
+      .price_range_preview_input {
+        text-align: right;
+      }
+    }
+
+    .price_range_preview_label {
+      font-size: 13px;
+      font-family: var(--booking-app-Nunito-Sans-font);
+      font-weight: 500;
+      color: var(--booking-app-grey-color);
+      line-height: 100%;
+    }
+    .price_range_preview_input_wrap {
+      padding: 2px 1ch;
+      border-radius: 10px;
+      margin-top: 5px;
+      border: 1px solid var(--booking-app-focused-background-color);
+
+      &:focus-within {
+        border-color: var(--booking-app-black-color);
+      }
+    }
+    .price_range_preview_input,
+    .price_range_preview_currency {
+      text-align: left;
+
+      font-family: var(--booking-app-Nunito-Sans-font);
+      color: var(--booking-app-black-color);
+      font-size: 15px;
+      font-weight: 500;
+      line-height: 100%;
+      &[data-loader="true"] {
+        margin: unset;
+        border-radius: 5px;
+        width: 33px;
+        height: 26px;
+      }
+    }
+    .price_range_preview_input {
+      position: relative;
+
+      &:focus,
+      &:active {
+        outline: none;
+      }
+    }
+  }
+}

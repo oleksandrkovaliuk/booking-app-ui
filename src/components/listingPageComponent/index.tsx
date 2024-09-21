@@ -2,7 +2,8 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { DateValue, RangeValue, Tooltip } from "@nextui-org/react";
+import { useSearchParams } from "next/navigation";
+import { Spinner, Tooltip } from "@nextui-org/react";
 import { today, getLocalTimeZone } from "@internationalized/date";
 
 import { store } from "@/store";
@@ -14,32 +15,25 @@ import { GoogleMapComponent } from "../googleMap/googleMap";
 import { DescriptionSection } from "./_components/descriptionSection";
 import { CalendarSection } from "./_components/calendarSection";
 import { ReserveListingBlock } from "./_components/reserveListingBlock";
-import { formattedAddressComponent } from "@/helpers/address/formattedAddressVariants";
 
-import { Logo } from "@/svgs/Logo";
 import super_host from "@/assets/medal-of-honor.png";
 import super_host_black from "@/assets/medal-of-honor-black.png";
 import regular_host from "@/assets/renter.png";
 
+import { ParseLocalStorageDates } from "@/helpers/dateManagment";
+import { formattedAddressComponent } from "@/helpers/address/formattedAddressVariants";
+
 import { ShowCaseUser } from "@/_utilities/interfaces";
 import { ListingPageComponentProps } from "./_lib/type";
+import { SEARCH_PARAM_KEYS } from "@/layout/header/_lib/enums";
 
 import styles from "./listing.module.scss";
-import { ParseLocalStorageDates } from "@/helpers/dateManagment";
 
 export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
   id,
   isPublic,
 }) => {
   const { data: listing } = useGetCurrentListingQuery({ id: Number(id) });
-
-  const [isMobile, setIsMobile] = useState<boolean>(false);
-  const [userDateSelection, setUserDateSelection] = useState<
-    RangeValue<DateValue>
-  >({
-    start: today(getLocalTimeZone()),
-    end: today(getLocalTimeZone()).add({ weeks: 1 }),
-  });
 
   const [host, setHost] = useState<ShowCaseUser>({
     user_name: "",
@@ -74,16 +68,10 @@ export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
     setUpPage();
   }, [listing?.host_email, listing?.host_name]);
 
-  useEffect(() => {
-    const storedDates = localStorage.getItem("userDateSelection");
-    if (!storedDates) return;
-    setUserDateSelection(ParseLocalStorageDates(storedDates));
-  }, []);
-
   return (
     <div className={styles.listing_container}>
       {!listing || !host ? (
-        <Logo className={styles.loader} />
+        <Spinner size="md" color="primary" className={styles.loader} />
       ) : (
         <div className={styles.listing_content}>
           <section className={styles.title_text_content}>
@@ -100,7 +88,8 @@ export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
             <h2 className={styles.sub_title_text}>
               {listing.type?.type_name} in{" "}
               {formattedAddressComponent({
-                address: listing?.address?.detailedAddressComponent,
+                detailedAddressComponent:
+                  listing?.address?.detailedAddressComponent,
                 variant: "cityStateCountry",
               })}
             </h2>
@@ -265,8 +254,6 @@ export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
 
               <CalendarSection
                 title={listing?.title}
-                userDateSelection={userDateSelection}
-                setUserDateSelection={setUserDateSelection}
                 disabledDates={listing?.disabled_dates!}
               />
             </div>
@@ -274,10 +261,8 @@ export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
               <ReserveListingBlock
                 price={listing?.price}
                 isPublic={isPublic || false}
-                userDateSelection={userDateSelection}
-                setUserDateSelection={setUserDateSelection}
-                disabledDates={listing?.disabled_dates!}
                 guests_limit={listing?.guests}
+                disabledDates={listing?.disabled_dates!}
               />
             </div>
           </div>

@@ -6,19 +6,21 @@
   &[data-is-disabled="true"] {
     .custom_day_wrap {
       cursor: not-allowed;
-      background-color: var(--booking-app-lightgrey-color);
+      border-radius: unset !important;
+      background-color: var(--booking-app-lightgrey-color) !important;
       &:hover {
-        border-radius: unset;
-        background-color: var(--booking-app-lightgrey-color);
+        border-radius: unset !important;
+        background-color: var(--booking-app-lightgrey-color) !important;
         & + .day {
-          color: var(--booking-app-black-color);
+          color: var(--booking-app-black-color) !important;
         }
       }
       & + .day {
-        color: var(--booking-app-black-color);
+        color: var(--booking-app-black-color) !important;
       }
     }
   }
+
   &[data-selected="true"] {
     &:hover {
       .custom_day_wrap {
@@ -28,6 +30,7 @@
     .custom_day_wrap {
       border-radius: 10px;
       background-color: var(--booking-app-black-color);
+
       & + .day {
         color: var(--booking-app-white-color);
       }

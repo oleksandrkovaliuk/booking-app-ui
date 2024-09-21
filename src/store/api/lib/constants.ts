@@ -1,34 +1,48 @@
 import { ApiTags } from "./enums";
 
-export const ApiUrls = {
-  getUser: "/user/get",
-  auth_acces_user: "/auth/accessUser",
-  auth_oauth_user: "/auth/oauthUser",
-  check_auth_type: "/auth/checkAuthType",
-
-  getListings: "/listings/listings",
-  getUserListings: "/listings/get/user",
+export const ApiUrlsListings = {
+  getUserListings: "/listings/get/users",
   getCurrentListing: "/listings/get/current",
-  getVerifiedListings: "/listings/verified",
   getListingsCategories: "/listings/categories",
   getListingsTypeOfPlace: "/listings/typeofplace",
+  getVerifiedListingByParams: "/listings/verified/by/params",
+  getFullListOfListingCategories: "/listings/categories/all",
 
+  requestListingSearch: "/listings/request/search",
   requestUpdateListing: "/listings/request/update",
   requestDeleteListing: "/listings/listing/delete",
   requestCreateListing: "/listings/listing/create",
   requestUpdateCalendar: "/listings/calendar/update",
   requestDeleteUserListingImages: "/listings/images/delete",
+  requestAvailableCategories: "/listings/request/available/categories",
   requestDeleteIndividualListingImage: "/listings/images/delete/individual",
 
   uploadListingImages: "/listings/images/upload",
 };
 
+export const ApiUrlsAuth = {
+  getUser: "/user/get",
+  auth_oauth_user: "auth/oauthUser",
+  auth_acces_user: "auth/accessUser",
+  check_auth_type: "/auth/checkAuthType",
+};
+
+export const ApiUrlsUser = {
+  getUserSearchRegionHistory: "/user/get/search/region/history",
+  updateUserSearchRegionHistory: "/user/update/search/region/history",
+};
+
 export const ApiTagsTypes = [
-  ApiTags.LISTING_CATEGORIES,
-  ApiTags.LISTING_TYPE_OF_PLACE,
   ApiTags.USER,
   ApiTags.CURRENT_USER,
-  ApiTags.VERIFIED_LISTINGS,
-  ApiTags.LISTING,
   ApiTags.USER_LISTINGS,
+
+  ApiTags.USER_SEARCH_REGION_HISTORY,
+
+  ApiTags.LISTING,
+  ApiTags.CURRENT_LISTING,
+  ApiTags.VERIFIED_LISTINGS,
+  ApiTags.LISTING_CATEGORIES,
+  ApiTags.LISTING_TYPE_OF_PLACE,
+  ApiTags.VERIFIED_LISTINGS_BY_PARAMS,
 ];

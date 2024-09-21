@@ -23,8 +23,10 @@ import { GoogleIcon } from "@/svgs/GoogleIcon";
 import { FaceBookIcon } from "@/svgs/FacebookIcon";
 
 import { ReactEvent } from "@/_utilities/type";
-import { EmailValidation } from "@/validation/emailValidation";
-import { ErrorHandler } from "@/helpers/errorHandler";
+import {
+  EmailValidation,
+  PasswordValidation,
+} from "@/validation/emailValidation";
 
 import styles from "./authorization.module.scss";
 
@@ -36,6 +38,7 @@ export const LoginModal = () => {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [emailValid, setEmailValid] = useState(false);
+  const [passValid, setPassValid] = useState(false);
 
   const router = useRouter();
   const searchParam = useSearchParams();
@@ -56,22 +59,28 @@ export const LoginModal = () => {
     e.preventDefault();
     const emailValue = (emailRef.current as HTMLInputElement).value;
     try {
-      if (EmailValidation(emailValue)) {
-        const { data: res, error } = await store.dispatch(
-          checkAuthType.initiate({ email: btoa(emailValue) })
-        );
-        if (!error && res) {
-          setEmailValid(true);
-        } else {
-          ErrorHandler(error as FetchBaseQueryError);
-        }
-      } else throw Error("Email is not valid. Please try again");
+      if (!EmailValidation(emailValue)) {
+        throw new Error("Email is not valid. Please try again");
+      }
+      const { data: res, error } = await store.dispatch(
+        checkAuthType.initiate({ email: btoa(emailValue) })
+      );
+
+      if (!error && !res) {
+        throw new Error("Failed with move on. Please try again.");
+      }
+      setEmailValid(true);
     } catch (error) {
       if (emailRef.current) {
         emailRef.current.value = " ";
         setEmailValid(false);
       }
-      toast.error((error as Error).message);
+      toast.error((error as Error).message, {
+        action: {
+          label: "Close",
+          onClick: () => {},
+        },
+      });
     }
   };
 
@@ -184,9 +193,11 @@ export const LoginModal = () => {
             <div className={styles.authorization_input_wrap}>
               <input
                 ref={emailRef}
-                onChange={() => (emailValid ? setEmailValid(false) : null)}
                 type="email"
                 id="email"
+                onChange={() => {
+                  setEmailValid(false);
+                }}
                 placeholder="Enter your email address..."
                 className={styles.authorization_input}
               />
@@ -203,9 +214,19 @@ export const LoginModal = () => {
             {emailValid && (
               <div className={styles.authorization_input_wrap}>
                 <input
+                  id="password"
                   ref={passRef}
                   type="password"
-                  id="password"
+                  onChange={(e) => {
+                    if (
+                      e.target.value.length > 0 &&
+                      PasswordValidation(e.target.value)
+                    ) {
+                      setPassValid(true);
+                    } else {
+                      setPassValid(false);
+                    }
+                  }}
                   placeholder="Enter your password here..."
                   className={styles.authorization_input}
                 />
@@ -222,7 +243,7 @@ export const LoginModal = () => {
             )}
 
             <button
-              disabled={!passRef.current?.value.length && emailValid}
+              disabled={!passValid && emailValid}
               className={styles.authorization_submit_button}
               onClick={!emailValid ? emailValidation : submitCredentials}
             >

@@ -13,7 +13,6 @@ import { requestCalendarUpdating } from "@/store/api/endpoints/listings/requestC
 import { useGetCurrentListingQuery } from "@/store/api/endpoints/listings/getCurrentListing";
 
 import { ConverIntoDateValueFormat } from "@/helpers/dateManagment";
-import { ErrorHandler } from "@/helpers/errorHandler";
 
 import { CustomDayComponent } from "../component/customDayComponent";
 import { ConfirmationButton } from "@/components/confirmationButton";
@@ -27,7 +26,6 @@ interface CalendarPageContentProps {
 export const CalendarPageContent: React.FC<CalendarPageContentProps> = ({
   params,
 }) => {
-  const dispatch = useDispatch();
   const localizer = momentLocalizer(moment);
 
   const { data: listing } = useGetCurrentListingQuery({
@@ -100,7 +98,7 @@ export const CalendarPageContent: React.FC<CalendarPageContentProps> = ({
         })
       );
 
-      if (error && !res) ErrorHandler(error);
+      if (error && !res) throw new Error();
 
       toast.success("Successfully updated.", {
         action: {
@@ -111,7 +109,12 @@ export const CalendarPageContent: React.FC<CalendarPageContentProps> = ({
       setEnableConfirmationButton(false);
       localStorage.removeItem(`${params.id}`);
     } catch (error) {
-      toast.error("Something went wrong");
+      toast.error("Something went wrong. Please try again", {
+        action: {
+          label: "Close",
+          onClick: () => {},
+        },
+      });
     }
   };
 

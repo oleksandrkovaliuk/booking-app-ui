@@ -32,8 +32,6 @@ import {
   ImagesStoreType,
 } from "@/app/manage/_components/createForm/content/type";
 
-import { ErrorHandler } from "@/helpers/errorHandler";
-
 import { ImagesCard } from "./card";
 import { LoadingValue } from "./type";
 import { AddIcon } from "@/svgs/Addicon";
@@ -65,8 +63,6 @@ export const Images: React.FC<ContentProps> = ({
     images: images!,
     isImagesReady: images?.length! >= 1 ? true : false,
   });
-
-  console.log(uploadedImages.images, "images");
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -101,11 +97,7 @@ export const Images: React.FC<ContentProps> = ({
 
   const handleSetHeadImageDown = (image: string, i: number) => {
     let copyOfImages = [...uploadedImages.images];
-    let underHeadImage = {
-      ...copyOfImages[i + 1],
-      url: copyOfImages[i + 1].url,
-    };
-    if (!underHeadImage) {
+    if (!copyOfImages[i + 1]) {
       toast.info(
         <div className="toast">
           🫣 Oops! You’ve reached the end of your list.
@@ -113,6 +105,10 @@ export const Images: React.FC<ContentProps> = ({
       );
       return;
     } else {
+      let underHeadImage = {
+        ...copyOfImages[i + 1],
+        url: copyOfImages[i + 1].url,
+      };
       copyOfImages[i + 1] = {
         ...copyOfImages[i],
         url: image,
@@ -149,8 +145,8 @@ export const Images: React.FC<ContentProps> = ({
       );
 
       if (error && !res) {
-        ErrorHandler(error);
         setIsLoading({ ...isLoading, uploadingImgs: false });
+        throw new Error();
       }
       setIsLoading({ ...isLoading, uploadingImgs: false });
 
@@ -185,7 +181,7 @@ export const Images: React.FC<ContentProps> = ({
         })
       );
 
-      if (error) ErrorHandler(error);
+      if (error) throw new Error();
 
       setUploadedImages({
         ...uploadedImages,
@@ -204,7 +200,15 @@ export const Images: React.FC<ContentProps> = ({
       });
       onClose();
     } catch (error) {
-      toast.error("Something went wrong");
+      toast.error(
+        "Something went wrong with canceling your operetion. Please try again.",
+        {
+          action: {
+            label: "Close",
+            onClick: () => {},
+          },
+        }
+      );
     }
   };
 
@@ -226,7 +230,7 @@ export const Images: React.FC<ContentProps> = ({
         })
       );
 
-      if (error || !res) ErrorHandler(error);
+      if (error || !res) throw new Error();
 
       setIsLoading({
         ...isLoading,
@@ -266,7 +270,15 @@ export const Images: React.FC<ContentProps> = ({
         </div>
       );
     } catch (error) {
-      toast.error("Something went wrong . Please try again");
+      toast.error(
+        "Something went wrong with deleting this image. Please try again.",
+        {
+          action: {
+            label: "Close",
+            onClick: () => {},
+          },
+        }
+      );
     }
   };
 
@@ -286,7 +298,12 @@ export const Images: React.FC<ContentProps> = ({
         );
       }
     } else {
-      toast.error("Please upload at least one image");
+      toast.info("It is required to upload at least five images. Thanks", {
+        action: {
+          label: "Close",
+          onClick: () => {},
+        },
+      });
     }
   };
 

@@ -1,0 +1,42 @@
+.type_of_place_tabs_container {
+  display: block;
+  div {
+    &:first-child {
+      background-color: transparent !important;
+      border-radius: 10px;
+      padding: 5px;
+      border: 1px solid var(--booking-app-lightgrey-color);
+    }
+  }
+  .type_of_place_tab,
+  .skeleton_tabs {
+    padding: 20px;
+    transition: background-color 0.3s ease;
+    &:hover {
+      opacity: 1;
+      background-color: var(--booking-app-background-hover-color);
+    }
+    span {
+      border: 2px solid var(--booking-app-black-color);
+      border-radius: 5px;
+      z-index: unset !important;
+    }
+    div {
+      border: 1px solid transparent;
+      font-size: 17px;
+      font-family: var(--booking-app-Nunito-Sans-font);
+      font-weight: 600;
+      color: var(--booking-app-black-color);
+      z-index: 12;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+  .skeleton_tabs {
+    div {
+      width: 100%;
+    }
+  }
+}

@@ -1,6 +1,6 @@
 import { api } from "../../api";
 import { ApiTags } from "../../lib/enums";
-import { ApiUrls } from "../../lib/constants";
+import { ApiUrlsListings } from "../../lib/constants";
 
 const requestDeleteIndividualListingImageApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -21,7 +21,7 @@ const requestDeleteIndividualListingImageApi = api.injectEndpoints({
         location: string;
         image: string;
       }) => ({
-        url: ApiUrls.requestDeleteIndividualListingImage,
+        url: ApiUrlsListings.requestDeleteIndividualListingImage,
         method: "POST",
         body: {
           user_email,

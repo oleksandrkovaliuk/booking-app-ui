@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Slider from "react-slick";
-import { DateValue, RangeValue, useDisclosure } from "@nextui-org/react";
-import { today, getLocalTimeZone } from "@internationalized/date";
+import { useSearchParams } from "next/navigation";
+import { useDisclosure } from "@nextui-org/react";
 
 import { Arrow } from "@/svgs/RightArrow";
 
@@ -10,6 +10,11 @@ import { StatusBadge } from "../statusBadge";
 import { ManageModal } from "./components/modals/manage";
 import { PreviewModal } from "./components/modals/preview";
 
+import {
+  ExtractAvailableQueryParams,
+  PrepareExtractedQueryParams,
+} from "@/helpers/paramsManagment";
+import { CalculatePriceIncludingTax } from "@/helpers/priceManagment";
 import { formattedAddressComponent } from "@/helpers/address/formattedAddressVariants";
 
 import { ListingCardProps } from "./type";
@@ -21,29 +26,27 @@ import styles from "./listingCard.module.scss";
 
 export const ListingCard: React.FC<ListingCardProps> = ({
   id,
-  images,
-  title,
-  address,
-  aboutplace,
   type,
-  pets_allowed,
-  accesable,
-  guests,
+  title,
   price,
-  isPreview,
-  isComplete,
-  isManagable,
+  guests,
+  images,
+  address,
   isPublic,
+  isPreview,
+  accesable,
+  isComplete,
+  aboutplace,
+  isManagable,
   isInProccess,
+  pets_allowed,
+  calculated_nights,
 }) => {
-  const sliderRef = useRef<Slider | null>(null);
+  const params = useSearchParams();
 
-  const [userDateSelection, setUserDateSelection] = useState<
-    RangeValue<DateValue>
-  >({
-    start: today(getLocalTimeZone()),
-    end: today(getLocalTimeZone()).add({ weeks: 1 }),
-  });
+  const sliderRef = useRef<Slider | null>(null);
+  const SliderContainerRef = useRef<HTMLDivElement | null>(null);
+
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
 
   const [currentSlide, setCurrentSlide] = useState<number>(0);
@@ -61,10 +64,16 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   const isLastSlider = currentSlide === images?.length - 1;
   const isFirstSlider = currentSlide === 0;
 
+  const preparedRedirectParams = params
+    ? `/listing/${address?.shorterAddress}/${id}?${PrepareExtractedQueryParams({
+        searchParamsResult: ExtractAvailableQueryParams(params),
+      })}`
+    : `/listing/${address?.shorterAddress}/${id}`;
+
   const mainHref = !isPreview
     ? !isPublic && isInProccess
       ? "/manage/listings/create"
-      : `/listing/${address?.shorterAddress}/${id}`
+      : preparedRedirectParams
     : "#";
 
   // OPTIONS
@@ -82,29 +91,12 @@ export const ListingCard: React.FC<ListingCardProps> = ({
     afterChange: (current: number) => setCurrentSlide(current),
   };
 
-  const handleWhellScroll = (e: React.WheelEvent) => {
+  const handleWheelScroll = (e: React.WheelEvent) => {
     if (e.deltaX > 10) sliderRef.current?.slickNext();
     else if (e.deltaX < -10) sliderRef.current?.slickPrev();
   };
 
   useEffect(() => {
-    const userDateSelectionStart = localStorage.getItem(
-      "userDateSelection.start"
-    );
-    const userDateSelectionEnd = localStorage.getItem("userDateSelection.end");
-    if (userDateSelectionStart) {
-      setUserDateSelection({
-        ...userDateSelection,
-        start: JSON.parse(userDateSelectionStart),
-      });
-    }
-    if (userDateSelectionEnd) {
-      setUserDateSelection({
-        ...userDateSelection,
-        end: JSON.parse(userDateSelectionEnd),
-      });
-    }
-
     const sliderContainer = sliderRef.current?.innerSlider?.list;
 
     const handleWheelEvent = (e: WheelEvent) =>
@@ -175,7 +167,11 @@ export const ListingCard: React.FC<ListingCardProps> = ({
         target={isPublic ? "_blank" : "_self"}
         onClick={onOpen}
       >
-        <div className={styles.slider_container} onWheel={handleWhellScroll}>
+        <div
+          ref={SliderContainerRef}
+          className={styles.slider_container}
+          onWheel={handleWheelScroll}
+        >
           {isInProccess && <StatusBadge status="In progress" color="#ffa836" />}
           {!isComplete && !isInProccess && !isPublic && !isPreview && (
             <StatusBadge
@@ -197,7 +193,6 @@ export const ListingCard: React.FC<ListingCardProps> = ({
               <div key={image.url} className={styles.slider_content}>
                 <div
                   className={styles.slider_image}
-                  onLoadedDataCapture={() => console.log("loading")}
                   style={{ backgroundImage: `url(${image.url})` }}
                 />
               </div>
@@ -229,16 +224,33 @@ export const ListingCard: React.FC<ListingCardProps> = ({
         <div className={styles.listing_info}>
           <div className={styles.location}>
             {formattedAddressComponent({
-              address: address?.detailedAddressComponent,
+              detailedAddressComponent: address?.detailedAddressComponent,
               variant: "neighboorhoodStateCountry",
             })}
           </div>
 
           <h5 className={styles.title}>{title}</h5>
           {!isManagable && (
-            <span className={styles.price}>
-              <b>${Number(price).toLocaleString()}</b> night
-            </span>
+            <div className={styles.price}>
+              <span>
+                <b>
+                  $
+                  {isNaN(Number(price))
+                    ? Number(price.split(",").join("")).toLocaleString()
+                    : price.toLocaleString()}
+                </b>{" "}
+                night
+              </span>
+              {calculated_nights && (
+                <span className={styles.total}>
+                  $
+                  {CalculatePriceIncludingTax(
+                    Number(price) * calculated_nights
+                  ).total_price.toLocaleString()}{" "}
+                  total
+                </span>
+              )}
+            </div>
           )}
         </div>
       </Link>

@@ -21,7 +21,7 @@ import { FormState } from "@/app/manage/_components/type";
 import styles from "./userMenu.module.scss";
 import "./dropdown.scss";
 
-export const UserMenu: React.FC = () => {
+export const UserMenu: React.FC<{ showArrow?: boolean }> = ({ showArrow }) => {
   const { data: session } = useSession();
   const [mobile, setMobile] = useState(false);
   const [listingInProgress] = useState<FormState | null>(() => {
@@ -59,7 +59,7 @@ export const UserMenu: React.FC = () => {
           shouldBlockScroll={true}
           radius="sm"
           placement={!mobile ? "bottom-end" : "top"}
-          showArrow
+          showArrow={showArrow}
         >
           <DropdownTrigger>
             <button className={styles.right_navigation_button}>

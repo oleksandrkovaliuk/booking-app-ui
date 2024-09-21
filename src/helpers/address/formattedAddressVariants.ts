@@ -24,7 +24,7 @@ const formatsOfAddress = {
 };
 
 interface FormattedAddressProps {
-  address: google.maps.places.PlaceResult["address_components"];
+  detailedAddressComponent: google.maps.places.PlaceResult["address_components"];
   variant:
     | "cityCountry"
     | "cityStateCountry"
@@ -33,18 +33,17 @@ interface FormattedAddressProps {
     | "neighboorhoodStateCountry";
 }
 export const formattedAddressComponent = ({
-  address,
+  detailedAddressComponent,
   variant,
 }: FormattedAddressProps) => {
-  if (!address) return;
-  const result = address?.reduce<FormattedAddressProps["address"]>(
-    (acc, current) => {
-      if (acc && formatsOfAddress[variant].includes(current.types[0])) {
-        acc.push(current);
-      }
-      return acc;
-    },
-    []
-  );
+  if (!detailedAddressComponent) return;
+  const result = detailedAddressComponent?.reduce<
+    FormattedAddressProps["detailedAddressComponent"]
+  >((acc, current) => {
+    if (acc && formatsOfAddress[variant].includes(current.types[0])) {
+      acc.push(current);
+    }
+    return acc;
+  }, []);
   return result?.map(({ long_name }) => long_name).join(" , ");
 };

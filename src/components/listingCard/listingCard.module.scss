@@ -39,9 +39,16 @@
       color: var(--booking-app-black-color);
     }
     .price {
+      display: flex;
+      gap: 10px;
+      align-items: center;
       font-size: 15px;
       font-family: var(--booking-app-Nunito-Sans-font);
       color: var(--booking-app-black-color);
+      .total {
+        text-decoration: underline;
+        color: var(--booking-app-grey-color);
+      }
     }
   }
 }

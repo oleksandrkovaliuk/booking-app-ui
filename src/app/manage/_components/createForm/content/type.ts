@@ -15,11 +15,12 @@ export interface ContentProps {
   onConfirmation?: Dispatch<SetStateAction<boolean>>;
   [key: string]: any;
   setValue: UseFormSetValue<FormState | any>;
-  selectedPrice?: string;
+  selectedPrice?: string | number;
   categories?: Category[];
   selectedAdress?: {
     formattedAddress: string;
     shorterAddress: string;
+    detailedAddressComponent: google.maps.places.PlaceResult["address_components"];
   };
   selectedGuests?: number;
   key?: CreateListingSteps;

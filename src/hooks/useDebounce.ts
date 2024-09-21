@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef } from "react";
 type CallbackFunction = (...args: any[]) => void;
 
-function debounc(func: CallbackFunction, time: number = 300, context: any) {
+function debounce(func: CallbackFunction, time: number = 300, context: any) {
   let timer: NodeJS.Timeout;
   return (...args: any[]) => {
     clearTimeout(timer);
@@ -25,7 +25,7 @@ export const useDebounce = (
     const func = (event: any) => {
       ref.current?.(event);
     };
-    return debounc(func, time, null);
+    return debounce(func, time, null);
   }, [time]);
 
   return debounceCallBack;

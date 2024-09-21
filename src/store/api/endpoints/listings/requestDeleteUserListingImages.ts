@@ -1,6 +1,6 @@
 import { api } from "../../api";
 import { ApiTags } from "../../lib/enums";
-import { ApiUrls } from "../../lib/constants";
+import { ApiUrlsListings } from "../../lib/constants";
 
 const requestDeleteUserListingImagesApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -18,7 +18,7 @@ const requestDeleteUserListingImagesApi = api.injectEndpoints({
         user_email: string;
         location: string;
       }) => ({
-        url: ApiUrls.requestDeleteUserListingImages,
+        url: ApiUrlsListings.requestDeleteUserListingImages,
         method: "POST",
         body: {
           user_email,

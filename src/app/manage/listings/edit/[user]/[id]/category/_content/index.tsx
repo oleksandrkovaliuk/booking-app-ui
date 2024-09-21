@@ -11,7 +11,6 @@ import { useGetCurrentListingQuery } from "@/store/api/endpoints/listings/getCur
 import { ConfirmationButton } from "@/components/confirmationButton";
 import { Category } from "@/app/manage/_components/createForm/content/_components/category";
 
-import { ErrorHandler } from "@/helpers/errorHandler";
 import { handleUpdateFormAndLocalStorage } from "@/helpers/updateFormAndStorageStates";
 
 import { ContentProps, EditFormValues } from "../../type";
@@ -49,7 +48,7 @@ export const CategoryPageContent: React.FC<ContentProps> = ({ params }) => {
         })
       );
 
-      if (error) return ErrorHandler(error);
+      if (error) throw new Error();
 
       toast.success("Successfully updated.", {
         action: {
@@ -60,8 +59,14 @@ export const CategoryPageContent: React.FC<ContentProps> = ({ params }) => {
       setEnableConfirmationButton(false);
       localStorage.removeItem("edit_category");
     } catch (error) {
-      return toast.error(
-        (error as Error).message || "Something went wrong, please try again."
+      toast.error(
+        (error as Error).message || "Something went wrong, please try again.",
+        {
+          action: {
+            label: "Close",
+            onClick: () => {},
+          },
+        }
       );
     }
   };

@@ -1,0 +1,86 @@
+.filter_btn {
+  background-color: transparent;
+  border: 1px solid var(--booking-app-focused-background-color);
+  color: var(--booking-app-black-color);
+  outline: none;
+  svg {
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+  }
+  &:hover,
+  &[data-opened="true"] {
+    border-color: var(--booking-app-black-color);
+    color: var(--booking-app-black-color) !important;
+  }
+}
+
+.modal_content {
+  .modal_header {
+    padding: 15px !important;
+    justify-content: center;
+    color: var(--booking-app-black-color);
+    font-family: var(--booking-app-Nunito-Sans-font);
+    font-size: 22px;
+    font-weight: 650;
+    border-bottom: 1px solid var(--booking-app-lightgrey-color);
+    margin-bottom: 40px;
+  }
+  .modal_footer {
+    padding: 10px 15px !important;
+    border-top: 1px solid var(--booking-app-lightgrey-color);
+    justify-content: space-between;
+    .clear_btn,
+    .apply_btn {
+      font-family: var(--booking-app-Nunito-Sans-font);
+      font-size: 17px;
+      font-weight: 600;
+      border-radius: 6px;
+
+      outline-color: none;
+
+      &:disabled {
+        background-color: var(--booking-app-lightgrey-color);
+        cursor: not-allowed;
+      }
+    }
+    .apply_btn {
+      color: var(--booking-app-white-color);
+      background-color: var(--booking-app-black-color);
+    }
+  }
+}
+
+.modal_filter_container {
+  padding: 0px 30px 20px;
+  .filter_section {
+    &:not(:last-child) {
+      padding-bottom: 30px;
+      margin-bottom: 30px;
+      border-bottom: 1px solid var(--booking-app-lightgrey-color);
+    }
+    .filter_section_title {
+      display: block;
+      font-size: 22px;
+      font-family: var(--booking-app-Nunito-Sans-font);
+      font-weight: 600;
+      color: var(--booking-app-black-color);
+      line-height: 100%;
+      margin-bottom: 15px;
+    }
+    .filter_section_description {
+      font-size: 16px;
+      color: var(--booking-app-grey-color);
+      line-height: 100%;
+      margin-bottom: 20px;
+    }
+  }
+}
+
+@media (width <= 768px) {
+  .modal_content {
+    .modal_filter_container {
+      padding: 0px 15px 20px;
+    }
+  }
+}

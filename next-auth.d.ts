@@ -1,10 +1,14 @@
-import NextAuth from "next-auth/next";
-import { User } from "next-auth";
+import { NextAuth } from "next-auth";
+import { User as NextAuthUser } from "next-auth";
+import { Roles } from "@/_utilities/enums"; // Make sure Roles is imported correctly
 
 declare module "next-auth" {
   interface User {
+    name: string | null;
+    email: string;
+    image: string | null;
+    jwt: string;
     role: Roles;
-    jwt: string | null;
   }
 
   interface Session {
@@ -12,13 +16,13 @@ declare module "next-auth" {
       name: string | null;
       email: string | null;
       image: string | null;
-      jwt: string | null;
+      jwt: string;
       role: Roles;
     };
   }
 
   interface Token {
     role: Roles;
-    jwt: string | null;
+    jwt: string;
   }
 }

@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useDispatch } from "react-redux";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { ScrollShadow, Skeleton } from "@nextui-org/react";
 
 import { useSelector } from "@/store";
@@ -19,10 +19,6 @@ import { skeletonData } from "@/information/data";
 
 import { FilterSelection } from "./_components/filterSelection";
 import { ParseLocalStorageDates } from "@/helpers/dateManagment";
-import { ExtractAvailableQueryParams } from "@/helpers/paramsManagment";
-
-import { SEARCH_PARAM_KEYS } from "../_lib/enums";
-import { getSearchSelection } from "../_lib/getSearchSelections";
 
 import styles from "./categoryBar.module.scss";
 
@@ -37,6 +33,13 @@ const Categories: React.FC = () => {
   } = useGetListingsCategoriesQuery();
   const [requestListingSearch] = useRequestListingSearchMutation();
 
+  const {
+    search_place,
+    search_date,
+    search_amountOfGuests,
+    search_includePets,
+  } = useSelector((state) => state.searchSelection);
+
   const { isFetched, isSearchTriggered } = useSelector(
     (state) => state.isSearchTriggered
   );
@@ -45,44 +48,24 @@ const Categories: React.FC = () => {
 
   const requestSearchBySelectedCategory = async (id: number) => {
     try {
-      const searchSelection = getSearchSelection(params, SEARCH_PARAM_KEYS);
-
+      if (id === selectedCategory) return;
       const { data: res, error } = await requestListingSearch({
-        search_place: searchSelection[SEARCH_PARAM_KEYS.SEARCH_PLACE]
-          ? JSON.parse(searchSelection[SEARCH_PARAM_KEYS.SEARCH_PLACE])
+        search_place: search_place ? JSON.parse(search_place) : null,
+        search_date: search_date ? ParseLocalStorageDates(search_date) : null,
+        search_amountOfGuests: search_amountOfGuests
+          ? JSON.parse(search_amountOfGuests)
           : null,
-        search_date: searchSelection[SEARCH_PARAM_KEYS.SEARCH_DATE]
-          ? ParseLocalStorageDates(
-              searchSelection[SEARCH_PARAM_KEYS.SEARCH_DATE]
-            )
-          : null,
-        search_amountOfGuests: searchSelection[
-          SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS
-        ]
-          ? JSON.parse(
-              searchSelection[SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS]
-            )
-          : null,
-        search_includePets: searchSelection[
-          SEARCH_PARAM_KEYS.SEARCH_INCLUDE_PETS
-        ]
-          ? JSON.parse(searchSelection[SEARCH_PARAM_KEYS.SEARCH_INCLUDE_PETS])
+        search_includePets: search_includePets
+          ? JSON.parse(search_includePets)
           : null,
         search_category_id: id,
-        options: ExtractAvailableQueryParams(params),
+        options: Object.fromEntries(params.entries()),
       });
-
       if (!res || error) throw new Error();
 
-      setSelectedCategory((prev) => {
-        if (prev === id) {
-          return prev;
-        } else {
-          return id;
-        }
-      });
+      setSelectedCategory(id);
 
-      dispatch(setFetch(true));
+      dispatch(setFetch(false));
       dispatch(setIsSearchTriggered(false));
     } catch (error) {
       toast(

@@ -7,6 +7,8 @@ import { NextUIProvider } from "@nextui-org/system";
 
 import { store } from "@/store";
 
+import { WidthHandler } from "@/components/widthHandler";
+
 export interface ProvidersProps {
   children: React.ReactNode;
 }
@@ -15,7 +17,9 @@ export function Providers({ children }: ProvidersProps) {
   return (
     <SessionProvider>
       <Provider store={store}>
-        <NextUIProvider>{children}</NextUIProvider>
+        <WidthHandler>
+          <NextUIProvider>{children}</NextUIProvider>
+        </WidthHandler>
       </Provider>
     </SessionProvider>
   );

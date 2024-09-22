@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 
-import { Logo } from "@/svgs/Logo";
+import { LogoLink } from "@/components/LogoLink";
 import { UserMenu } from "@/components/userMenu";
 
 import styles from "./manageNavigation.module.scss";
@@ -21,9 +21,7 @@ export const ManageNavigation: React.FC<ManageNavigationProps> = ({
   return (
     <header className={styles.manage_header}>
       <motion.nav className={styles.manage_navigation}>
-        <Link href={"/"} className={styles.logo}>
-          <Logo />
-        </Link>
+        <LogoLink colorTheme="black" />
         {!isCutted && (
           <motion.div className={styles.navigation_menu}>
             <Link

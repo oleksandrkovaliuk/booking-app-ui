@@ -5,14 +5,20 @@ import { useDispatch } from "react-redux";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { store } from "@/store";
+import { UserSearchRegionHistory } from "@/store/api/lib/type";
+import {
+  updateUserSearchRegionHistory,
+  useGetUserSearchRegionHistoryQuery,
+} from "@/store/api/endpoints/search/getUserSearchRegionHistory";
 import { setFetch } from "@/store/slices/listings/isSearchTriggeredSlice";
+import { setSearchSelection } from "@/store/slices/search/searchSelectionSlice";
 
 import { Location } from "@/svgs/Location";
+import { SearchHistoryIcon } from "@/svgs/SearchHistoryIcon";
 import boat_with_people from "@/assets/boat_with_people.webp";
 
 import { useDebounce } from "@/hooks/useDebounce";
 import { ModalPanel } from "@/components/modalPanel";
-import { AssignNewQueryParams } from "@/helpers/paramsManagment";
 
 import {
   useStaysButtonContextData,
@@ -23,19 +29,13 @@ import {
 import { ClearInputSelectionButton } from "./clearInputSelection";
 
 import { SelectionComponentsProps } from "./type";
-import { SEARCH_PARAM_KEYS } from "../../_lib/enums";
+import { searchParamsKeys } from "../../_lib/enums";
 import { TypesOfSelections } from "@/_utilities/enums";
 
 import { regionResponceType } from "../../_lib/types";
 import { getCountriesByRequest } from "../../_lib/getCountriesByRequest";
 
 import styles from "../search_form_bar.module.scss";
-import {
-  updateUserSearchRegionHistory,
-  useGetUserSearchRegionHistoryQuery,
-} from "@/store/api/endpoints/search/getUserSearchRegionHistory";
-import { UserSearchRegionHistory } from "@/store/api/lib/type";
-import { SearchHistoryIcon } from "@/svgs/SearchHistoryIcon";
 
 const RegionSelection: React.FC<SelectionComponentsProps> = ({
   searchBarRef,
@@ -101,14 +101,11 @@ const RegionSelection: React.FC<SelectionComponentsProps> = ({
 
       dispatch(setFetch(false));
     } else {
-      AssignNewQueryParams({
-        updatedParams: {
-          [SEARCH_PARAM_KEYS.SEARCH_PLACE]: null,
-        },
-        params,
-        router,
-        pathname,
-      });
+      dispatch(
+        setSearchSelection({
+          [searchParamsKeys.SEARCH_PLACE]: null,
+        })
+      );
       setResponseForRegion([]);
       setRegionSelection({
         value: null,
@@ -138,19 +135,15 @@ const RegionSelection: React.FC<SelectionComponentsProps> = ({
         );
 
         if (prev.value !== formattedValue) {
-          AssignNewQueryParams({
-            updatedParams: {
-              [SEARCH_PARAM_KEYS.SEARCH_PLACE]: JSON.stringify({
+          dispatch(
+            setSearchSelection({
+              [searchParamsKeys.SEARCH_PLACE]: JSON.stringify({
                 city: region.city,
                 country: region.country,
                 value: formattedValue,
               }),
-            },
-            pathname,
-            params,
-            router,
-          });
-
+            })
+          );
           return {
             value: formattedValue,
             city: region.city,
@@ -180,6 +173,13 @@ const RegionSelection: React.FC<SelectionComponentsProps> = ({
   const handleClearRegionSelection = (e: React.MouseEvent) => {
     e.preventDefault();
 
+    const currentParams = new URLSearchParams(params);
+    currentParams.delete(searchParamsKeys.SEARCH_PLACE);
+
+    router.replace(`${pathname}?${currentParams.toString()}`, {
+      scroll: false,
+    });
+
     setRegionSelection({
       value: null,
       country: null,
@@ -188,25 +188,28 @@ const RegionSelection: React.FC<SelectionComponentsProps> = ({
 
     setResponseForRegion([]);
 
-    AssignNewQueryParams({
-      updatedParams: {
-        [SEARCH_PARAM_KEYS.SEARCH_PLACE]: null,
-      },
-      pathname,
-      params,
-      router,
-    });
+    dispatch(
+      setSearchSelection({
+        [searchParamsKeys.SEARCH_PLACE]: null,
+      })
+    );
+
     dispatch(setFetch(false));
   };
 
   useEffect(() => {
-    const storedRegionSelection = params.get(SEARCH_PARAM_KEYS.SEARCH_PLACE);
+    const storedRegionSelection = params.get(searchParamsKeys.SEARCH_PLACE);
 
     if (storedRegionSelection)
       setRegionSelection({
         ...JSON.parse(storedRegionSelection),
       });
-  }, [params]);
+    dispatch(
+      setSearchSelection({
+        [searchParamsKeys.SEARCH_PLACE]: storedRegionSelection,
+      })
+    );
+  }, [dispatch, params]);
 
   return (
     <div

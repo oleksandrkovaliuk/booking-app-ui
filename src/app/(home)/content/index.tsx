@@ -13,13 +13,11 @@ import { useGetVerifiedListingByParamsQuery } from "@/store/api/endpoints/listin
 import { ListingCard } from "@/components/listingCard";
 import { SkeletonListingCard } from "@/components/listingCard/components/skeleton";
 
-import { ExtractAvailableQueryParams } from "@/helpers/paramsManagment";
-
 import { skeletonData } from "@/information/data";
 
 import styles from "./homeContent.module.scss";
 import { setIsSearchTriggered } from "@/store/slices/listings/isSearchTriggeredSlice";
-import { SEARCH_PARAM_KEYS } from "@/layout/header/_lib/enums";
+import { searchParamsKeys } from "@/layout/header/_lib/enums";
 
 export const HomeContent: React.FC = () => {
   const dispatch = useDispatch();
@@ -29,7 +27,7 @@ export const HomeContent: React.FC = () => {
 
   const [initParams, setInitParams] = useState<{
     [key: string]: string | null;
-  }>(ExtractAvailableQueryParams(params));
+  }>(Object.fromEntries(params.entries()));
 
   const { data: listings, refetch } = useGetVerifiedListingByParamsQuery({
     options: initParams,
@@ -39,12 +37,12 @@ export const HomeContent: React.FC = () => {
 
   useEffect(() => {
     const isSearchSelectionClear =
-      !params.get(SEARCH_PARAM_KEYS.SEARCH_PLACE) &&
-      !params.get(SEARCH_PARAM_KEYS.SEARCH_DATE) &&
-      !params.get(SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS);
+      !params.get(searchParamsKeys.SEARCH_PLACE) &&
+      !params.get(searchParamsKeys.SEARCH_DATE) &&
+      !params.get(searchParamsKeys.SEARCH_AMOUNT_OF_GUESTS);
 
     if (isFetched) {
-      setInitParams(ExtractAvailableQueryParams(params));
+      setInitParams(Object.fromEntries(params.entries()));
       refetch();
       if (isSearchSelectionClear) {
         dispatch(setIsSearchTriggered(false));

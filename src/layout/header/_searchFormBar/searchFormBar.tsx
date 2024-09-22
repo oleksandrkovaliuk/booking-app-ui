@@ -1,10 +1,11 @@
 import React, { useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-import { Spinner } from "@nextui-org/react";
+import { Spinner, useSelect } from "@nextui-org/react";
 import { useDispatch } from "react-redux";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
+import { useSelector } from "@/store";
 import {
   setFetch,
   setIsSearchTriggered,
@@ -23,19 +24,15 @@ import { GuestsSelectionComponent } from "./_components/guestSelection";
 import { RegionSelectionComponent } from "./_components/regionSelection";
 
 import { ParseLocalStorageDates } from "@/helpers/dateManagment";
-import {
-  AssignNewQueryParams,
-  ExtractAvailableQueryParams,
-} from "@/helpers/paramsManagment";
-import { getSearchSelection } from "../_lib/getSearchSelections";
+import { CreateNewQueryParams } from "@/helpers/paramsManagment";
+
 import {
   TriggeredSelectionApi,
   TriggeredSelectionData,
   useStaysButtonContextApi,
 } from "../_lib/context/context";
-import { today, getLocalTimeZone } from "@internationalized/date";
 
-import { SEARCH_PARAM_KEYS } from "../_lib/enums";
+import { searchParamsKeys } from "../_lib/enums";
 import { SearchFormBarProps } from "../_lib/types";
 import { TypesOfSelections } from "@/_utilities/enums";
 import { HandlePopUpMenuOpening } from "./_components/type";
@@ -43,20 +40,31 @@ import { HandlePopUpMenuOpening } from "./_components/type";
 import styles from "./search_form_bar.module.scss";
 
 export const SearchFormBar: React.FC<SearchFormBarProps> = ({
-  isMobile,
   trackScrolled,
   onCloseCallBack,
 }) => {
-  const dispatch = useDispatch();
-
   const router = useRouter();
   const pathname = usePathname();
+  const dispatch = useDispatch();
   const params = useSearchParams();
 
   const searchBarRef = useRef<HTMLFormElement | null>(null);
 
+  const {
+    search_place,
+    search_date,
+    search_amountOfGuests,
+    search_includePets,
+    search_category_id,
+    search_accesable,
+    search_shared_room,
+    search_price_range,
+    search_type_of_place,
+  } = useSelector((state) => state.searchSelection);
+  const { isWidthEqual } = useSelector((state) => state.widthHandler);
+
   const { isLoading } = useGetVerifiedListingByParamsQuery({
-    options: ExtractAvailableQueryParams(params),
+    options: Object.fromEntries(params.entries()),
   });
   const { setIsCategoryChanged } = useStaysButtonContextApi();
   const [requestListingSearch] = useRequestListingSearchMutation();
@@ -95,67 +103,72 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
   const requestSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const availableSearchOptions = getSearchSelection(
-        params,
-        SEARCH_PARAM_KEYS
-      );
-
-      const {
-        [SEARCH_PARAM_KEYS.SEARCH_PRICE_RANGE]: priceRange,
-        [SEARCH_PARAM_KEYS.SEARCH_TYPE_OF_PLACE]: typeOfPlace,
-        [SEARCH_PARAM_KEYS.SEARCH_ACCESABLE]: accesable,
-        [SEARCH_PARAM_KEYS.SEARCH_SHARED_ROOM]: sharedRoom,
-      } = availableSearchOptions;
-
       const { data: res, error } = await requestListingSearch({
-        search_place: availableSearchOptions[SEARCH_PARAM_KEYS.SEARCH_PLACE]
-          ? JSON.parse(availableSearchOptions[SEARCH_PARAM_KEYS.SEARCH_PLACE])
+        search_place: search_place ? JSON.parse(search_place) : null,
+        search_date: search_date ? ParseLocalStorageDates(search_date) : null,
+        search_amountOfGuests: search_amountOfGuests
+          ? JSON.parse(search_amountOfGuests)
           : null,
-        search_date: availableSearchOptions[SEARCH_PARAM_KEYS.SEARCH_DATE]
-          ? ParseLocalStorageDates(
-              availableSearchOptions[SEARCH_PARAM_KEYS.SEARCH_DATE]
-            )
-          : null,
-        search_amountOfGuests: availableSearchOptions[
-          SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS
-        ]
-          ? JSON.parse(
-              availableSearchOptions[SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS]
-            )
-          : null,
-        search_includePets: availableSearchOptions[
-          SEARCH_PARAM_KEYS.SEARCH_INCLUDE_PETS
-        ]
-          ? JSON.parse(
-              availableSearchOptions[SEARCH_PARAM_KEYS.SEARCH_INCLUDE_PETS]
-            )
+        search_includePets: search_includePets
+          ? JSON.parse(search_includePets)
           : null,
         search_category_id: null,
 
         returnFiltered:
-          accesable || sharedRoom || priceRange || typeOfPlace ? true : false,
-        accesable: accesable ? JSON.parse(accesable) : null,
-        shared_room: sharedRoom ? JSON.parse(sharedRoom) : null,
-        price_range: priceRange ? JSON.parse(priceRange) : null,
-        type_of_place: typeOfPlace ? JSON.parse(typeOfPlace) : null,
+          search_accesable ||
+          search_shared_room ||
+          search_price_range ||
+          search_type_of_place
+            ? true
+            : false,
+        accesable: search_accesable ? JSON.parse(search_accesable) : null,
+        shared_room: search_shared_room ? JSON.parse(search_shared_room) : null,
+        price_range: search_price_range ? JSON.parse(search_price_range) : null,
+        type_of_place: search_type_of_place
+          ? JSON.parse(search_type_of_place)
+          : null,
 
-        options: ExtractAvailableQueryParams(params),
+        options: Object.fromEntries(params.entries()),
       });
 
       if (error || !res?.length) throw new Error();
 
-      AssignNewQueryParams({
+      const updatedParams = CreateNewQueryParams({
         updatedParams: {
-          [SEARCH_PARAM_KEYS.SEARCH_CATEGORY_ID]: null,
+          [searchParamsKeys.SEARCH_PLACE]: search_place ? search_place : null,
+          [searchParamsKeys.SEARCH_DATE]: search_date ? search_date : null,
+          [searchParamsKeys.SEARCH_AMOUNT_OF_GUESTS]: search_amountOfGuests
+            ? search_amountOfGuests
+            : null,
+          [searchParamsKeys.SEARCH_INCLUDE_PETS]: search_includePets
+            ? search_includePets
+            : null,
+          [searchParamsKeys.SEARCH_CATEGORY_ID]: search_category_id
+            ? search_category_id
+            : null,
+          [searchParamsKeys.SEARCH_ACCESABLE]: search_accesable
+            ? search_accesable
+            : null,
+          [searchParamsKeys.SEARCH_SHARED_ROOM]: search_shared_room
+            ? search_shared_room
+            : null,
+          [searchParamsKeys.SEARCH_PRICE_RANGE]: search_price_range
+            ? search_price_range
+            : null,
+          [searchParamsKeys.SEARCH_TYPE_OF_PLACE]: search_type_of_place
+            ? search_type_of_place
+            : null,
         },
-        pathname,
         params,
-        router,
+      });
+
+      router.replace(`${pathname}?${updatedParams}`, {
+        scroll: false,
       });
 
       requestAvailableCategories(res!);
-      dispatch(setListings(res!));
 
+      dispatch(setListings(res!));
       dispatch(setFetch(true));
       dispatch(setIsSearchTriggered(true));
 
@@ -191,7 +204,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
           animate={trackScrolled ? { marginTop: "0" } : { marginTop: "64px" }}
           transition={{ duration: 0.25, ease: "easeInOut" }}
           data-triggered={triggeredSelection !== ""}
-          data-is-mobile={isMobile}
+          data-is-mobile={isWidthEqual[1080]}
         >
           <RegionSelectionComponent
             searchBarRef={searchBarRef}

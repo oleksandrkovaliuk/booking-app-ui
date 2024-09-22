@@ -6,12 +6,18 @@ import {
 
 import { api } from "./api/api";
 
+import searchSelectionReducer from "./slices/search/searchSelectionSlice";
+
+import widthHandlerReducer from "./slices/utilities/isMobileHandlerSlice";
+
 import isSearchTriggeredReducer from "./slices/listings/isSearchTriggeredSlice";
 import listingSearchResponseReducer from "./slices/listings/listingSearchResponseSlice";
 
 export const store = configureStore({
   reducer: {
     [api.reducerPath]: api.reducer,
+    widthHandler: widthHandlerReducer,
+    searchSelection: searchSelectionReducer,
     isSearchTriggered: isSearchTriggeredReducer,
     listingSearchResponse: listingSearchResponseReducer,
   },

@@ -5,11 +5,13 @@ import { motion } from "framer-motion";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Modal, ModalContent, useDisclosure } from "@nextui-org/react";
 
-import { Logo } from "@/svgs/Logo";
-import { AddHouseIcon } from "@/svgs/AddHouseIcon";
+import { useSelector } from "@/store";
+
 import { Search } from "@/svgs/Search";
+import { AddHouseIcon } from "@/svgs/AddHouseIcon";
 
 import { UserMenu } from "@/components/userMenu";
+import { LogoLink } from "@/components/LogoLink";
 import { SearchFormBar } from "./_searchFormBar/searchFormBar";
 import { CategoryBar } from "@/layout/header/_categoryBar/categoryBar";
 
@@ -106,27 +108,21 @@ const RightNavigationMenu = ({
 };
 
 export const Header = () => {
-  const params = useSearchParams();
   const headerRef = useRef<HTMLDivElement>(null);
+
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+  const { isWidthEqual } = useSelector((state) => state.widthHandler);
+
   const [windowIsScrolled, setWindowIsScrolled] = useState<boolean>(false);
   const [windowIsScrolledToTop, setWindowIsScrolledToTop] =
     useState<boolean>(false);
 
-  const [mobile, setMobile] = useState<boolean>(false);
-
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-
   const isHomePage = usePathname() === "/";
-
-  const preparedParams = params.toString();
 
   useEffect(() => {
     let prevScroll = window.scrollY;
-    if (window && window.innerWidth < 1080) {
-      setMobile(true);
-    } else {
-      setMobile(false);
-    }
+
     const trackWindowScroll = () => {
       if (window.scrollY > 0) {
         setWindowIsScrolled(true);
@@ -155,11 +151,9 @@ export const Header = () => {
       data-track={windowIsScrolled}
     >
       <motion.nav className={styles.navigation}>
-        <Link href={`/?${preparedParams}`} className={styles.logo}>
-          <Logo />
-        </Link>
+        <LogoLink isShouldHide />
 
-        {mobile ? (
+        {isWidthEqual[1080] ? (
           <>
             <button onClick={onOpen} className={styles.mobile_search_button}>
               <Search className={styles.mobile_search_icon} />{" "}
@@ -174,7 +168,6 @@ export const Header = () => {
               <ModalContent>
                 <CenterNavigationMenu>
                   <SearchFormBar
-                    isMobile={mobile}
                     trackScrolled={windowIsScrolled}
                     onCloseCallBack={onOpenChange}
                   />
@@ -184,7 +177,7 @@ export const Header = () => {
           </>
         ) : (
           <CenterNavigationMenu>
-            <SearchFormBar isMobile={mobile} trackScrolled={windowIsScrolled} />
+            <SearchFormBar trackScrolled={windowIsScrolled} />
           </CenterNavigationMenu>
         )}
 

@@ -2,21 +2,19 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useDispatch } from "react-redux";
 import { Skeleton } from "@nextui-org/react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 import { setFetch } from "@/store/slices/listings/isSearchTriggeredSlice";
+import { setSearchSelection } from "@/store/slices/search/searchSelectionSlice";
 import { useGetListingsTypeOfPlaceQuery } from "@/store/api/endpoints/listings/getTypeOfPlace";
 
 import { AccesableIcon } from "@/svgs/AccesableIcon";
 
-import { SEARCH_PARAM_KEYS } from "@/layout/header/_lib/enums";
-import { AssignNewQueryParams } from "@/helpers/paramsManagment";
+import { searchParamsKeys } from "@/layout/header/_lib/enums";
 
 import styles from "./optionSelection.module.scss";
 
 export const OptionSelection: React.FC = () => {
-  const router = useRouter();
-  const pathname = usePathname();
   const dispatch = useDispatch();
   const params = useSearchParams();
 
@@ -27,53 +25,51 @@ export const OptionSelection: React.FC = () => {
     isSuccess,
   } = useGetListingsTypeOfPlaceQuery();
   const [selectedOptions, setSelectedOptions] = useState<{
-    [SEARCH_PARAM_KEYS.SEARCH_ACCESABLE]: boolean;
-    [SEARCH_PARAM_KEYS.SEARCH_SHARED_ROOM]: boolean;
+    [searchParamsKeys.SEARCH_ACCESABLE]: boolean;
+    [searchParamsKeys.SEARCH_SHARED_ROOM]: boolean;
   }>({
-    [SEARCH_PARAM_KEYS.SEARCH_ACCESABLE]: false,
-    [SEARCH_PARAM_KEYS.SEARCH_SHARED_ROOM]: false,
+    [searchParamsKeys.SEARCH_ACCESABLE]: false,
+    [searchParamsKeys.SEARCH_SHARED_ROOM]: false,
   });
 
   const handleSelectOption = (option: keyof typeof selectedOptions) => {
     setSelectedOptions((prev) => {
+      dispatch(
+        setSearchSelection({
+          [option]: !prev[option],
+        })
+      );
       return { ...prev, [option]: !prev[option] };
     });
 
-    AssignNewQueryParams({
-      updatedParams: {
-        [option]: !selectedOptions[option]
-          ? JSON.stringify(!selectedOptions[option])
-          : null,
-      },
-      pathname,
-      params,
-      router,
-    });
     dispatch(setFetch(false));
   };
 
   useEffect(() => {
-    const accesable = params.get(SEARCH_PARAM_KEYS.SEARCH_ACCESABLE);
-    const sharedRoom = params.get(SEARCH_PARAM_KEYS.SEARCH_SHARED_ROOM);
+    const accesable = params.get(searchParamsKeys.SEARCH_ACCESABLE);
+    const sharedRoom = params.get(searchParamsKeys.SEARCH_SHARED_ROOM);
 
     if (accesable || sharedRoom) {
       setSelectedOptions((prev) => ({
         ...prev,
-        [SEARCH_PARAM_KEYS.SEARCH_ACCESABLE]: accesable
-          ? JSON.parse(accesable)
-          : false,
-        [SEARCH_PARAM_KEYS.SEARCH_SHARED_ROOM]: sharedRoom
-          ? JSON.parse(sharedRoom)
-          : false,
+        [searchParamsKeys.SEARCH_ACCESABLE]: JSON.parse(accesable!),
+        [searchParamsKeys.SEARCH_SHARED_ROOM]: JSON.parse(sharedRoom!),
       }));
+
+      dispatch(
+        setSearchSelection({
+          [searchParamsKeys.SEARCH_ACCESABLE]: accesable,
+          [searchParamsKeys.SEARCH_SHARED_ROOM]: sharedRoom,
+        })
+      );
     } else {
       setSelectedOptions((prev) => ({
         ...prev,
-        [SEARCH_PARAM_KEYS.SEARCH_ACCESABLE]: false,
-        [SEARCH_PARAM_KEYS.SEARCH_SHARED_ROOM]: false,
+        [searchParamsKeys.SEARCH_ACCESABLE]: false,
+        [searchParamsKeys.SEARCH_SHARED_ROOM]: false,
       }));
     }
-  }, [params]);
+  }, [dispatch, params]);
 
   return (
     <div className={styles.opation_container}>
@@ -97,7 +93,7 @@ export const OptionSelection: React.FC = () => {
               id="accesable"
               name="accesable"
               onChange={() =>
-                handleSelectOption(SEARCH_PARAM_KEYS.SEARCH_ACCESABLE)
+                handleSelectOption(searchParamsKeys.SEARCH_ACCESABLE)
               }
               className={styles.hidden_checkbox}
             />
@@ -105,7 +101,7 @@ export const OptionSelection: React.FC = () => {
               htmlFor="accesable"
               className={styles.option_label}
               data-selected={
-                selectedOptions[SEARCH_PARAM_KEYS.SEARCH_ACCESABLE]
+                selectedOptions[searchParamsKeys.SEARCH_ACCESABLE]
               }
             >
               <AccesableIcon className={styles.option_icon} />
@@ -119,7 +115,7 @@ export const OptionSelection: React.FC = () => {
                 id="shared"
                 name="shared"
                 onChange={() =>
-                  handleSelectOption(SEARCH_PARAM_KEYS.SEARCH_SHARED_ROOM)
+                  handleSelectOption(searchParamsKeys.SEARCH_SHARED_ROOM)
                 }
                 className={styles.hidden_checkbox}
               />
@@ -127,7 +123,7 @@ export const OptionSelection: React.FC = () => {
                 htmlFor="shared"
                 className={styles.option_label}
                 data-selected={
-                  selectedOptions[SEARCH_PARAM_KEYS.SEARCH_SHARED_ROOM]
+                  selectedOptions[searchParamsKeys.SEARCH_SHARED_ROOM]
                 }
               >
                 <Image

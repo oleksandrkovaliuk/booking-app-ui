@@ -15,7 +15,7 @@ export interface ContentProps {
   onConfirmation?: Dispatch<SetStateAction<boolean>>;
   [key: string]: any;
   setValue: UseFormSetValue<FormState | any>;
-  selectedPrice?: string | number;
+  selectedPrice?: string;
   categories?: Category[];
   selectedAdress?: {
     formattedAddress: string;

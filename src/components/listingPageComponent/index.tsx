@@ -2,9 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { useSearchParams } from "next/navigation";
 import { Spinner, Tooltip } from "@nextui-org/react";
-import { today, getLocalTimeZone } from "@internationalized/date";
 
 import { store } from "@/store";
 import { getUser } from "@/store/api/endpoints/auth/getUser";
@@ -25,7 +23,7 @@ import { formattedAddressComponent } from "@/helpers/address/formattedAddressVar
 
 import { ShowCaseUser } from "@/_utilities/interfaces";
 import { ListingPageComponentProps } from "./_lib/type";
-import { SEARCH_PARAM_KEYS } from "@/layout/header/_lib/enums";
+import { searchParamsKeys } from "@/layout/header/_lib/enums";
 
 import styles from "./listing.module.scss";
 

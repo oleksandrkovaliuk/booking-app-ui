@@ -80,7 +80,6 @@ const getVerifiedListingsApi = api.injectEndpoints({
         try {
           const { data: updatedListings } = await queryFulfilled;
 
-          console.log("updatedListings", updatedListings);
           dispatch(
             api.util.updateQueryData(
               "getVerifiedListingByParams" as never,

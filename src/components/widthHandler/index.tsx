@@ -1,7 +1,8 @@
+"use client";
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 
-import { setWidth } from "@/store/slices/utilities/isMobileHandlerSlice";
+import { setWidth } from "@/store/slices/utilities/isWidthHandlerSlice";
 
 export const WidthHandler: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -15,7 +16,7 @@ export const WidthHandler: React.FC<{ children: React.ReactNode }> = ({
       const width = window.innerWidth;
       dispatch(
         setWidth({
-          isWidthEqual: {
+          isWidthEqualTo: {
             768: width <= 768,
             1080: width <= 1080,
             1280: width <= 1280,

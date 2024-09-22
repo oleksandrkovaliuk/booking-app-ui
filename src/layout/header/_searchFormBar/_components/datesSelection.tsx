@@ -45,7 +45,7 @@ const DatesSelection: React.FC<SelectionComponentsProps> = ({
   const { staysButtonState, isCategoryChanged } = useStaysButtonContextData();
   const { setIsCategoryChanged } = useStaysButtonContextApi();
 
-  const { isWidthEqual } = useSelector((state) => state.widthHandler);
+  const { isWidthEqualTo } = useSelector((state) => state.widthHandler);
 
   const [userDateSelection, setUserDateSelection] = useState<
     RangeValue<DateValue>
@@ -226,7 +226,7 @@ const DatesSelection: React.FC<SelectionComponentsProps> = ({
         >
           <RangeCalendar
             aria-label="Booking dates"
-            visibleMonths={isWidthEqual[1080] ? 1 : 2}
+            visibleMonths={isWidthEqualTo[1080] ? 1 : 2}
             onChange={(value: RangeValue<DateValue>) => {
               handleBookingCalendarSelections(value);
             }}
@@ -239,7 +239,7 @@ const DatesSelection: React.FC<SelectionComponentsProps> = ({
           />
         </ModalPanel>
       )}
-      {staysButtonState && !isWidthEqual[1080] ? (
+      {staysButtonState && !isWidthEqualTo[1080] ? (
         <>
           <div
             className={styles.search_bar_input_container}

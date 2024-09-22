@@ -112,7 +112,7 @@ export const Header = () => {
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-  const { isWidthEqual } = useSelector((state) => state.widthHandler);
+  const { isWidthEqualTo } = useSelector((state) => state.widthHandler);
 
   const [windowIsScrolled, setWindowIsScrolled] = useState<boolean>(false);
   const [windowIsScrolledToTop, setWindowIsScrolledToTop] =
@@ -144,6 +144,8 @@ export const Header = () => {
     };
   }, []);
 
+  console.log(isWidthEqualTo);
+
   return (
     <header
       ref={headerRef}
@@ -153,7 +155,7 @@ export const Header = () => {
       <motion.nav className={styles.navigation}>
         <LogoLink isShouldHide />
 
-        {isWidthEqual[1080] ? (
+        {isWidthEqualTo[1080] ? (
           <>
             <button onClick={onOpen} className={styles.mobile_search_button}>
               <Search className={styles.mobile_search_icon} />{" "}

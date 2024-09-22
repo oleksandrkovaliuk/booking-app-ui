@@ -73,7 +73,6 @@ export const FilterSelection: React.FC = () => {
     const parsedAccesableOption = JSON.parse(search_accesable || "false");
     const parsedSharedRoomOption = JSON.parse(search_shared_room || "false");
 
-    console.log(parsedAccesableOption, parsedSharedRoomOption);
     setPreviewCountOfResults(
       listings!?.filter((listing) => {
         const matchedPriceRange = parsedPriceRange

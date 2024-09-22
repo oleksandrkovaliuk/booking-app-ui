@@ -35,7 +35,7 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
   const pathname = usePathname();
   const params = useSearchParams();
 
-  const { isWidthEqual } = useSelector((state) => state.widthHandler);
+  const { isWidthEqualTo } = useSelector((state) => state.widthHandler);
   const { search_date } = useSelector((state) => state.searchSelection);
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -72,7 +72,7 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
   };
 
   const ModalComponent = (
-    <div className={styles.modal} data-is-mobile={isWidthEqual[1280]}>
+    <div className={styles.modal} data-is-mobile={isWidthEqualTo[1280]}>
       <button
         aria-label="Close modal"
         className={styles.modal_bg}
@@ -156,7 +156,7 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
 
   return (
     <>
-      {isModalOpen && !isWidthEqual[1280] ? (
+      {isModalOpen && !isWidthEqualTo[1280] ? (
         ModalComponent
       ) : (
         <Modal

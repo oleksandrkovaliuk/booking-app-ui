@@ -17,9 +17,7 @@ export function Providers({ children }: ProvidersProps) {
   return (
     <SessionProvider>
       <Provider store={store}>
-        <WidthHandler>
-          <NextUIProvider>{children}</NextUIProvider>
-        </WidthHandler>
+        <NextUIProvider>{children}</NextUIProvider>
       </Provider>
     </SessionProvider>
   );

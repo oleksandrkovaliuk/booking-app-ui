@@ -7,6 +7,7 @@ import { useSearchParams } from "next/navigation";
 
 import { useSelector } from "@/store";
 import { setListings } from "@/store/slices/listings/listingSearchResponseSlice";
+import { setIsSearchTriggered } from "@/store/slices/listings/isSearchTriggeredSlice";
 
 import { useGetVerifiedListingByParamsQuery } from "@/store/api/endpoints/listings/getVerifiedListings";
 
@@ -14,10 +15,9 @@ import { ListingCard } from "@/components/listingCard";
 import { SkeletonListingCard } from "@/components/listingCard/components/skeleton";
 
 import { skeletonData } from "@/information/data";
+import { searchParamsKeys } from "@/layout/header/_lib/enums";
 
 import styles from "./homeContent.module.scss";
-import { setIsSearchTriggered } from "@/store/slices/listings/isSearchTriggeredSlice";
-import { searchParamsKeys } from "@/layout/header/_lib/enums";
 
 export const HomeContent: React.FC = () => {
   const dispatch = useDispatch();

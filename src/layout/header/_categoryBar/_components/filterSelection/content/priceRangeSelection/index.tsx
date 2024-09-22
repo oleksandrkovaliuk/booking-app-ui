@@ -102,7 +102,7 @@ export const PriceRangeSelection: React.FC = () => {
 
   useEffect(() => {
     const savedPriceRange = params.get(searchParamsKeys.SEARCH_PRICE_RANGE);
-    console.log(JSON.parse(savedPriceRange!), "savedPriceRange");
+
     if (savedPriceRange) {
       const [min, max] = JSON.parse(savedPriceRange);
       dispatch(

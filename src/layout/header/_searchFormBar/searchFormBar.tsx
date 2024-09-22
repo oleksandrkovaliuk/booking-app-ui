@@ -61,7 +61,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
     search_price_range,
     search_type_of_place,
   } = useSelector((state) => state.searchSelection);
-  const { isWidthEqual } = useSelector((state) => state.widthHandler);
+  const { isWidthEqualTo } = useSelector((state) => state.widthHandler);
 
   const { isLoading } = useGetVerifiedListingByParamsQuery({
     options: Object.fromEntries(params.entries()),
@@ -204,7 +204,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
           animate={trackScrolled ? { marginTop: "0" } : { marginTop: "64px" }}
           transition={{ duration: 0.25, ease: "easeInOut" }}
           data-triggered={triggeredSelection !== ""}
-          data-is-mobile={isWidthEqual[1080]}
+          data-is-mobile={isWidthEqualTo[1080]}
         >
           <RegionSelectionComponent
             searchBarRef={searchBarRef}

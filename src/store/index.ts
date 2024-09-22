@@ -8,7 +8,7 @@ import { api } from "./api/api";
 
 import searchSelectionReducer from "./slices/search/searchSelectionSlice";
 
-import widthHandlerReducer from "./slices/utilities/isMobileHandlerSlice";
+import widthHandlerReducer from "./slices/utilities/isWidthHandlerSlice";
 
 import isSearchTriggeredReducer from "./slices/listings/isSearchTriggeredSlice";
 import listingSearchResponseReducer from "./slices/listings/listingSearchResponseSlice";

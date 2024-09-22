@@ -447,6 +447,20 @@
       transform: translateY(0px);
       min-height: unset;
       padding-block: 20px;
+      .search_region_modal {
+        flex-direction: column;
+        .user_search_history {
+          .user_search_history_title {
+            padding-inline: 0px;
+            .user_search_history_title_text {
+              font-size: 15px;
+            }
+          }
+          .user_search_history_block {
+            padding-inline: 0px;
+          }
+        }
+      }
       .regions_cards_container {
         overflow: auto;
         .search_region_modal_title {
@@ -458,6 +472,10 @@
         }
       }
     }
+    .region_preview_container {
+      display: none;
+    }
+
     .search_bar_input_container {
       max-width: unset;
       border: 1px solid var(--booking-app-lightgrey-color);

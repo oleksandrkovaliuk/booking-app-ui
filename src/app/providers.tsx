@@ -7,6 +7,8 @@ import { NextUIProvider } from "@nextui-org/system";
 
 import { store } from "@/store";
 
+import { WidthHandler } from "@/components/widthHandler";
+
 export interface ProvidersProps {
   children: React.ReactNode;
 }

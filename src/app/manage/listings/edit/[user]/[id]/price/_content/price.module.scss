@@ -85,3 +85,21 @@
     }
   }
 }
+
+@media (width <= 1080px) {
+  .price {
+    .title,
+    .description {
+      max-width: unset;
+    }
+    .price_container {
+      justify-content: center;
+      .input_wrap {
+        .price_input,
+        .price_label {
+          font-size: 70px;
+        }
+      }
+    }
+  }
+}

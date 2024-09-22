@@ -1,19 +1,17 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Skeleton, Tab, Tabs } from "@nextui-org/react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 import { setFetch } from "@/store/slices/listings/isSearchTriggeredSlice";
+import { setSearchSelection } from "@/store/slices/search/searchSelectionSlice";
 import { useGetListingsTypeOfPlaceQuery } from "@/store/api/endpoints/listings/getTypeOfPlace";
 
-import { SEARCH_PARAM_KEYS } from "@/layout/header/_lib/enums";
-import { AssignNewQueryParams } from "@/helpers/paramsManagment";
+import { searchParamsKeys } from "@/layout/header/_lib/enums";
 
 import styles from "./typeOfPlaceSelection.module.scss";
 
 export const TypeOfPlaceSelection: React.FC = () => {
-  const router = useRouter();
-  const pathname = usePathname();
   const dispatch = useDispatch();
   const params = useSearchParams();
 
@@ -23,11 +21,21 @@ export const TypeOfPlaceSelection: React.FC = () => {
     isFetching,
     isSuccess,
   } = useGetListingsTypeOfPlaceQuery();
-  const [selectedType, setSelectedType] = useState<React.Key>(
-    params.get(SEARCH_PARAM_KEYS.SEARCH_TYPE_OF_PLACE)
-      ? JSON.parse(params.get(SEARCH_PARAM_KEYS.SEARCH_TYPE_OF_PLACE)!)
-      : "clear"
-  );
+
+  const [selectedType, setSelectedType] = useState<React.Key>(() => {
+    if (params.get(searchParamsKeys.SEARCH_TYPE_OF_PLACE)) {
+      dispatch(
+        setSearchSelection({
+          [searchParamsKeys.SEARCH_TYPE_OF_PLACE]: params.get(
+            searchParamsKeys.SEARCH_TYPE_OF_PLACE
+          ),
+        })
+      );
+      return JSON.parse(params.get(searchParamsKeys.SEARCH_TYPE_OF_PLACE)!);
+    } else {
+      return "clear";
+    }
+  });
 
   const handleSelectedType = (key: React.Key | "clear") => {
     try {
@@ -37,15 +45,12 @@ export const TypeOfPlaceSelection: React.FC = () => {
         );
 
         if (selectedType?.id || key === "clear") {
-          AssignNewQueryParams({
-            updatedParams: {
-              [SEARCH_PARAM_KEYS.SEARCH_TYPE_OF_PLACE]:
+          dispatch(
+            setSearchSelection({
+              [searchParamsKeys.SEARCH_TYPE_OF_PLACE]:
                 key === "clear" ? null : JSON.stringify(selectedType?.id),
-            },
-            pathname,
-            params,
-            router,
-          });
+            })
+          );
           setSelectedType(key);
           dispatch(setFetch(false));
         }

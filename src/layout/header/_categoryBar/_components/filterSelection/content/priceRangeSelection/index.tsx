@@ -2,21 +2,18 @@ import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useDispatch } from "react-redux";
 import { Skeleton, Slider } from "@nextui-org/react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 import { useSelector } from "@/store";
+import { setSearchSelection } from "@/store/slices/search/searchSelectionSlice";
 import { setFetch } from "@/store/slices/listings/isSearchTriggeredSlice";
 
-import { AssignNewQueryParams } from "@/helpers/paramsManagment";
-
-import { SEARCH_PARAM_KEYS } from "@/layout/header/_lib/enums";
+import { searchParamsKeys } from "@/layout/header/_lib/enums";
 import { PriceLimit } from "@/app/manage/_components/createForm/content/enum";
 
 import styles from "./priceRangeSelection.module.scss";
 
 export const PriceRangeSelection: React.FC = () => {
-  const router = useRouter();
-  const pathname = usePathname();
   const dispatch = useDispatch();
   const params = useSearchParams();
 
@@ -41,14 +38,11 @@ export const PriceRangeSelection: React.FC = () => {
 
   const handlePriceRangeChange = (value: number[]) => {
     setPriceRangeValue(value as number[]);
-    AssignNewQueryParams({
-      updatedParams: {
-        [SEARCH_PARAM_KEYS.SEARCH_PRICE_RANGE]: JSON.stringify(value),
-      },
-      pathname,
-      params,
-      router,
-    });
+    dispatch(
+      setSearchSelection({
+        [searchParamsKeys.SEARCH_PRICE_RANGE]: JSON.stringify(value),
+      })
+    );
     dispatch(setFetch(false));
   };
 
@@ -82,43 +76,46 @@ export const PriceRangeSelection: React.FC = () => {
 
     if (type === "min") {
       setPriceRangeValue([Number(price), priceRangeValue[1]]);
-      AssignNewQueryParams({
-        updatedParams: {
-          [SEARCH_PARAM_KEYS.SEARCH_PRICE_RANGE]: JSON.stringify([
+
+      dispatch(
+        setSearchSelection({
+          [searchParamsKeys.SEARCH_PRICE_RANGE]: JSON.stringify([
             Number(price),
             priceRangeValue[1],
           ]),
-        },
-        pathname,
-        params,
-        router,
-      });
+        })
+      );
     } else {
       setPriceRangeValue([priceRangeValue[0], Number(price)]);
-      AssignNewQueryParams({
-        updatedParams: {
-          [SEARCH_PARAM_KEYS.SEARCH_PRICE_RANGE]: JSON.stringify([
+
+      dispatch(
+        setSearchSelection({
+          [searchParamsKeys.SEARCH_PRICE_RANGE]: JSON.stringify([
             priceRangeValue[0],
             Number(price),
           ]),
-        },
-        pathname,
-        params,
-        router,
-      });
+        })
+      );
     }
     dispatch(setFetch(false));
   };
 
   useEffect(() => {
-    const savedPriceRange = params.get(SEARCH_PARAM_KEYS.SEARCH_PRICE_RANGE);
+    const savedPriceRange = params.get(searchParamsKeys.SEARCH_PRICE_RANGE);
+
     if (savedPriceRange) {
       const [min, max] = JSON.parse(savedPriceRange);
+      dispatch(
+        setSearchSelection({
+          [searchParamsKeys.SEARCH_PRICE_RANGE]: savedPriceRange,
+        })
+      );
+
       setPriceRangeValue([Number(min), Number(max)]);
     } else if (!savedPriceRange) {
       setPriceRangeValue([Number(priceMinRange), Number(priceMaxRange)]);
     }
-  }, [params, priceMaxRange, priceMinRange]);
+  }, [dispatch, params, priceMaxRange, priceMinRange]);
 
   return (
     <div className={styles.filter_price_range}>

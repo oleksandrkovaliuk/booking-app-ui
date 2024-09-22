@@ -10,10 +10,6 @@ import { StatusBadge } from "../statusBadge";
 import { ManageModal } from "./components/modals/manage";
 import { PreviewModal } from "./components/modals/preview";
 
-import {
-  ExtractAvailableQueryParams,
-  PrepareExtractedQueryParams,
-} from "@/helpers/paramsManagment";
 import { CalculatePriceIncludingTax } from "@/helpers/priceManagment";
 import { formattedAddressComponent } from "@/helpers/address/formattedAddressVariants";
 
@@ -65,9 +61,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   const isFirstSlider = currentSlide === 0;
 
   const preparedRedirectParams = params
-    ? `/listing/${address?.shorterAddress}/${id}?${PrepareExtractedQueryParams({
-        searchParamsResult: ExtractAvailableQueryParams(params),
-      })}`
+    ? `/listing/${address?.shorterAddress}/${id}?${params.toString()}`
     : `/listing/${address?.shorterAddress}/${id}`;
 
   const mainHref = !isPreview
@@ -230,7 +224,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
           </div>
 
           <h5 className={styles.title}>{title}</h5>
-          {!isManagable && (
+          {!isManagable && price && (
             <div className={styles.price}>
               <span>
                 <b>

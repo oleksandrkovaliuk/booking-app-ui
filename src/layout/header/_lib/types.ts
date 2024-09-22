@@ -13,7 +13,7 @@ export interface RightNavigationMenuProps
 
 export interface SearchFormBarProps {
   trackScrolled: boolean;
-  isMobile: boolean;
+
   onCloseCallBack?: () => void;
 }
 

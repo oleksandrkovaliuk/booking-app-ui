@@ -4,16 +4,15 @@ import { useDispatch } from "react-redux";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { setFetch } from "@/store/slices/listings/isSearchTriggeredSlice";
+import { setSearchSelection } from "@/store/slices/search/searchSelectionSlice";
 
 import { Counter } from "@/components/counter";
 import { ModalPanel } from "@/components/modalPanel";
 
 import { SelectionComponentsProps } from "./type";
-import { SEARCH_PARAM_KEYS } from "../../_lib/enums";
+import { searchParamsKeys } from "../../_lib/enums";
 import { TypesOfSelections } from "@/_utilities/enums";
 import { useTriggeredSelectionData } from "../../_lib/context/context";
-
-import { AssignNewQueryParams } from "@/helpers/paramsManagment";
 
 import styles from "../search_form_bar.module.scss";
 
@@ -22,8 +21,8 @@ const GuestsSelection: React.FC<SelectionComponentsProps> = ({
   handlePopUpMenuOpening,
 }) => {
   const router = useRouter();
-  const pathname = usePathname();
   const dispatch = useDispatch();
+  const pathname = usePathname();
   const params = useSearchParams();
 
   const { triggeredSelection } = useTriggeredSelectionData();
@@ -32,57 +31,44 @@ const GuestsSelection: React.FC<SelectionComponentsProps> = ({
   const [includePets, setIncludePets] = useState<boolean>(false);
 
   useEffect(() => {
-    if (amoutOfGuests !== 0) {
-      AssignNewQueryParams({
-        updatedParams: {
-          [SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS]:
-            JSON.stringify(amoutOfGuests),
-        },
-        pathname,
-        params,
-        router,
-      });
-    } else {
-      AssignNewQueryParams({
-        updatedParams: {
-          [SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS]: null,
-        },
-        pathname,
-        params,
-        router,
-      });
-    }
+    dispatch(
+      setSearchSelection({
+        [searchParamsKeys.SEARCH_AMOUNT_OF_GUESTS]:
+          amoutOfGuests !== 0 ? JSON.stringify(amoutOfGuests) : null,
+      })
+    );
+
     dispatch(setFetch(false));
-  }, [amoutOfGuests, dispatch, params, pathname, router]);
+  }, [amoutOfGuests, dispatch]);
 
   useEffect(() => {
-    if (includePets) {
-      AssignNewQueryParams({
-        updatedParams: { pets: JSON.stringify(includePets) },
-        pathname,
-        params,
-        router,
-      });
-    } else {
-      AssignNewQueryParams({
-        updatedParams: { pets: null },
-        pathname,
-        params,
-        router,
-      });
-    }
+    dispatch(
+      setSearchSelection({
+        [searchParamsKeys.SEARCH_INCLUDE_PETS]: JSON.stringify(includePets),
+      })
+    );
+
     dispatch(setFetch(false));
-  }, [dispatch, includePets, params, pathname, router]);
+  }, [dispatch, includePets]);
 
   useEffect(() => {
     const guests = JSON.parse(
-      params.get(SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS) || "0"
+      params.get(searchParamsKeys.SEARCH_AMOUNT_OF_GUESTS) || "0"
     );
-    const include_pets = JSON.parse(params.get("pets") || "false");
+    const include_pets = JSON.parse(
+      params.get(searchParamsKeys.SEARCH_INCLUDE_PETS) || "false"
+    );
+
+    dispatch(
+      setSearchSelection({
+        [searchParamsKeys.SEARCH_AMOUNT_OF_GUESTS]: guests,
+        [searchParamsKeys.SEARCH_INCLUDE_PETS]: include_pets,
+      })
+    );
 
     setIncludePets(include_pets);
     setAmoutOfGuests(guests);
-  }, [params]);
+  }, [dispatch, params]);
 
   return (
     <div

@@ -2,10 +2,12 @@ import React, { memo, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useDispatch } from "react-redux";
 import { today, getLocalTimeZone } from "@internationalized/date";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { DateValue, RangeCalendar, RangeValue } from "@nextui-org/calendar";
 
+import { useSelector } from "@/store";
 import { setFetch } from "@/store/slices/listings/isSearchTriggeredSlice";
+import { setSearchSelection } from "@/store/slices/search/searchSelectionSlice";
 
 import {
   useStaysButtonContextApi,
@@ -21,14 +23,11 @@ import {
   isDateValueEqual,
   ParseLocalStorageDates,
 } from "@/helpers/dateManagment";
-import {
-  AssignNewQueryParams,
-  assignNewQueryParams2,
-} from "@/helpers/paramsManagment";
+
 import { ClearInputSelectionButton } from "./clearInputSelection";
 
 import { SelectionComponentsProps } from "./type";
-import { SEARCH_PARAM_KEYS } from "../../_lib/enums";
+import { searchParamsKeys } from "../../_lib/enums";
 import { TypesOfSelections } from "@/_utilities/enums";
 
 import styles from "../search_form_bar.module.scss";
@@ -37,8 +36,6 @@ const DatesSelection: React.FC<SelectionComponentsProps> = ({
   searchBarRef,
   handlePopUpMenuOpening,
 }) => {
-  const router = useRouter();
-  const pathname = usePathname();
   const dispatch = useDispatch();
   const params = useSearchParams();
 
@@ -48,6 +45,8 @@ const DatesSelection: React.FC<SelectionComponentsProps> = ({
   const { staysButtonState, isCategoryChanged } = useStaysButtonContextData();
   const { setIsCategoryChanged } = useStaysButtonContextApi();
 
+  const { isWidthEqualTo } = useSelector((state) => state.widthHandler);
+
   const [userDateSelection, setUserDateSelection] = useState<
     RangeValue<DateValue>
   >({
@@ -56,7 +55,6 @@ const DatesSelection: React.FC<SelectionComponentsProps> = ({
   });
 
   const [isNewDateSelected, setIsNewDateSelected] = useState<boolean>(false);
-  const [isMobile, setIsMobile] = useState<boolean>(false);
 
   const isDefaultDate =
     isDateValueEqual(userDateSelection) && !isNewDateSelected;
@@ -97,14 +95,11 @@ const DatesSelection: React.FC<SelectionComponentsProps> = ({
         start: value.start,
       });
     } else if (value.start.toString() !== value.end.toString()) {
-      const searchParams = assignNewQueryParams2({
-        updatedParams: {
-          [SEARCH_PARAM_KEYS.SEARCH_DATE]: JSON.stringify(value),
-        },
-        params,
-      });
-
-      router.replace(`${pathname}?${searchParams}`, { scroll: false });
+      dispatch(
+        setSearchSelection({
+          [searchParamsKeys.SEARCH_DATE]: JSON.stringify(value),
+        })
+      );
 
       setUserDateSelection({
         ...userDateSelection,
@@ -138,17 +133,14 @@ const DatesSelection: React.FC<SelectionComponentsProps> = ({
     e.preventDefault();
 
     if (type === "checkIn") {
-      AssignNewQueryParams({
-        updatedParams: {
-          [SEARCH_PARAM_KEYS.SEARCH_DATE]: JSON.stringify({
+      dispatch(
+        setSearchSelection({
+          [searchParamsKeys.SEARCH_DATE]: JSON.stringify({
             start: today(getLocalTimeZone()),
             end: userDateSelection.end,
           }),
-        },
-        pathname,
-        params,
-        router,
-      });
+        })
+      );
       setUserDateSelection((prev) => ({
         ...prev,
         start: today(getLocalTimeZone()),
@@ -156,18 +148,14 @@ const DatesSelection: React.FC<SelectionComponentsProps> = ({
     }
 
     if (type === "checkOut") {
-      AssignNewQueryParams({
-        updatedParams: {
-          [SEARCH_PARAM_KEYS.SEARCH_DATE]: JSON.stringify({
+      dispatch(
+        setSearchSelection({
+          [searchParamsKeys.SEARCH_DATE]: JSON.stringify({
             start: userDateSelection.start,
             end: today(getLocalTimeZone()).add({ weeks: 1 }),
           }),
-        },
-        pathname,
-        params,
-        router,
-      });
-
+        })
+      );
       setUserDateSelection((prev) => ({
         ...prev,
         end: today(getLocalTimeZone()).add({ weeks: 1 }),
@@ -175,15 +163,11 @@ const DatesSelection: React.FC<SelectionComponentsProps> = ({
     }
 
     if (type === "all") {
-      AssignNewQueryParams({
-        updatedParams: {
-          [SEARCH_PARAM_KEYS.SEARCH_DATE]: null,
-        },
-        pathname,
-        params,
-        router,
-      });
-
+      dispatch(
+        setSearchSelection({
+          [searchParamsKeys.SEARCH_DATE]: null,
+        })
+      );
       setUserDateSelection({
         start: today(getLocalTimeZone()),
         end: today(getLocalTimeZone()).add({ weeks: 1 }),
@@ -193,15 +177,7 @@ const DatesSelection: React.FC<SelectionComponentsProps> = ({
   };
 
   useEffect(() => {
-    if (window && window.innerWidth < 1080) {
-      setIsMobile(true);
-    } else {
-      setIsMobile(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    const storedDateSelection = params.get(SEARCH_PARAM_KEYS.SEARCH_DATE);
+    const storedDateSelection = params.get(searchParamsKeys.SEARCH_DATE);
 
     if (storedDateSelection) {
       setIsNewDateSelected(true);
@@ -209,8 +185,13 @@ const DatesSelection: React.FC<SelectionComponentsProps> = ({
         start: ParseLocalStorageDates(storedDateSelection!).start,
         end: ParseLocalStorageDates(storedDateSelection!).end,
       });
+      dispatch(
+        setSearchSelection({
+          [searchParamsKeys.SEARCH_DATE]: storedDateSelection,
+        })
+      );
     }
-  }, [params]);
+  }, [dispatch, params]);
 
   useEffect(() => {
     if (
@@ -245,7 +226,7 @@ const DatesSelection: React.FC<SelectionComponentsProps> = ({
         >
           <RangeCalendar
             aria-label="Booking dates"
-            visibleMonths={isMobile ? 1 : 2}
+            visibleMonths={isWidthEqualTo[1080] ? 1 : 2}
             onChange={(value: RangeValue<DateValue>) => {
               handleBookingCalendarSelections(value);
             }}
@@ -258,7 +239,7 @@ const DatesSelection: React.FC<SelectionComponentsProps> = ({
           />
         </ModalPanel>
       )}
-      {staysButtonState && !isMobile ? (
+      {staysButtonState && !isWidthEqualTo[1080] ? (
         <>
           <div
             className={styles.search_bar_input_container}

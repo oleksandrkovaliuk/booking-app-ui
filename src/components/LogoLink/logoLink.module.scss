@@ -1,0 +1,48 @@
+.logo_link {
+  position: relative;
+  z-index: 3;
+  min-width: clamp(110px, 5vw, 180px);
+
+  &[data-color-theme="black"] {
+    flex-grow: 1;
+    &:hover {
+      .logo_icon {
+        path {
+          fill: var(--booking-app-red-color);
+        }
+      }
+    }
+
+    .logo_icon {
+      flex-grow: 1;
+      display: flex;
+      path {
+        fill: var(--booking-app-black-color);
+      }
+    }
+  }
+
+  &:hover {
+    .logo_icon {
+      path {
+        fill: var(--booking-app-black-color);
+      }
+    }
+  }
+  .logo_icon {
+    width: 40px;
+    height: 40px;
+    path {
+      transition: fill 0.3s ease-in-out;
+    }
+  }
+}
+
+@media (width <= 1080px) {
+  .logo_link {
+    min-width: unset;
+    &[data-is-should-hide="true"] {
+      display: none;
+    }
+  }
+}

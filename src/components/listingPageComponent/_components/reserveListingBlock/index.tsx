@@ -5,6 +5,7 @@ import { Modal, ModalBody, ModalContent } from "@nextui-org/react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { DateValue, RangeCalendar, RangeValue } from "@nextui-org/calendar";
 
+import { useSelector } from "@/store";
 import { Counter } from "@/components/counter";
 
 import {
@@ -12,14 +13,15 @@ import {
   DateFormatingMonthDay,
   ParseLocalStorageDates,
 } from "@/helpers/dateManagment";
-import { AssignNewQueryParams } from "@/helpers/paramsManagment";
+
+import { CreateNewQueryParams } from "@/helpers/paramsManagment";
 import { CalculatePriceIncludingTax } from "@/helpers/priceManagment";
 
 import {
   DateInputConrainerProps,
   ReserveListingBlockProps,
 } from "../../_lib/type";
-import { SEARCH_PARAM_KEYS } from "@/layout/header/_lib/enums";
+import { searchParamsKeys } from "@/layout/header/_lib/enums";
 
 import styles from "./reserveListing.module.scss";
 import "./additionalStyles.scss";
@@ -33,11 +35,13 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
   const pathname = usePathname();
   const params = useSearchParams();
 
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [isMobile, setIsMobile] = useState<boolean>(false);
+  const { isWidthEqualTo } = useSelector((state) => state.widthHandler);
+  const { search_date } = useSelector((state) => state.searchSelection);
 
-  const extractedDateParams = params.get(SEARCH_PARAM_KEYS.SEARCH_DATE)
-    ? ParseLocalStorageDates(params.get(SEARCH_PARAM_KEYS.SEARCH_DATE)!)
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
+  const parsedSearchDate = search_date
+    ? ParseLocalStorageDates(search_date)
     : {
         start: today(getLocalTimeZone()),
         end: today(getLocalTimeZone()).add({ weeks: 1 }),
@@ -45,13 +49,15 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
 
   const handleSetDateSelection = (value: RangeValue<DateValue>) => {
     if (value.start.toString() !== value.end.toString()) {
-      AssignNewQueryParams({
+      const updatedParams = CreateNewQueryParams({
         updatedParams: {
-          [SEARCH_PARAM_KEYS.SEARCH_DATE]: JSON.stringify(value),
+          [searchParamsKeys.SEARCH_DATE]: JSON.stringify(value),
         },
-        pathname,
         params,
-        router,
+      });
+
+      router.replace(`${pathname}?${updatedParams}`, {
+        scroll: false,
       });
       setInputSelection("checkOut");
     } else {
@@ -65,12 +71,8 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
     }
   };
 
-  useEffect(() => {
-    if (window && window.innerWidth <= 1280) setIsMobile(true);
-  }, []);
-
   const ModalComponent = (
-    <div className={styles.modal} data-is-mobile={isMobile}>
+    <div className={styles.modal} data-is-mobile={isWidthEqualTo[1280]}>
       <button
         aria-label="Close modal"
         className={styles.modal_bg}
@@ -88,8 +90,8 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
             {inputSelection === "checkIn"
               ? "Minimum stay of 1 night"
               : `${DateFormatingMonthDay(
-                  extractedDateParams.start
-                )} - ${DateFormatingMonthDay(extractedDateParams.end)}`}
+                  parsedSearchDate.start
+                )} - ${DateFormatingMonthDay(parsedSearchDate.end)}`}
           </p>
         </div>
         <div className={styles.calendar_container}>
@@ -101,7 +103,7 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
             }}
             color="primary"
             minValue={today(getLocalTimeZone())}
-            defaultValue={extractedDateParams}
+            defaultValue={parsedSearchDate}
             isDateUnavailable={(date: DateValue) => {
               if (!date) return false;
               return disabledDates?.some(
@@ -117,16 +119,18 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
           <button
             className={`${styles.modal_button} ${styles.clear_button}`}
             onClick={() => {
-              AssignNewQueryParams({
+              const updatedParams = CreateNewQueryParams({
                 updatedParams: {
-                  [SEARCH_PARAM_KEYS.SEARCH_DATE]: JSON.stringify({
+                  [searchParamsKeys.SEARCH_DATE]: JSON.stringify({
                     start: today(getLocalTimeZone()),
                     end: today(getLocalTimeZone()).add({ weeks: 1 }),
                   }),
                 },
-                pathname,
                 params,
-                router,
+              });
+
+              router.replace(`${pathname}?${updatedParams}`, {
+                scroll: false,
               });
               setInputSelection("none");
             }}
@@ -152,7 +156,7 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
 
   return (
     <>
-      {isModalOpen && !isMobile ? (
+      {isModalOpen && !isWidthEqualTo[1280] ? (
         ModalComponent
       ) : (
         <Modal
@@ -186,7 +190,7 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
             id="dateInputCheckIn"
             className={styles.date_input}
             placeholder="Add dates"
-            value={DateFormatingMonthDay(extractedDateParams.start)}
+            value={DateFormatingMonthDay(parsedSearchDate.start)}
             readOnly
           />
         </div>
@@ -203,7 +207,7 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
             id="dateInputCheckOut"
             className={styles.date_input}
             placeholder="Add dates"
-            value={DateFormatingMonthDay(extractedDateParams.end)}
+            value={DateFormatingMonthDay(parsedSearchDate.end)}
             readOnly
           />
         </div>
@@ -219,8 +223,8 @@ export const ReserveListingBlock: React.FC<ReserveListingBlockProps> = ({
 }) => {
   const params = useSearchParams();
 
-  const extractedDateParams = params.get(SEARCH_PARAM_KEYS.SEARCH_DATE)
-    ? ParseLocalStorageDates(params.get(SEARCH_PARAM_KEYS.SEARCH_DATE)!)
+  const parsedSearchDate = params.get(searchParamsKeys.SEARCH_DATE)
+    ? ParseLocalStorageDates(params.get(searchParamsKeys.SEARCH_DATE)!)
     : {
         start: today(getLocalTimeZone()),
         end: today(getLocalTimeZone()).add({ weeks: 1 }),
@@ -234,7 +238,7 @@ export const ReserveListingBlock: React.FC<ReserveListingBlockProps> = ({
 
   const calculationOfPrice =
     Number(Number(price).toLocaleString().split(",").join("")) *
-    CountNights(extractedDateParams.start, extractedDateParams.end);
+    CountNights(parsedSearchDate.start, parsedSearchDate.end);
 
   return (
     <div className={styles.reserve_listing_container}>
@@ -277,8 +281,7 @@ export const ReserveListingBlock: React.FC<ReserveListingBlockProps> = ({
           <div className={styles.calculate_price_block}>
             <span className={styles.price_label}>
               ${Number(price).toLocaleString()} x{" "}
-              {CountNights(extractedDateParams.start, extractedDateParams.end)}{" "}
-              night
+              {CountNights(parsedSearchDate.start, parsedSearchDate.end)} night
             </span>
             <span className={styles.price_result}>
               ${calculationOfPrice.toLocaleString()}

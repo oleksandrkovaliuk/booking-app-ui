@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { toast } from "sonner";
+import { useDispatch } from "react-redux";
 import { getLocalTimeZone, today } from "@internationalized/date";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { DateValue, RangeCalendar, RangeValue } from "@nextui-org/calendar";
 
 import {
@@ -10,23 +10,23 @@ import {
   isDateValueEqual,
   ParseLocalStorageDates,
 } from "@/helpers/dateManagment";
-import { AssignNewQueryParams } from "@/helpers/paramsManagment";
 
-import { SEARCH_PARAM_KEYS } from "@/layout/header/_lib/enums";
+import { searchParamsKeys } from "@/layout/header/_lib/enums";
 import { CalendarSelectionProps } from "../../_lib/type";
 
 import styles from "./calendarSection.module.scss";
+import { setSearchSelection } from "@/store/slices/search/searchSelectionSlice";
+import { useSelector } from "@/store";
 
 export const CalendarSection: React.FC<CalendarSelectionProps> = ({
   title,
   disabledDates,
 }) => {
-  const router = useRouter();
-  const pathname = usePathname();
-  const params = useSearchParams();
+  const dispatch = useDispatch();
 
-  const extractedDateParams = params.get(SEARCH_PARAM_KEYS.SEARCH_DATE)
-    ? ParseLocalStorageDates(params.get(SEARCH_PARAM_KEYS.SEARCH_DATE)!)
+  const { search_date } = useSelector((state) => state.searchSelection);
+  const parsedSearchDate = search_date
+    ? ParseLocalStorageDates(search_date)
     : {
         start: today(getLocalTimeZone()),
         end: today(getLocalTimeZone()).add({ weeks: 1 }),
@@ -38,7 +38,7 @@ export const CalendarSection: React.FC<CalendarSelectionProps> = ({
 
   // CONDITIONS
   const isDefaultDate =
-    isDateValueEqual(extractedDateParams) && triggeredSelection !== "both";
+    isDateValueEqual(parsedSearchDate) && triggeredSelection !== "both";
 
   const checkInOrOutText =
     triggeredSelection === "checkIn"
@@ -48,28 +48,18 @@ export const CalendarSection: React.FC<CalendarSelectionProps> = ({
   const textContentBasedOnSelection = isDefaultDate
     ? checkInOrOutText
     : `${CountNights(
-        extractedDateParams.start,
-        extractedDateParams.end
+        parsedSearchDate.start,
+        parsedSearchDate.end
       )} nights in ${title}`;
 
   const handleSetDateSelection = (value: RangeValue<DateValue>) => {
     if (value.start.toString() !== value.end.toString()) {
-      AssignNewQueryParams({
-        updatedParams: {
-          [SEARCH_PARAM_KEYS.SEARCH_DATE]: JSON.stringify(value),
-        },
-        pathname,
-        params,
-        router,
-      });
-
-      localStorage.setItem(
-        SEARCH_PARAM_KEYS.SEARCH_DATE,
-        JSON.stringify({
-          start: value.start,
-          end: value.end,
+      dispatch(
+        setSearchSelection({
+          [searchParamsKeys.SEARCH_DATE]: JSON.stringify(value),
         })
       );
+
       setTriggeredSelection("both");
     } else {
       toast(
@@ -77,18 +67,15 @@ export const CalendarSection: React.FC<CalendarSelectionProps> = ({
           🫣 Selected dates cannot be the same. The minimum stay is one night.
         </div>
       );
-      localStorage.removeItem("userDateSelection");
-      AssignNewQueryParams({
-        updatedParams: {
-          [SEARCH_PARAM_KEYS.SEARCH_DATE]: JSON.stringify({
+
+      dispatch(
+        setSearchSelection({
+          [searchParamsKeys.SEARCH_DATE]: JSON.stringify({
             start: today(getLocalTimeZone()),
             end: today(getLocalTimeZone()).add({ weeks: 1 }),
           }),
-        },
-        pathname,
-        params,
-        router,
-      });
+        })
+      );
     }
   };
 
@@ -101,8 +88,8 @@ export const CalendarSection: React.FC<CalendarSelectionProps> = ({
         {isDefaultDate
           ? "Minimum stay of 1 night"
           : `${DateFormatingMonthDay(
-              extractedDateParams.start
-            )} - ${DateFormatingMonthDay(extractedDateParams.end)}`}
+              parsedSearchDate.start
+            )} - ${DateFormatingMonthDay(parsedSearchDate.end)}`}
       </div>
       <div className={styles.calendar_container}>
         <RangeCalendar
@@ -116,7 +103,7 @@ export const CalendarSection: React.FC<CalendarSelectionProps> = ({
           }}
           color="primary"
           minValue={today(getLocalTimeZone())}
-          defaultValue={extractedDateParams}
+          defaultValue={parsedSearchDate}
           isDateUnavailable={(date: DateValue) => {
             if (!date) return false;
             return disabledDates?.some(

@@ -5,7 +5,7 @@ import { api } from "../../api";
 import { ApiTags } from "../../lib/enums";
 import { ApiUrlsListings } from "../../lib/constants";
 import { ListingState, TypeOfPlace } from "../../lib/type";
-import { SEARCH_PARAM_KEYS } from "@/layout/header/_lib/enums";
+import { searchParamsKeys } from "@/layout/header/_lib/enums";
 
 const getVerifiedListingsApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -18,9 +18,9 @@ const getVerifiedListingsApi = api.injectEndpoints({
       }
     >({
       query: ({ options }) => ({
-        url: `${ApiUrlsListings.getVerifiedListingByParams}?options=${JSON.stringify(
-          options
-        )}`,
+        url: `${
+          ApiUrlsListings.getVerifiedListingByParams
+        }?options=${JSON.stringify(options)}`,
       }),
       providesTags: [ApiTags.VERIFIED_LISTINGS_BY_PARAMS],
     }),
@@ -28,13 +28,13 @@ const getVerifiedListingsApi = api.injectEndpoints({
     requestListingSearch: builder.mutation<
       ListingState[],
       {
-        [SEARCH_PARAM_KEYS.SEARCH_PLACE]: {
+        [searchParamsKeys.SEARCH_PLACE]: {
           [key: string]: string;
         } | null;
-        [SEARCH_PARAM_KEYS.SEARCH_DATE]: RangeValue<DateValue> | null;
-        [SEARCH_PARAM_KEYS.SEARCH_AMOUNT_OF_GUESTS]: number | null;
-        [SEARCH_PARAM_KEYS.SEARCH_INCLUDE_PETS]: boolean | null;
-        [SEARCH_PARAM_KEYS.SEARCH_CATEGORY_ID]?: number | null;
+        [searchParamsKeys.SEARCH_DATE]: RangeValue<DateValue> | null;
+        [searchParamsKeys.SEARCH_AMOUNT_OF_GUESTS]: number | null;
+        [searchParamsKeys.SEARCH_INCLUDE_PETS]: boolean | null;
+        [searchParamsKeys.SEARCH_CATEGORY_ID]?: number | null;
 
         accesable?: boolean | null;
         shared_room?: boolean | null;

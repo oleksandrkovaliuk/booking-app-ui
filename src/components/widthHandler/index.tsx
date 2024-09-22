@@ -31,5 +31,5 @@ export const WidthHandler: React.FC<{ children: React.ReactNode }> = ({
     return () => window.removeEventListener("resize", handleResize);
   }, [dispatch]);
 
-  return <>{children}</>;
+  return children;
 };

@@ -1,8 +1,9 @@
+import type { Metadata } from "next";
+
 import { Providers } from "./providers";
 import { Toaster } from "sonner";
 
 import "./globals.scss";
-import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Booking-app",

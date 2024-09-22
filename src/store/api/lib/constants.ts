@@ -36,6 +36,7 @@ export const ApiTagsTypes = [
   ApiTags.USER,
   ApiTags.CURRENT_USER,
   ApiTags.USER_LISTINGS,
+  ApiTags.FULL_CATEGORIES_LIST,
 
   ApiTags.USER_SEARCH_REGION_HISTORY,
 

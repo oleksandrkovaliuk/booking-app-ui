@@ -144,8 +144,6 @@ export const Header = () => {
     };
   }, []);
 
-  console.log(isWidthEqualTo);
-
   return (
     <header
       ref={headerRef}

@@ -1,16 +1,19 @@
 "use client";
 import React, { useLayoutEffect, useMemo, useState } from "react";
 import moment from "moment";
+import Link from "next/link";
 import { toast } from "sonner";
-import { useDispatch } from "react-redux";
+import { useRouter } from "next/navigation";
 import { DateValue } from "@nextui-org/calendar";
+import { Button, Tooltip } from "@nextui-org/react";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import { today, getLocalTimeZone } from "@internationalized/date";
 
 import { store } from "@/store";
 import { requestCalendarUpdating } from "@/store/api/endpoints/listings/requestCalendarUpdating";
-
 import { useGetCurrentListingQuery } from "@/store/api/endpoints/listings/getCurrentListing";
+
+import { LeftArrow } from "@/svgs/LeftArrow";
 
 import { ConverIntoDateValueFormat } from "@/helpers/dateManagment";
 
@@ -26,6 +29,7 @@ interface CalendarPageContentProps {
 export const CalendarPageContent: React.FC<CalendarPageContentProps> = ({
   params,
 }) => {
+  const router = useRouter();
   const localizer = momentLocalizer(moment);
 
   const { data: listing } = useGetCurrentListingQuery({
@@ -187,13 +191,34 @@ export const CalendarPageContent: React.FC<CalendarPageContentProps> = ({
           }}
           messages={messages}
         />
-        <ConfirmationButton
-          onConfirm={onConfirm}
-          enable={enableConfirmationButton}
-          position="bottom-right"
+        <Tooltip
+          showArrow
+          placement="top-start"
+          content={"Go Back"}
+          color="default"
+          size="sm"
+          delay={200}
+          classNames={{
+            content: ["text-#2f2f2f font-medium rounded-lg"],
+          }}
         >
-          Confirm
-        </ConfirmationButton>
+          <Button
+            variant="ghost"
+            onClick={() => router.back()}
+            className={styles.go_back_button}
+          >
+            <LeftArrow className={styles.go_back_button_icon} />
+          </Button>
+        </Tooltip>
+        <Link inert={!enableConfirmationButton} href="/manage/listings">
+          <ConfirmationButton
+            onConfirm={onConfirm}
+            enable={enableConfirmationButton}
+            position="bottom-right"
+          >
+            Confirm
+          </ConfirmationButton>
+        </Link>
       </div>
     </>
   );

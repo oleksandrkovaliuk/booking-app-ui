@@ -200,15 +200,22 @@ const RegionSelection: React.FC<SelectionComponentsProps> = ({
   useEffect(() => {
     const storedRegionSelection = params.get(searchParamsKeys.SEARCH_PLACE);
 
-    if (storedRegionSelection)
+    if (storedRegionSelection) {
       setRegionSelection({
         ...JSON.parse(storedRegionSelection),
       });
-    dispatch(
-      setSearchSelection({
-        [searchParamsKeys.SEARCH_PLACE]: storedRegionSelection,
-      })
-    );
+      dispatch(
+        setSearchSelection({
+          [searchParamsKeys.SEARCH_PLACE]: storedRegionSelection,
+        })
+      );
+    } else {
+      setRegionSelection({
+        value: null,
+        country: null,
+        city: null,
+      });
+    }
   }, [dispatch, params]);
 
   return (

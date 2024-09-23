@@ -7,14 +7,15 @@ import styles from "./logoLink.module.scss";
 
 export const LogoLink: React.FC<{
   colorTheme?: "black" | "primary";
-  isShouldHide?: boolean;
-}> = ({ colorTheme, isShouldHide }) => {
+  href: string;
+  handleOnClick?: () => void;
+}> = ({ colorTheme, href, handleOnClick }) => {
   return (
     <Link
-      href="/"
+      href={href}
       className={styles.logo_link}
       data-color-theme={colorTheme}
-      data-is-should-hide={isShouldHide}
+      onClick={!!handleOnClick ? handleOnClick : () => {}}
     >
       <Logo className={styles.logo_icon} />
     </Link>

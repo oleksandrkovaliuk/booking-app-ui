@@ -18,6 +18,7 @@ import {
   setFetch,
   setIsSearchTriggered,
 } from "@/store/slices/listings/isSearchTriggeredSlice";
+import { searchSelectionSelector } from "@/store/selectors/searchSelection";
 import { setSearchSelection } from "@/store/slices/search/searchSelectionSlice";
 import { setListings } from "@/store/slices/listings/listingSearchResponseSlice";
 import { useRequestListingSearchMutation } from "@/store/api/endpoints/listings/getVerifiedListings";
@@ -50,12 +51,14 @@ export const FilterSelection: React.FC = () => {
     search_date,
     search_amountOfGuests,
     search_includePets,
+    search_category_id,
 
     search_accesable,
     search_shared_room,
     search_price_range,
     search_type_of_place,
-  } = useSelector((state) => state.searchSelection);
+  } = useSelector(searchSelectionSelector);
+
   const { listings } = useSelector((state) => state.listingSearchResponse);
 
   const [_, { isLoading: isLoadingCategories }] =
@@ -182,7 +185,9 @@ export const FilterSelection: React.FC = () => {
         search_includePets: search_includePets
           ? JSON.parse(search_includePets)
           : null,
-        search_category_id: null,
+        search_category_id: search_category_id
+          ? JSON.parse(search_category_id)
+          : null,
 
         returnFiltered: true,
         accesable: search_accesable ? JSON.parse(search_accesable) : null,
@@ -215,8 +220,8 @@ export const FilterSelection: React.FC = () => {
         scroll: false,
       });
 
+      dispatch(setFetch(false));
       dispatch(setListings(res!));
-      dispatch(setFetch(true));
       dispatch(setIsSearchTriggered(false));
 
       setIsListingRequested(false);

@@ -14,6 +14,8 @@ import {
   useGetVerifiedListingByParamsQuery,
   useRequestListingSearchMutation,
 } from "@/store/api/endpoints/listings/getVerifiedListings";
+import { isWidthHandlerSelector } from "@/store/selectors/isWidthHandler";
+import { searchSelectionSelector } from "@/store/selectors/searchSelection";
 import { setListings } from "@/store/slices/listings/listingSearchResponseSlice";
 import { useRequestAvailableCategoriesMutation } from "@/store/api/endpoints/listings/getCategories";
 
@@ -60,8 +62,8 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
     search_shared_room,
     search_price_range,
     search_type_of_place,
-  } = useSelector((state) => state.searchSelection);
-  const { isWidthEqualTo } = useSelector((state) => state.widthHandler);
+  } = useSelector(searchSelectionSelector);
+  const { isWidthEqualTo } = useSelector(isWidthHandlerSelector);
 
   const { isLoading } = useGetVerifiedListingByParamsQuery({
     options: Object.fromEntries(params.entries()),
@@ -204,7 +206,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
           animate={trackScrolled ? { marginTop: "0" } : { marginTop: "64px" }}
           transition={{ duration: 0.25, ease: "easeInOut" }}
           data-triggered={triggeredSelection !== ""}
-          data-is-mobile={isWidthEqualTo[1080]}
+          data-is-mobile={isWidthEqualTo.tablet}
         >
           <RegionSelectionComponent
             searchBarRef={searchBarRef}

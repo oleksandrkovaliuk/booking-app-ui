@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -11,8 +11,12 @@ import {
   setFetch,
   setIsSearchTriggered,
 } from "@/store/slices/listings/isSearchTriggeredSlice";
+import { searchSelectionSelector } from "@/store/selectors/searchSelection";
 import { useRequestListingSearchMutation } from "@/store/api/endpoints/listings/getVerifiedListings";
-import { useGetListingsCategoriesQuery } from "@/store/api/endpoints/listings/getCategories";
+import {
+  useGetListingsCategoriesQuery,
+  useRequestAvailableCategoriesMutation,
+} from "@/store/api/endpoints/listings/getCategories";
 
 import your_search from "@/assets/loan.png";
 import { skeletonData } from "@/information/data";
@@ -21,6 +25,8 @@ import { FilterSelection } from "./_components/filterSelection";
 import { ParseLocalStorageDates } from "@/helpers/dateManagment";
 
 import styles from "./categoryBar.module.scss";
+import { setSearchSelection } from "@/store/slices/search/searchSelectionSlice";
+import { searchParamsKeys } from "../_lib/enums";
 
 const Categories: React.FC = () => {
   const dispatch = useDispatch();
@@ -32,13 +38,14 @@ const Categories: React.FC = () => {
     isFetching,
   } = useGetListingsCategoriesQuery();
   const [requestListingSearch] = useRequestListingSearchMutation();
+  const [requestAvailableCategories] = useRequestAvailableCategoriesMutation();
 
   const {
     search_place,
     search_date,
     search_amountOfGuests,
     search_includePets,
-  } = useSelector((state) => state.searchSelection);
+  } = useSelector(searchSelectionSelector);
 
   const { isFetched, isSearchTriggered } = useSelector(
     (state) => state.isSearchTriggered
@@ -65,6 +72,11 @@ const Categories: React.FC = () => {
 
       setSelectedCategory(id);
 
+      dispatch(
+        setSearchSelection({
+          [searchParamsKeys.SEARCH_CATEGORY_ID]: JSON.stringify(id),
+        })
+      );
       dispatch(setFetch(false));
       dispatch(setIsSearchTriggered(false));
     } catch (error) {
@@ -81,11 +93,44 @@ const Categories: React.FC = () => {
     }
   };
 
+  const handleResetCategory = useCallback(async () => {
+    if (params.size === 0) {
+      const { data: res } = await requestListingSearch({
+        search_place: null,
+        search_date: null,
+        search_amountOfGuests: null,
+        search_includePets: null,
+
+        options: Object.fromEntries(params.entries()),
+      });
+
+      await requestAvailableCategories(res!);
+
+      setSelectedCategory(null);
+      dispatch(
+        setSearchSelection({
+          [searchParamsKeys.SEARCH_CATEGORY_ID]: JSON.stringify(null),
+        })
+      );
+    } else {
+      return;
+    }
+  }, [dispatch, params, requestAvailableCategories, requestListingSearch]);
+
   useEffect(() => {
     if (isSearchTriggered) {
       setSelectedCategory(null);
+      dispatch(
+        setSearchSelection({
+          [searchParamsKeys.SEARCH_CATEGORY_ID]: JSON.stringify(null),
+        })
+      );
     }
-  }, [isFetched, isSearchTriggered]);
+  }, [dispatch, isSearchTriggered]);
+
+  useEffect(() => {
+    handleResetCategory();
+  }, [handleResetCategory]);
 
   return (
     <ScrollShadow

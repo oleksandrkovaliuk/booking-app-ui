@@ -7,6 +7,7 @@ import { DateValue, RangeCalendar, RangeValue } from "@nextui-org/calendar";
 
 import { useSelector } from "@/store";
 import { setFetch } from "@/store/slices/listings/isSearchTriggeredSlice";
+import { isWidthHandlerSelector } from "@/store/selectors/isWidthHandler";
 import { setSearchSelection } from "@/store/slices/search/searchSelectionSlice";
 
 import {
@@ -45,7 +46,7 @@ const DatesSelection: React.FC<SelectionComponentsProps> = ({
   const { staysButtonState, isCategoryChanged } = useStaysButtonContextData();
   const { setIsCategoryChanged } = useStaysButtonContextApi();
 
-  const { isWidthEqualTo } = useSelector((state) => state.widthHandler);
+  const { isWidthEqualTo } = useSelector(isWidthHandlerSelector);
 
   const [userDateSelection, setUserDateSelection] = useState<
     RangeValue<DateValue>
@@ -226,7 +227,7 @@ const DatesSelection: React.FC<SelectionComponentsProps> = ({
         >
           <RangeCalendar
             aria-label="Booking dates"
-            visibleMonths={isWidthEqualTo[1080] ? 1 : 2}
+            visibleMonths={isWidthEqualTo.tablet ? 1 : 2}
             onChange={(value: RangeValue<DateValue>) => {
               handleBookingCalendarSelections(value);
             }}
@@ -239,7 +240,7 @@ const DatesSelection: React.FC<SelectionComponentsProps> = ({
           />
         </ModalPanel>
       )}
-      {staysButtonState && !isWidthEqualTo[1080] ? (
+      {staysButtonState && !isWidthEqualTo.tablet ? (
         <>
           <div
             className={styles.search_bar_input_container}

@@ -21,7 +21,7 @@ export const ManageNavigation: React.FC<ManageNavigationProps> = ({
   return (
     <header className={styles.manage_header}>
       <motion.nav className={styles.manage_navigation}>
-        <LogoLink colorTheme="black" />
+        <LogoLink href={"/"} colorTheme="black" />
         {!isCutted && (
           <motion.div className={styles.navigation_menu}>
             <Link

@@ -124,6 +124,11 @@ export const ListingCard: React.FC<ListingCardProps> = ({
     }
   }, [id]);
 
+  useEffect(() => {
+    if (!isComplete && !isInProccess) {
+      onOpen();
+    }
+  }, [isComplete, isInProccess, onOpen]);
   return (
     <>
       {isPreview && (
@@ -149,6 +154,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
           title={title}
           address={address}
           isComplete={isComplete}
+          isInProccess={isInProccess}
           listingHasUnsavedChanges={listingHasUnsavedChanges}
           onOpenChange={onOpenChange}
         />

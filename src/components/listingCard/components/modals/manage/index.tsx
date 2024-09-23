@@ -22,6 +22,7 @@ export const ManageModal: React.FC<ModalProps> = ({
   title,
   address,
   isComplete,
+  isInProccess,
   onOpenChange,
   listingHasUnsavedChanges,
 }) => {
@@ -61,12 +62,14 @@ export const ManageModal: React.FC<ModalProps> = ({
   useEffect(() => {
     setIsDeleteProcess(false);
   }, [onOpenChange]);
+
   return (
     <Modal
       size="sm"
+      hideCloseButton={!isComplete && !isInProccess}
       isOpen={isOpen}
-      onClose={onClose}
-      backdrop="transparent"
+      onClose={!isComplete && !isInProccess ? () => {} : onClose}
+      backdrop="opaque"
       motionProps={{
         variants: {
           enter: {
@@ -88,13 +91,24 @@ export const ManageModal: React.FC<ModalProps> = ({
         },
       }}
     >
-      <ModalContent>
+      <ModalContent className="modal_manage_content">
         <ModalBody className="modal_manage_body">
           {isDeleteProcess && (
             <div className="modal_manage_message">
-              <h4 className="modal_manage_message_title">Are you sure?</h4>
+              <h4 className="modal_manage_message_title">Delete listing</h4>
               <p className="modal_manage_message_description">
                 This is permanent and can’t be undone.
+              </p>
+            </div>
+          )}
+          {!isComplete && (
+            <div className="modal_manage_message">
+              <h4 className="modal_manage_message_title">
+                Make your listing available for booking.
+              </h4>
+              <p className="modal_manage_message_description">
+                By completing availability your listing will be available for
+                booking.
               </p>
             </div>
           )}
@@ -113,7 +127,7 @@ export const ManageModal: React.FC<ModalProps> = ({
             {isDeleteProcess ? (
               <Button
                 variant="light"
-                className="modal_manage_button no_link"
+                className="modal_manage_button confirm_delete"
                 onClick={handleDeleteListing}
               >
                 Yes , delete
@@ -141,7 +155,9 @@ export const ManageModal: React.FC<ModalProps> = ({
 
                 <Link
                   href={`/manage/listings/calendar/${id}`}
-                  className="modal_manage_button main"
+                  className={`modal_manage_button main ${
+                    !isComplete && !isInProccess ? "is_only_availability" : ""
+                  }`}
                 >
                   <Button
                     variant="light"
@@ -157,13 +173,15 @@ export const ManageModal: React.FC<ModalProps> = ({
             )}
           </div>
 
-          <Button
-            variant="light"
-            className="modal_manage_button delete"
-            onClick={handleSetProcessDelete}
-          >
-            {isDeleteProcess ? "Cancel" : "Delete"}
-          </Button>
+          {isComplete && (
+            <Button
+              variant="light"
+              className="modal_manage_button delete"
+              onClick={handleSetProcessDelete}
+            >
+              {isDeleteProcess ? "Cancel" : "Delete"}
+            </Button>
+          )}
         </ModalBody>
       </ModalContent>
     </Modal>

@@ -2,15 +2,15 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: {
   isWidthEqualTo: {
-    768: boolean;
-    1080: boolean;
-    1280: boolean;
+    mobile: boolean;
+    tablet: boolean;
+    desktop: boolean;
   };
 } = {
   isWidthEqualTo: {
-    768: false,
-    1080: false,
-    1280: false,
+    mobile: false,
+    tablet: false,
+    desktop: false,
   },
 };
 
@@ -21,15 +21,15 @@ const WidthHandler = createSlice({
     setWidth: (
       state,
       action: PayloadAction<{
-        isWidthEqualTo: { 768: boolean; 1080: boolean; 1280: boolean };
+        isWidthEqualTo: { mobile: boolean; tablet: boolean; desktop: boolean };
       }>
     ) => {
       return {
         isWidthEqualTo: {
           ...state.isWidthEqualTo,
-          [768]: action.payload.isWidthEqualTo[768],
-          [1080]: action.payload.isWidthEqualTo[1080],
-          [1280]: action.payload.isWidthEqualTo[1280],
+          mobile: action.payload.isWidthEqualTo.mobile,
+          tablet: action.payload.isWidthEqualTo.tablet,
+          desktop: action.payload.isWidthEqualTo.desktop,
         },
       };
     },

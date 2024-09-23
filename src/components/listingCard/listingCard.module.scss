@@ -136,11 +136,29 @@
   }
 }
 
-@media (width <= 400px) {
+@media (width <= 615px) {
+  .listing_card {
+    width: 450px !important;
+
+    .slider_container {
+      height: 450px !important;
+
+      .slider_content {
+        .slider_image {
+          height: 450px !important;
+        }
+      }
+    }
+  }
+}
+
+@media (width <= 460px) {
   .listing_card {
     width: 350px !important;
+
     .slider_container {
       height: 350px !important;
+
       .slider_content {
         .slider_image {
           height: 350px !important;

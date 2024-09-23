@@ -41,8 +41,5 @@
 @media (width <= 1080px) {
   .logo_link {
     min-width: unset;
-    &[data-is-should-hide="true"] {
-      display: none;
-    }
   }
 }

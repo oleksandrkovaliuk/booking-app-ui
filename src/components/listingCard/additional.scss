@@ -117,9 +117,9 @@
           }
         }
         .modal_hosted_additional_info {
-        display: flex;
-        gap: 20px;
-        align-items: center;
+          display: flex;
+          gap: 20px;
+          align-items: center;
           .modal_info_description {
             position: relative;
             &:not(:last-child) {
@@ -182,16 +182,20 @@
 
 // Manage modal
 
+.modal_manage_content {
+  border: 1px solid var(--booking-app-lightgrey-color);
+}
 .modal_manage_body {
   padding-block: 50px 20px;
   .modal_manage_message {
     .modal_manage_message_title {
       font-size: 22px;
-      font-weight: 600;
+      font-weight: 650;
       font-family: var(--booking-app-Nunito-Sans-font);
       color: var(--booking-app-black-color);
       line-height: 100%;
       text-align: center;
+      margin-bottom: 10px;
     }
     .modal_manage_message_description {
       font-size: 15px;
@@ -237,12 +241,13 @@
 }
 
 .modal_manage_button {
-  flex-grow: 1;
+  width: 100%;
+  max-width: 50%;
   position: relative;
 
   button,
   &.delete,
-  &.no_link {
+  &.confirm_delete {
     width: 100%;
     padding: 8px 10px;
     border-radius: 8px;
@@ -260,7 +265,12 @@
     }
   }
   &.main {
+    &.is_only_availability {
+      max-width: unset;
+      width: 100%;
+    }
     button {
+      width: 100%;
       color: var(--booking-app-white-color);
       background-color: var(--booking-app-black-color);
       border: 1px solid transparent;
@@ -282,7 +292,9 @@
       }
     }
   }
-  &.no_link {
+  &.confirm_delete {
+    width: 100%;
+    max-width: unset;
     color: var(--booking-app-white-color);
     background-color: var(--booking-app-black-color);
     border: 1px solid transparent;
@@ -291,6 +303,8 @@
     }
   }
   &.delete {
+    width: 100%;
+    max-width: unset;
     button {
       &:hover {
         scale: 0.99;

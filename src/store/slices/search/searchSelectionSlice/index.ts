@@ -30,9 +30,14 @@ export const searchSelectionSlice = createSlice({
         ...action.payload,
       };
     },
+
+    clearSearchSelection: (state) => {
+      return initialState;
+    },
   },
 });
 
-export const { setSearchSelection } = searchSelectionSlice.actions;
+export const { setSearchSelection, clearSearchSelection } =
+  searchSelectionSlice.actions;
 
 export default searchSelectionSlice.reducer;

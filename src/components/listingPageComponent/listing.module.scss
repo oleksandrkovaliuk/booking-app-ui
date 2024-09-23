@@ -170,7 +170,7 @@
 .more_details {
   display: flex;
   align-items: flex-start;
-  gap: 20%;
+  gap: 20px;
   justify-content: flex-start;
   padding-bottom: 25px;
   border-bottom: 1px solid var(--booking-app-lightgrey-color);
@@ -183,24 +183,33 @@
       padding: 20px;
       background-color: var(--booking-app-white-color);
       border: 1px solid var(--booking-app-lightgrey-color);
-      border-radius: 20px;
-      margin-bottom: 10px;
+      border-radius: 5px;
+      margin-bottom: 5px;
+      cursor: pointer;
+    }
+    .specification_badge {
+      width: max-content;
+      color: var(--booking-app-black-color);
+      font-family: var(--booking-app-Nunito-Sans-font);
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 100%;
+
+      padding: 2px 5px;
+      border: 1px solid var(--booking-app-lightgrey-color);
+      border-radius: 5px;
+      background-color: var(--booking-app-background-hover-color);
+      margin-bottom: 5px;
     }
     .more_details_title {
-      font-size: 17px;
+      font-size: 15px;
       font-family: var(--booking-app-Nunito-Sans-font);
-      font-weight: 600;
+      font-weight: 700;
       color: var(--booking-app-black-color);
       line-height: 100%;
       text-transform: capitalize;
       margin-bottom: 5px;
-    }
-    .more_details_description {
-      font-size: 15px;
-      font-family: var(--booking-app-Nunito-Sans-font);
-      font-weight: 400;
-      color: var(--booking-app-grey-color);
-      line-height: 130%;
+      padding-inline: 5px;
     }
   }
 }

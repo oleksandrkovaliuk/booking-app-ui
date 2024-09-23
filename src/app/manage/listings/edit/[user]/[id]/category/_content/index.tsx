@@ -5,7 +5,7 @@ import { useForm, UseFormSetValue } from "react-hook-form";
 
 import { store } from "@/store";
 import { requestUpdateListing } from "@/store/api/endpoints/listings/requestUpdateListing";
-import { useGetListingsCategoriesQuery } from "@/store/api/endpoints/listings/getCategories";
+import { useGetFullCategoriesListQuery } from "@/store/api/endpoints/listings/getCategories";
 import { useGetCurrentListingQuery } from "@/store/api/endpoints/listings/getCurrentListing";
 
 import { ConfirmationButton } from "@/components/confirmationButton";
@@ -21,7 +21,7 @@ import "../../shared/sharedStyles.scss";
 export const CategoryPageContent: React.FC<ContentProps> = ({ params }) => {
   const setValueRef = useRef<UseFormSetValue<EditFormValues> | null>(null);
 
-  const { data: categories } = useGetListingsCategoriesQuery();
+  const { data: categories } = useGetFullCategoriesListQuery();
 
   const { data: listing } = useGetCurrentListingQuery({
     id: Number(params?.id),

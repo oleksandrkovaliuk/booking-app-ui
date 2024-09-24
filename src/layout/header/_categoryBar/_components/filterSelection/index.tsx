@@ -157,6 +157,8 @@ export const FilterSelection: React.FC = () => {
 
       if (error) throw new Error();
 
+      await requestAvailableCategories(res!);
+
       dispatch(setFetch(true));
       dispatch(setListings(res!));
       dispatch(setIsSearchTriggered(false));

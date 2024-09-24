@@ -58,10 +58,10 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
     search_amountOfGuests,
     search_includePets,
     search_category_id,
-    search_accesable,
-    search_shared_room,
-    search_price_range,
-    search_type_of_place,
+    filter_accesable,
+    filter_shared_room,
+    filter_price_range,
+    filter_type_of_place,
   } = useSelector(searchSelectionSelector);
   const { isWidthEqualTo } = useSelector(isWidthHandlerSelector);
 
@@ -117,17 +117,17 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
         search_category_id: null,
 
         returnFiltered:
-          search_accesable ||
-          search_shared_room ||
-          search_price_range ||
-          search_type_of_place
+          filter_accesable ||
+          filter_shared_room ||
+          filter_price_range ||
+          filter_type_of_place
             ? true
             : false,
-        accesable: search_accesable ? JSON.parse(search_accesable) : null,
-        shared_room: search_shared_room ? JSON.parse(search_shared_room) : null,
-        price_range: search_price_range ? JSON.parse(search_price_range) : null,
-        type_of_place: search_type_of_place
-          ? JSON.parse(search_type_of_place)
+        accesable: filter_accesable ? JSON.parse(filter_accesable) : null,
+        shared_room: filter_shared_room ? JSON.parse(filter_shared_room) : null,
+        price_range: filter_price_range ? JSON.parse(filter_price_range) : null,
+        type_of_place: filter_type_of_place
+          ? JSON.parse(filter_type_of_place)
           : null,
 
         options: Object.fromEntries(params.entries()),
@@ -148,17 +148,17 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
           [searchParamsKeys.SEARCH_CATEGORY_ID]: search_category_id
             ? search_category_id
             : null,
-          [searchParamsKeys.SEARCH_ACCESABLE]: search_accesable
-            ? search_accesable
+          [searchParamsKeys.FILTER_ACCESABLE]: filter_accesable
+            ? filter_accesable
             : null,
-          [searchParamsKeys.SEARCH_SHARED_ROOM]: search_shared_room
-            ? search_shared_room
+          [searchParamsKeys.FILTER_SHARED_ROOM]: filter_shared_room
+            ? filter_shared_room
             : null,
-          [searchParamsKeys.SEARCH_PRICE_RANGE]: search_price_range
-            ? search_price_range
+          [searchParamsKeys.FILTER_PRICE_RANGE]: filter_price_range
+            ? filter_price_range
             : null,
-          [searchParamsKeys.SEARCH_TYPE_OF_PLACE]: search_type_of_place
-            ? search_type_of_place
+          [searchParamsKeys.FILTER_TYPE_OF_PLACE]: filter_type_of_place
+            ? filter_type_of_place
             : null,
         },
         params,

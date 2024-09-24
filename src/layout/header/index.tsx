@@ -4,7 +4,12 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { useDispatch } from "react-redux";
 import { usePathname, useSearchParams } from "next/navigation";
-import { Modal, ModalContent, useDisclosure } from "@nextui-org/react";
+import {
+  Modal,
+  ModalContent,
+  Skeleton,
+  useDisclosure,
+} from "@nextui-org/react";
 
 import { useSelector } from "@/store";
 import { clearSearchSelection } from "@/store/slices/search/searchSelectionSlice";
@@ -156,7 +161,7 @@ export const Header = () => {
       data-track={windowIsScrolled}
     >
       <motion.nav className={styles.navigation}>
-        {!isWidthEqualTo.tablet && (
+        {isWidthEqualTo.desktop && (
           <LogoLink
             href={params.size >= 1 ? "/" : "#"}
             handleOnClick={() => {
@@ -164,6 +169,22 @@ export const Header = () => {
             }}
           />
         )}
+
+        {!isWidthEqualTo.mobile &&
+          !isWidthEqualTo.tablet &&
+          !isWidthEqualTo.desktop && (
+            <div className={styles.skeleton_search_container}>
+              <div className={styles.head_buttons_skeleton}>
+                <Skeleton className={styles.head_button} />
+                <Skeleton className={styles.head_button} />
+              </div>
+              <Skeleton
+                className={styles.mobile_search_button_skeleton}
+                data-is-desktop={isWidthEqualTo.desktop}
+              />
+            </div>
+          )}
+
         {isWidthEqualTo.tablet && (
           <>
             <button onClick={onOpen} className={styles.mobile_search_button}>

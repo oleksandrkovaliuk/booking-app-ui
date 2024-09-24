@@ -236,7 +236,9 @@ const RegionSelection: React.FC<SelectionComponentsProps> = ({
             triggeredElementLeft={0}
             gap={15}
             width={
-              !responseForRegion.length && userSearchRegionHistory?.length
+              !responseForRegion.length &&
+              userSearchRegionHistory?.length &&
+              !regionSelection.value
                 ? 100
                 : 50
             }

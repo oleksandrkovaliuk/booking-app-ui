@@ -12,6 +12,7 @@ import {
   setIsSearchTriggered,
 } from "@/store/slices/listings/isSearchTriggeredSlice";
 import { searchSelectionSelector } from "@/store/selectors/searchSelection";
+import { setSearchSelection } from "@/store/slices/search/searchSelectionSlice";
 import { useRequestListingSearchMutation } from "@/store/api/endpoints/listings/getVerifiedListings";
 import {
   useGetListingsCategoriesQuery,
@@ -24,9 +25,9 @@ import { skeletonData } from "@/information/data";
 import { FilterSelection } from "./_components/filterSelection";
 import { ParseLocalStorageDates } from "@/helpers/dateManagment";
 
-import styles from "./categoryBar.module.scss";
-import { setSearchSelection } from "@/store/slices/search/searchSelectionSlice";
 import { searchParamsKeys } from "../_lib/enums";
+
+import styles from "./categoryBar.module.scss";
 
 const Categories: React.FC = () => {
   const dispatch = useDispatch();
@@ -45,11 +46,14 @@ const Categories: React.FC = () => {
     search_date,
     search_amountOfGuests,
     search_includePets,
+
+    filter_accesable,
+    filter_shared_room,
+    filter_price_range,
+    filter_type_of_place,
   } = useSelector(searchSelectionSelector);
 
-  const { isFetched, isSearchTriggered } = useSelector(
-    (state) => state.isSearchTriggered
-  );
+  const { isSearchTriggered } = useSelector((state) => state.isSearchTriggered);
 
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
 
@@ -66,6 +70,15 @@ const Categories: React.FC = () => {
           ? JSON.parse(search_includePets)
           : null,
         search_category_id: id,
+
+        returnFiltered: true,
+        accesable: filter_accesable ? JSON.parse(filter_accesable) : null,
+        shared_room: filter_shared_room ? JSON.parse(filter_shared_room) : null,
+        price_range: filter_price_range ? JSON.parse(filter_price_range) : null,
+        type_of_place: filter_type_of_place
+          ? JSON.parse(filter_type_of_place)
+          : null,
+
         options: Object.fromEntries(params.entries()),
       });
       if (!res || error) throw new Error();
@@ -77,7 +90,7 @@ const Categories: React.FC = () => {
           [searchParamsKeys.SEARCH_CATEGORY_ID]: JSON.stringify(id),
         })
       );
-      dispatch(setFetch(false));
+      dispatch(setFetch(true));
       dispatch(setIsSearchTriggered(false));
     } catch (error) {
       toast(

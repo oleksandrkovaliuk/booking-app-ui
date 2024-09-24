@@ -23,15 +23,15 @@ export const TypeOfPlaceSelection: React.FC = () => {
   } = useGetListingsTypeOfPlaceQuery();
 
   const [selectedType, setSelectedType] = useState<React.Key>(() => {
-    if (params.get(searchParamsKeys.SEARCH_TYPE_OF_PLACE)) {
+    if (params.get(searchParamsKeys.FILTER_TYPE_OF_PLACE)) {
       dispatch(
         setSearchSelection({
-          [searchParamsKeys.SEARCH_TYPE_OF_PLACE]: params.get(
-            searchParamsKeys.SEARCH_TYPE_OF_PLACE
+          [searchParamsKeys.FILTER_TYPE_OF_PLACE]: params.get(
+            searchParamsKeys.FILTER_TYPE_OF_PLACE
           ),
         })
       );
-      return JSON.parse(params.get(searchParamsKeys.SEARCH_TYPE_OF_PLACE)!);
+      return JSON.parse(params.get(searchParamsKeys.FILTER_TYPE_OF_PLACE)!);
     } else {
       return "clear";
     }
@@ -47,7 +47,7 @@ export const TypeOfPlaceSelection: React.FC = () => {
         if (selectedType?.id || key === "clear") {
           dispatch(
             setSearchSelection({
-              [searchParamsKeys.SEARCH_TYPE_OF_PLACE]:
+              [searchParamsKeys.FILTER_TYPE_OF_PLACE]:
                 key === "clear" ? null : JSON.stringify(selectedType?.id),
             })
           );

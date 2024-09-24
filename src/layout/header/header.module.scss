@@ -20,7 +20,15 @@
   border-bottom: 1px solid var(--booking-app-lightgrey-color);
 }
 
-.mobile_search_button {
+.mobile_search_button_skeleton {
+  // min-height: 52px;
+  margin-top: 74px;
+  min-height: 74px;
+  background-color: transparent;
+}
+
+.mobile_search_button,
+.mobile_search_button_skeleton {
   padding: 15px;
 
   display: flex;
@@ -56,12 +64,14 @@
   }
 }
 
-.center_nagivation_menu {
+.center_nagivation_menu,
+.skeleton_search_container {
   max-width: 854px;
   margin: auto;
   width: 100%;
   position: relative;
-  .center_nagivation_menu_buttons {
+  .center_nagivation_menu_buttons,
+  .head_buttons_skeleton {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -74,7 +84,8 @@
     z-index: 3;
   }
 
-  .center_nagivation_menu_button {
+  .center_nagivation_menu_button,
+  .head_button {
     color: var(--booking-app-grey-color);
     font-family: var(--booking-app-Nunito-Sans-font);
     font-size: 18px;
@@ -160,6 +171,26 @@
     }
   }
 }
+
+.skeleton_search_container {
+  .head_buttons_skeleton {
+    margin-left: 40px;
+    max-width: 200px;
+    width: 100%;
+    gap: 40px;
+    .head_button {
+      margin-top: 10px;
+      border-radius: 20px;
+      width: 100%;
+      min-height: 27px;
+    }
+  }
+  .mobile_search_button_skeleton {
+    margin-left: 40px;
+    margin-top: 64px;
+    background-color: transparent;
+  }
+}
 @keyframes scrollCenterMenuAnimation {
   0% {
     transform: scale(1);
@@ -190,6 +221,17 @@
     z-index: 4;
     .right_navigation_button {
       padding: 8px;
+    }
+  }
+
+  .skeleton_search_container {
+    max-width: unset;
+    .head_buttons_skeleton {
+      display: none;
+    }
+    .mobile_search_button_skeleton {
+      margin: 0px;
+      min-height: 52px;
     }
   }
 }

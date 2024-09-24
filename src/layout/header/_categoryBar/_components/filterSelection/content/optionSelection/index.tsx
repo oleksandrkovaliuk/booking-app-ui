@@ -25,11 +25,11 @@ export const OptionSelection: React.FC = () => {
     isSuccess,
   } = useGetListingsTypeOfPlaceQuery();
   const [selectedOptions, setSelectedOptions] = useState<{
-    [searchParamsKeys.SEARCH_ACCESABLE]: boolean;
-    [searchParamsKeys.SEARCH_SHARED_ROOM]: boolean;
+    [searchParamsKeys.FILTER_ACCESABLE]: boolean;
+    [searchParamsKeys.FILTER_SHARED_ROOM]: boolean;
   }>({
-    [searchParamsKeys.SEARCH_ACCESABLE]: false,
-    [searchParamsKeys.SEARCH_SHARED_ROOM]: false,
+    [searchParamsKeys.FILTER_ACCESABLE]: false,
+    [searchParamsKeys.FILTER_SHARED_ROOM]: false,
   });
 
   const handleSelectOption = (option: keyof typeof selectedOptions) => {
@@ -46,27 +46,27 @@ export const OptionSelection: React.FC = () => {
   };
 
   useEffect(() => {
-    const accesable = params.get(searchParamsKeys.SEARCH_ACCESABLE);
-    const sharedRoom = params.get(searchParamsKeys.SEARCH_SHARED_ROOM);
+    const accesable = params.get(searchParamsKeys.FILTER_ACCESABLE);
+    const sharedRoom = params.get(searchParamsKeys.FILTER_SHARED_ROOM);
 
     if (accesable || sharedRoom) {
       setSelectedOptions((prev) => ({
         ...prev,
-        [searchParamsKeys.SEARCH_ACCESABLE]: JSON.parse(accesable!),
-        [searchParamsKeys.SEARCH_SHARED_ROOM]: JSON.parse(sharedRoom!),
+        [searchParamsKeys.FILTER_ACCESABLE]: JSON.parse(accesable!),
+        [searchParamsKeys.FILTER_SHARED_ROOM]: JSON.parse(sharedRoom!),
       }));
 
       dispatch(
         setSearchSelection({
-          [searchParamsKeys.SEARCH_ACCESABLE]: accesable,
-          [searchParamsKeys.SEARCH_SHARED_ROOM]: sharedRoom,
+          [searchParamsKeys.FILTER_ACCESABLE]: accesable,
+          [searchParamsKeys.FILTER_SHARED_ROOM]: sharedRoom,
         })
       );
     } else {
       setSelectedOptions((prev) => ({
         ...prev,
-        [searchParamsKeys.SEARCH_ACCESABLE]: false,
-        [searchParamsKeys.SEARCH_SHARED_ROOM]: false,
+        [searchParamsKeys.FILTER_ACCESABLE]: false,
+        [searchParamsKeys.FILTER_SHARED_ROOM]: false,
       }));
     }
   }, [dispatch, params]);
@@ -93,16 +93,14 @@ export const OptionSelection: React.FC = () => {
               id="accesable"
               name="accesable"
               onChange={() =>
-                handleSelectOption(searchParamsKeys.SEARCH_ACCESABLE)
+                handleSelectOption(searchParamsKeys.FILTER_ACCESABLE)
               }
               className={styles.hidden_checkbox}
             />
             <label
               htmlFor="accesable"
               className={styles.option_label}
-              data-selected={
-                selectedOptions[searchParamsKeys.SEARCH_ACCESABLE]
-              }
+              data-selected={selectedOptions[searchParamsKeys.FILTER_ACCESABLE]}
             >
               <AccesableIcon className={styles.option_icon} />
               <span className={styles.option_title}>Accesable</span>
@@ -115,7 +113,7 @@ export const OptionSelection: React.FC = () => {
                 id="shared"
                 name="shared"
                 onChange={() =>
-                  handleSelectOption(searchParamsKeys.SEARCH_SHARED_ROOM)
+                  handleSelectOption(searchParamsKeys.FILTER_SHARED_ROOM)
                 }
                 className={styles.hidden_checkbox}
               />
@@ -123,7 +121,7 @@ export const OptionSelection: React.FC = () => {
                 htmlFor="shared"
                 className={styles.option_label}
                 data-selected={
-                  selectedOptions[searchParamsKeys.SEARCH_SHARED_ROOM]
+                  selectedOptions[searchParamsKeys.FILTER_SHARED_ROOM]
                 }
               >
                 <Image

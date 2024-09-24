@@ -10,17 +10,16 @@ export const WidthHandler: React.FC<{ children: React.ReactNode }> = ({
   children: React.ReactNode;
 }) => {
   const dispatch = useDispatch();
-  const [isClientRendered, setIsClientRendered] = useState(false);
+  const [isRehydrationEnd, setIsRehydrationEnd] = useState(false);
 
   useEffect(() => {
-    setIsClientRendered(true);
+    setIsRehydrationEnd(true);
   }, []);
-
   useEffect(() => {
-    if (!isClientRendered) return;
-
+    if (!isRehydrationEnd) return;
     const handleResize = () => {
       const width = window.innerWidth;
+
       dispatch(
         setWidth({
           isWidthEqualTo: {
@@ -37,7 +36,7 @@ export const WidthHandler: React.FC<{ children: React.ReactNode }> = ({
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, [dispatch, isClientRendered]);
+  }, [dispatch, isRehydrationEnd]);
 
   return children;
 };

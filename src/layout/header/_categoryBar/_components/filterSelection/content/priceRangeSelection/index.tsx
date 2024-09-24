@@ -40,7 +40,7 @@ export const PriceRangeSelection: React.FC = () => {
     setPriceRangeValue(value as number[]);
     dispatch(
       setSearchSelection({
-        [searchParamsKeys.SEARCH_PRICE_RANGE]: JSON.stringify(value),
+        [searchParamsKeys.FILTER_PRICE_RANGE]: JSON.stringify(value),
       })
     );
     dispatch(setFetch(false));
@@ -79,7 +79,7 @@ export const PriceRangeSelection: React.FC = () => {
 
       dispatch(
         setSearchSelection({
-          [searchParamsKeys.SEARCH_PRICE_RANGE]: JSON.stringify([
+          [searchParamsKeys.FILTER_PRICE_RANGE]: JSON.stringify([
             Number(price),
             priceRangeValue[1],
           ]),
@@ -90,7 +90,7 @@ export const PriceRangeSelection: React.FC = () => {
 
       dispatch(
         setSearchSelection({
-          [searchParamsKeys.SEARCH_PRICE_RANGE]: JSON.stringify([
+          [searchParamsKeys.FILTER_PRICE_RANGE]: JSON.stringify([
             priceRangeValue[0],
             Number(price),
           ]),
@@ -101,13 +101,13 @@ export const PriceRangeSelection: React.FC = () => {
   };
 
   useEffect(() => {
-    const savedPriceRange = params.get(searchParamsKeys.SEARCH_PRICE_RANGE);
+    const savedPriceRange = params.get(searchParamsKeys.FILTER_PRICE_RANGE);
 
     if (savedPriceRange) {
       const [min, max] = JSON.parse(savedPriceRange);
       dispatch(
         setSearchSelection({
-          [searchParamsKeys.SEARCH_PRICE_RANGE]: savedPriceRange,
+          [searchParamsKeys.FILTER_PRICE_RANGE]: savedPriceRange,
         })
       );
 

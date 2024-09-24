@@ -1,17 +1,38 @@
+.filter_btn_container {
+  position: relative;
+  .count_of_aplied_filters_badge {
+    position: absolute;
+    z-index: 1;
+    top: -7px;
+    left: -2px;
+    padding: 3px 5px;
+    background-color: var(--booking-app-white-color);
+    border: 1px solid var(--booking-app-focused-background-color);
+    border-radius: 50%;
+
+    font-size: 12px;
+    color: var(--booking-app-black-color);
+    font-family: var(--booking-app-Nunito-Sans-font);
+    font-weight: 600;
+    line-height: 100%;
+  }
+}
 .filter_btn {
   background-color: transparent;
   border: 1px solid var(--booking-app-focused-background-color);
   color: var(--booking-app-black-color);
   outline: none;
-  svg {
-    width: 15px;
-    height: 15px;
-    flex-shrink: 0;
-  }
+
   &:hover,
   &[data-opened="true"] {
     border-color: var(--booking-app-black-color);
     color: var(--booking-app-black-color) !important;
+  }
+
+  .filter_icon {
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
   }
 }
 

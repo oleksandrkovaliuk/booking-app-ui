@@ -104,12 +104,6 @@ export const CalendarPageContent: React.FC<CalendarPageContentProps> = ({
 
       if (error && !res) throw new Error();
 
-      toast.success("Successfully updated.", {
-        action: {
-          label: "Close",
-          onClick: () => {},
-        },
-      });
       setEnableConfirmationButton(false);
       localStorage.removeItem(`${params.id}`);
     } catch (error) {

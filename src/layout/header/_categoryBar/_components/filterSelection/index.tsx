@@ -53,28 +53,32 @@ export const FilterSelection: React.FC = () => {
     search_includePets,
     search_category_id,
 
-    search_accesable,
-    search_shared_room,
-    search_price_range,
-    search_type_of_place,
+    filter_accesable,
+    filter_shared_room,
+    filter_price_range,
+    filter_type_of_place,
   } = useSelector(searchSelectionSelector);
 
   const { listings } = useSelector((state) => state.listingSearchResponse);
 
   const [_, { isLoading: isLoadingCategories }] =
     useRequestAvailableCategoriesMutation();
+  const [requestAvailableCategories] = useRequestAvailableCategoriesMutation();
+
   const [requestListingSearch] = useRequestListingSearchMutation();
 
   const [previewCountOfResults, setPreviewCountOfResults] = useState<
     number | null
   >(null);
+
+  const [countOfApliedFilters, setCountOfAppliedFilters] = useState<number>(0);
   const [isListingRequested, setIsListingRequested] = useState<boolean>(false);
 
   const previewNumberOfResults = useCallback(() => {
-    const parsedPriceRange = JSON.parse(search_price_range || "null");
-    const parsedTypeOfPlace = JSON.parse(search_type_of_place || "null");
-    const parsedAccesableOption = JSON.parse(search_accesable || "false");
-    const parsedSharedRoomOption = JSON.parse(search_shared_room || "false");
+    const parsedPriceRange = JSON.parse(filter_price_range || "null");
+    const parsedTypeOfPlace = JSON.parse(filter_type_of_place || "null");
+    const parsedAccesableOption = JSON.parse(filter_accesable || "false");
+    const parsedSharedRoomOption = JSON.parse(filter_shared_room || "false");
 
     setPreviewCountOfResults(
       listings!?.filter((listing) => {
@@ -101,10 +105,10 @@ export const FilterSelection: React.FC = () => {
     );
   }, [
     listings,
-    search_accesable,
-    search_price_range,
-    search_shared_room,
-    search_type_of_place,
+    filter_price_range,
+    filter_type_of_place,
+    filter_accesable,
+    filter_shared_room,
   ]);
 
   const handleClearFilterSelection = async () => {
@@ -113,22 +117,24 @@ export const FilterSelection: React.FC = () => {
 
       const updatedParams = CreateNewQueryParams({
         updatedParams: {
-          [searchParamsKeys.SEARCH_PRICE_RANGE]: null,
-          [searchParamsKeys.SEARCH_TYPE_OF_PLACE]: null,
-          [searchParamsKeys.SEARCH_ACCESABLE]: null,
-          [searchParamsKeys.SEARCH_SHARED_ROOM]: null,
           [searchParamsKeys.SEARCH_CATEGORY_ID]: null,
+
+          [searchParamsKeys.FILTER_ACCESABLE]: null,
+          [searchParamsKeys.FILTER_PRICE_RANGE]: null,
+          [searchParamsKeys.FILTER_SHARED_ROOM]: null,
+          [searchParamsKeys.FILTER_TYPE_OF_PLACE]: null,
         },
         params,
       });
 
       dispatch(
         setSearchSelection({
-          [searchParamsKeys.SEARCH_ACCESABLE]: null,
-          [searchParamsKeys.SEARCH_SHARED_ROOM]: null,
-          [searchParamsKeys.SEARCH_PRICE_RANGE]: null,
-          [searchParamsKeys.SEARCH_TYPE_OF_PLACE]: null,
           [searchParamsKeys.SEARCH_CATEGORY_ID]: null,
+
+          [searchParamsKeys.FILTER_ACCESABLE]: null,
+          [searchParamsKeys.FILTER_SHARED_ROOM]: null,
+          [searchParamsKeys.FILTER_PRICE_RANGE]: null,
+          [searchParamsKeys.FILTER_TYPE_OF_PLACE]: null,
         })
       );
 
@@ -190,11 +196,11 @@ export const FilterSelection: React.FC = () => {
           : null,
 
         returnFiltered: true,
-        accesable: search_accesable ? JSON.parse(search_accesable) : null,
-        shared_room: search_shared_room ? JSON.parse(search_shared_room) : null,
-        price_range: search_price_range ? JSON.parse(search_price_range) : null,
-        type_of_place: search_type_of_place
-          ? JSON.parse(search_type_of_place)
+        accesable: filter_accesable ? JSON.parse(filter_accesable) : null,
+        shared_room: filter_shared_room ? JSON.parse(filter_shared_room) : null,
+        price_range: filter_price_range ? JSON.parse(filter_price_range) : null,
+        type_of_place: filter_type_of_place
+          ? JSON.parse(filter_type_of_place)
           : null,
 
         options: Object.fromEntries(params.entries()),
@@ -202,15 +208,16 @@ export const FilterSelection: React.FC = () => {
 
       if (!res && error) throw new Error();
 
+      await requestAvailableCategories(res!);
       const updatedQueryParams = CreateNewQueryParams({
         updatedParams: {
-          [searchParamsKeys.SEARCH_ACCESABLE]: search_accesable!,
-          [searchParamsKeys.SEARCH_SHARED_ROOM]: search_shared_room!,
-          [searchParamsKeys.SEARCH_PRICE_RANGE]: search_price_range
-            ? search_price_range
+          [searchParamsKeys.FILTER_ACCESABLE]: filter_accesable!,
+          [searchParamsKeys.FILTER_SHARED_ROOM]: filter_shared_room!,
+          [searchParamsKeys.FILTER_PRICE_RANGE]: filter_price_range
+            ? filter_price_range
             : null,
-          [searchParamsKeys.SEARCH_TYPE_OF_PLACE]: search_type_of_place
-            ? search_type_of_place
+          [searchParamsKeys.FILTER_TYPE_OF_PLACE]: filter_type_of_place
+            ? filter_type_of_place
             : null,
         },
         params,
@@ -244,6 +251,19 @@ export const FilterSelection: React.FC = () => {
   useEffect(() => {
     previewNumberOfResults();
   }, [previewNumberOfResults]);
+
+  useEffect(() => {
+    const existingFilterParams = Array.from(
+      Object.keys(Object.fromEntries(params.entries()))
+    );
+    if (existingFilterParams.length >= 1) {
+      setCountOfAppliedFilters(
+        existingFilterParams.filter((key) => key.startsWith("filter_")).length
+      );
+    } else {
+      setCountOfAppliedFilters(0);
+    }
+  }, [params]);
 
   return (
     <>
@@ -323,15 +343,23 @@ export const FilterSelection: React.FC = () => {
         </ModalContent>
       </Modal>
 
-      <Button
-        className={styles.filter_btn}
-        size="md"
-        onClick={onOpen}
-        data-opened={isOpen}
-      >
-        <FilterIcon />
-        Filter
-      </Button>
+      <div role="button" className={styles.filter_btn_container}>
+        {countOfApliedFilters > 0 && (
+          <div className={styles.count_of_aplied_filters_badge}>
+            {countOfApliedFilters}
+          </div>
+        )}
+        <Button
+          size="md"
+          aria-label="listign_filters"
+          className={styles.filter_btn}
+          onClick={onOpen}
+          data-opened={isOpen}
+        >
+          <FilterIcon className={styles.filter_icon} />
+          Filter
+        </Button>
+      </div>
     </>
   );
 };

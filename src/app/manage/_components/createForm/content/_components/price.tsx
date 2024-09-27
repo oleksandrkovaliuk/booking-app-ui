@@ -33,12 +33,13 @@ export const Price: React.FC<ContentProps> = ({
     e.preventDefault();
     const price = e.target.value.split(",").join("");
     if (isNaN(Number(price))) {
-      toast(
-        <div className="toast error">
-          🤔 It appears that an invalid price was entered. Please verify and try
-          again.
-        </div>
-      );
+      toast("🤔 It looks like you trying to enter non numeric character.", {
+        position: "top-center",
+        action: {
+          label: "Close",
+          onClick: () => {},
+        },
+      });
       setInputWidth(1);
       editPage && onConfirmation!(false);
       handleUpdateFormAndLocalStorage(
@@ -49,12 +50,13 @@ export const Price: React.FC<ContentProps> = ({
       return;
     }
     if (Number(price) > PriceLimit.MAX) {
-      toast(
-        <div className="toast ">
-          🤔 Oppss . Price can not be higher then 30.000$/night. Contact our
-          support for more details.
-        </div>
-      );
+      toast("🤔 Oppss . Price can not be higher then 30.000$/night.", {
+        position: "top-center",
+        action: {
+          label: "Close",
+          onClick: () => {},
+        },
+      });
       editPage && onConfirmation!(false);
       setInvalidPrice(true);
       return;

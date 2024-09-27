@@ -4,6 +4,10 @@ import { useDispatch } from "react-redux";
 import { getLocalTimeZone, today } from "@internationalized/date";
 import { DateValue, RangeCalendar, RangeValue } from "@nextui-org/calendar";
 
+import { useSelector } from "@/store";
+import { searchSelectionSelector } from "@/store/selectors/searchSelection";
+import { setSearchSelection } from "@/store/slices/search/searchSelectionSlice";
+
 import {
   CountNights,
   DateFormatingMonthDay,
@@ -15,8 +19,6 @@ import { searchParamsKeys } from "@/layout/header/_lib/enums";
 import { CalendarSelectionProps } from "../../_lib/type";
 
 import styles from "./calendarSection.module.scss";
-import { setSearchSelection } from "@/store/slices/search/searchSelectionSlice";
-import { useSelector } from "@/store";
 
 export const CalendarSection: React.FC<CalendarSelectionProps> = ({
   title,
@@ -24,7 +26,7 @@ export const CalendarSection: React.FC<CalendarSelectionProps> = ({
 }) => {
   const dispatch = useDispatch();
 
-  const { search_date } = useSelector((state) => state.searchSelection);
+  const { search_date } = useSelector(searchSelectionSelector);
   const parsedSearchDate = search_date
     ? ParseLocalStorageDates(search_date)
     : {

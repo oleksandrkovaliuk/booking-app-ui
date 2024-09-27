@@ -218,32 +218,51 @@ export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
               />
               <section className={styles.more_details}>
                 <div className={styles.more_details_wrap}>
-                  <div className={styles.more_details_img}>
-                    <Image
-                      src={listing?.type?.type_img!}
-                      alt="type_img"
-                      width={100}
-                      height={100}
-                    />
-                  </div>
-
+                  <Tooltip
+                    placement="top"
+                    content={listing.type?.type_description}
+                    color="default"
+                    size="md"
+                    delay={300}
+                    classNames={{
+                      content: ["text-#2f2f2f font-medium rounded-lg"],
+                    }}
+                  >
+                    <div className={styles.more_details_img}>
+                      <Image
+                        src={listing?.type?.type_img!}
+                        alt="type_img"
+                        width={100}
+                        height={100}
+                      />
+                    </div>
+                  </Tooltip>
+                  <p className={styles.specification_badge}>Type of place</p>
                   <h4 className={styles.more_details_title}>
                     {listing.type?.type_name}
                   </h4>
-                  <p className={styles.more_details_description}>
-                    {listing.type?.type_description}
-                  </p>
                 </div>
                 <div className={styles.more_details_wrap}>
-                  <div className={styles.more_details_img}>
-                    <Image
-                      src={listing?.category?.category_icon!}
-                      alt="type_img"
-                      width={100}
-                      height={100}
-                    />
-                  </div>
-
+                  <Tooltip
+                    placement="top"
+                    content="Category"
+                    color="default"
+                    size="md"
+                    delay={300}
+                    classNames={{
+                      content: ["text-#2f2f2f font-medium rounded-lg"],
+                    }}
+                  >
+                    <div className={styles.more_details_img}>
+                      <Image
+                        src={listing?.category?.category_icon!}
+                        alt="type_img"
+                        width={100}
+                        height={100}
+                      />
+                    </div>
+                  </Tooltip>
+                  <p className={styles.specification_badge}>Category</p>
                   <h5 className={styles.more_details_title}>
                     {listing.category?.category_name}
                   </h5>

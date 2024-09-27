@@ -3,11 +3,11 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { useDispatch } from "react-redux";
 import { Tooltip } from "@nextui-org/react";
 import { usePathname } from "next/navigation";
 
 import { useSelector } from "@/store";
+import { isWidthHandlerSelector } from "@/store/selectors/isWidthHandler";
 
 import { MenuIcon } from "@/svgs/MenuIcon";
 import { EditOverviewIcon } from "@/svgs/EditOverviewIcon";
@@ -29,7 +29,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
 }) => {
   const pathname = usePathname();
 
-  const { isWidthEqualTo } = useSelector((state) => state.widthHandler);
+  const { isWidthEqualTo } = useSelector(isWidthHandlerSelector);
 
   const [isNavBarActive, setIsNavBarActive] = useState<boolean>(true);
   const [unsavedSelection, setUnsavedSelection] = useState<string[]>([]);
@@ -122,10 +122,10 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
     <>
       <div
         className={styles.mobile_navigation_background}
-        data-active={isNavBarActive && isWidthEqualTo[768]}
+        data-active={isNavBarActive && isWidthEqualTo.mobile}
       />
 
-      {isWidthEqualTo[768] && (
+      {isWidthEqualTo.mobile && (
         <Tooltip
           placement="top"
           content={isNavBarActive ? "Close" : "Open"}
@@ -149,14 +149,14 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
       <motion.header
         className={styles.navigationBar_container}
         initial={
-          isWidthEqualTo[768]
+          isWidthEqualTo.mobile
             ? { left: 0 }
             : {
                 maxWidth: "clamp(160px, 9vw, 10dvw)",
               }
         }
         animate={
-          isWidthEqualTo[768]
+          isWidthEqualTo.mobile
             ? isNavBarActive
               ? { left: "0%" }
               : { left: "-100%" }

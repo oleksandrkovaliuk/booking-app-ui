@@ -6,6 +6,9 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { DateValue, RangeCalendar, RangeValue } from "@nextui-org/calendar";
 
 import { useSelector } from "@/store";
+import { isWidthHandlerSelector } from "@/store/selectors/isWidthHandler";
+import { searchSelectionSelector } from "@/store/selectors/searchSelection";
+
 import { Counter } from "@/components/counter";
 
 import {
@@ -35,8 +38,8 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
   const pathname = usePathname();
   const params = useSearchParams();
 
-  const { isWidthEqualTo } = useSelector((state) => state.widthHandler);
-  const { search_date } = useSelector((state) => state.searchSelection);
+  const { isWidthEqualTo } = useSelector(isWidthHandlerSelector);
+  const { search_date } = useSelector(searchSelectionSelector);
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
@@ -72,7 +75,7 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
   };
 
   const ModalComponent = (
-    <div className={styles.modal} data-is-mobile={isWidthEqualTo[1280]}>
+    <div className={styles.modal} data-is-mobile={isWidthEqualTo.desktop}>
       <button
         aria-label="Close modal"
         className={styles.modal_bg}
@@ -156,7 +159,7 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
 
   return (
     <>
-      {isModalOpen && !isWidthEqualTo[1280] ? (
+      {isModalOpen && !isWidthEqualTo.desktop ? (
         ModalComponent
       ) : (
         <Modal

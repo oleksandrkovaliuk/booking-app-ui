@@ -200,15 +200,22 @@ const RegionSelection: React.FC<SelectionComponentsProps> = ({
   useEffect(() => {
     const storedRegionSelection = params.get(searchParamsKeys.SEARCH_PLACE);
 
-    if (storedRegionSelection)
+    if (storedRegionSelection) {
       setRegionSelection({
         ...JSON.parse(storedRegionSelection),
       });
-    dispatch(
-      setSearchSelection({
-        [searchParamsKeys.SEARCH_PLACE]: storedRegionSelection,
-      })
-    );
+      dispatch(
+        setSearchSelection({
+          [searchParamsKeys.SEARCH_PLACE]: storedRegionSelection,
+        })
+      );
+    } else {
+      setRegionSelection({
+        value: null,
+        country: null,
+        city: null,
+      });
+    }
   }, [dispatch, params]);
 
   return (
@@ -229,7 +236,9 @@ const RegionSelection: React.FC<SelectionComponentsProps> = ({
             triggeredElementLeft={0}
             gap={15}
             width={
-              !responseForRegion.length && userSearchRegionHistory?.length
+              !responseForRegion.length &&
+              userSearchRegionHistory?.length &&
+              !regionSelection.value
                 ? 100
                 : 50
             }

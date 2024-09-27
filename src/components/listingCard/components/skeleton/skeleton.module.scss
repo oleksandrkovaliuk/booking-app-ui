@@ -5,7 +5,7 @@
       height: 280px;
     }
     .skeleton_title {
-      max-width: 240px;
+      width: 240px;
     }
     .skeleton_description {
       width: 200px;
@@ -43,5 +43,37 @@
   .skeleton_title,
   .skeleton_description {
     margin-bottom: 10px;
+  }
+}
+
+@media (width <= 615px) {
+  .listing_card {
+    .skeleton_card {
+      .skeleton_img {
+        width: 450px !important;
+      }
+      .skeleton_title {
+        width: 400px !important;
+      }
+
+      .skeleton_description {
+        width: 400px !important;
+      }
+    }
+  }
+}
+
+@media (width <= 460px) {
+  .skeleton_card {
+    .skeleton_img {
+      width: 350px !important;
+    }
+    .skeleton_title {
+      width: 300px !important;
+    }
+
+    .skeleton_description {
+      width: 300px !important;
+    }
   }
 }

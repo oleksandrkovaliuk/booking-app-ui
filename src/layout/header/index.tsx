@@ -2,10 +2,18 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { useDispatch } from "react-redux";
 import { usePathname, useSearchParams } from "next/navigation";
-import { Modal, ModalContent, useDisclosure } from "@nextui-org/react";
+import {
+  Modal,
+  ModalContent,
+  Skeleton,
+  useDisclosure,
+} from "@nextui-org/react";
 
 import { useSelector } from "@/store";
+import { clearSearchSelection } from "@/store/slices/search/searchSelectionSlice";
+import { isWidthHandlerSelector } from "@/store/selectors/isWidthHandler";
 
 import { Search } from "@/svgs/Search";
 import { AddHouseIcon } from "@/svgs/AddHouseIcon";
@@ -108,11 +116,13 @@ const RightNavigationMenu = ({
 };
 
 export const Header = () => {
+  const dispatch = useDispatch();
+  const params = useSearchParams();
   const headerRef = useRef<HTMLDivElement>(null);
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-  const { isWidthEqualTo } = useSelector((state) => state.widthHandler);
+  const { isWidthEqualTo } = useSelector(isWidthHandlerSelector);
 
   const [windowIsScrolled, setWindowIsScrolled] = useState<boolean>(false);
   const [windowIsScrolledToTop, setWindowIsScrolledToTop] =
@@ -151,9 +161,31 @@ export const Header = () => {
       data-track={windowIsScrolled}
     >
       <motion.nav className={styles.navigation}>
-        <LogoLink isShouldHide />
+        {isWidthEqualTo.desktop && (
+          <LogoLink
+            href={params.size >= 1 ? "/" : "#"}
+            handleOnClick={() => {
+              dispatch(clearSearchSelection());
+            }}
+          />
+        )}
 
-        {isWidthEqualTo[1080] ? (
+        {!isWidthEqualTo.mobile &&
+          !isWidthEqualTo.tablet &&
+          !isWidthEqualTo.desktop && (
+            <div className={styles.skeleton_search_container}>
+              <div className={styles.head_buttons_skeleton}>
+                <Skeleton className={styles.head_button} />
+                <Skeleton className={styles.head_button} />
+              </div>
+              <Skeleton
+                className={styles.mobile_search_button_skeleton}
+                data-is-desktop={isWidthEqualTo.desktop}
+              />
+            </div>
+          )}
+
+        {isWidthEqualTo.tablet && (
           <>
             <button onClick={onOpen} className={styles.mobile_search_button}>
               <Search className={styles.mobile_search_icon} />{" "}
@@ -175,12 +207,12 @@ export const Header = () => {
               </ModalContent>
             </Modal>
           </>
-        ) : (
+        )}
+        {isWidthEqualTo.desktop && (
           <CenterNavigationMenu>
             <SearchFormBar trackScrolled={windowIsScrolled} />
           </CenterNavigationMenu>
         )}
-
         <RightNavigationMenu
           windowIsScrolledToTop={windowIsScrolledToTop}
           windowIsScrolled={windowIsScrolled}

@@ -21,8 +21,6 @@ import { FormState } from "@/app/manage/_components/type";
 
 import styles from "./userMenu.module.scss";
 import "./dropdown.scss";
-import { store } from "@/store";
-import { checkAuthType } from "@/store/api/endpoints/auth/checkAuthType";
 
 export const UserMenu: React.FC<{ showArrow?: boolean }> = ({ showArrow }) => {
   const params = useSearchParams();
@@ -46,18 +44,9 @@ export const UserMenu: React.FC<{ showArrow?: boolean }> = ({ showArrow }) => {
 
   const handleLogOut = async () => {
     try {
-      console.log(session?.user.email, "email");
-      const { data: res, error } = await store.dispatch(
-        checkAuthType.initiate({ email: session?.user.email! })
-      );
-
-      if (error && !res) {
-        throw new Error((error as FetchBaseQueryError).data?.message);
-      } else {
-        await signOut({
-          callbackUrl: `/${params.toString()}`,
-        });
-      }
+      await signOut({
+        callbackUrl: `/${params.toString()}`,
+      });
     } catch (error) {}
   };
   useEffect(() => {

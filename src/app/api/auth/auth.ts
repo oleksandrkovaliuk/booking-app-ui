@@ -101,7 +101,7 @@ export const authConfig: AuthOptions = {
     },
   },
   session: {
-    maxAge: 60,
+    maxAge: 86400,
   },
   pages: {
     signIn: "/login",

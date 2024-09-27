@@ -5,9 +5,27 @@ const searchSelection = (state: RootState) => state.searchSelection;
 
 export const searchSelectionSelector = createSelector(
   [searchSelection],
-  (searchSelection) => {
+  ({
+    search_place,
+    search_date,
+    search_amountOfGuests,
+    search_includePets,
+    search_category_id,
+    filter_price_range,
+    filter_type_of_place,
+    filter_accesable,
+    filter_shared_room,
+  }) => {
     return {
-      ...searchSelection,
+      search_place,
+      search_date,
+      search_amountOfGuests,
+      search_includePets,
+      search_category_id,
+      filter_price_range,
+      filter_type_of_place,
+      filter_accesable,
+      filter_shared_room,
     };
   }
 );

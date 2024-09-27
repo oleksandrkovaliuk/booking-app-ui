@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useDispatch } from "react-redux";
@@ -122,7 +122,7 @@ export const Header = () => {
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-  const { isWidthEqualTo } = useSelector(isWidthHandlerSelector);
+  const { desktop, mobile, tablet } = useSelector(isWidthHandlerSelector);
 
   const [windowIsScrolled, setWindowIsScrolled] = useState<boolean>(false);
   const [windowIsScrolledToTop, setWindowIsScrolledToTop] =
@@ -161,18 +161,17 @@ export const Header = () => {
       data-track={windowIsScrolled}
     >
       <motion.nav className={styles.navigation}>
-        {isWidthEqualTo.desktop && (
-          <LogoLink
-            href={params.size >= 1 ? "/" : "#"}
-            handleOnClick={() => {
-              dispatch(clearSearchSelection());
-            }}
-          />
-        )}
+        <Suspense fallback="LOADING .....">
+          {desktop && (
+            <LogoLink
+              href={params.size >= 1 ? "/" : "#"}
+              handleOnClick={() => {
+                dispatch(clearSearchSelection());
+              }}
+            />
+          )}
 
-        {!isWidthEqualTo.mobile &&
-          !isWidthEqualTo.tablet &&
-          !isWidthEqualTo.desktop && (
+          {!mobile && !tablet && !desktop && (
             <div className={styles.skeleton_search_container}>
               <div className={styles.head_buttons_skeleton}>
                 <Skeleton className={styles.head_button} />
@@ -180,39 +179,43 @@ export const Header = () => {
               </div>
               <Skeleton
                 className={styles.mobile_search_button_skeleton}
-                data-is-desktop={isWidthEqualTo.desktop}
+                data-is-desktop={desktop}
               />
             </div>
           )}
 
-        {isWidthEqualTo.tablet && (
-          <>
-            <button onClick={onOpen} className={styles.mobile_search_button}>
-              <Search className={styles.mobile_search_icon} />{" "}
-              <span className={styles.mobile_search_text}>Where do we go?</span>
-            </button>
-            <Modal
-              isOpen={isOpen}
-              onClose={onOpenChange}
-              backdrop="blur"
-              size="full"
-            >
-              <ModalContent>
-                <CenterNavigationMenu>
-                  <SearchFormBar
-                    trackScrolled={windowIsScrolled}
-                    onCloseCallBack={onOpenChange}
-                  />
-                </CenterNavigationMenu>
-              </ModalContent>
-            </Modal>
-          </>
-        )}
-        {isWidthEqualTo.desktop && (
-          <CenterNavigationMenu>
-            <SearchFormBar trackScrolled={windowIsScrolled} />
-          </CenterNavigationMenu>
-        )}
+          {tablet && (
+            <>
+              <button onClick={onOpen} className={styles.mobile_search_button}>
+                <Search className={styles.mobile_search_icon} />{" "}
+                <span className={styles.mobile_search_text}>
+                  Where do we go?
+                </span>
+              </button>
+              <Modal
+                isOpen={isOpen}
+                onClose={onOpenChange}
+                backdrop="blur"
+                size="full"
+              >
+                <ModalContent>
+                  <CenterNavigationMenu>
+                    <SearchFormBar
+                      trackScrolled={windowIsScrolled}
+                      onCloseCallBack={onOpenChange}
+                    />
+                  </CenterNavigationMenu>
+                </ModalContent>
+              </Modal>
+            </>
+          )}
+          {desktop && (
+            <CenterNavigationMenu>
+              <SearchFormBar trackScrolled={windowIsScrolled} />
+            </CenterNavigationMenu>
+          )}
+        </Suspense>
+
         <RightNavigationMenu
           windowIsScrolledToTop={windowIsScrolledToTop}
           windowIsScrolled={windowIsScrolled}

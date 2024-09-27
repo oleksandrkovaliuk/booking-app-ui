@@ -6,11 +6,11 @@ const isWidthHandler = (state: RootState) => state.widthHandler;
 
 export const isWidthHandlerSelector = createSelector(
   [isWidthHandler],
-  (state) => {
+  ({ mobile, tablet, desktop }) => {
     return {
-      isWidthEqualTo: {
-        ...state.isWidthEqualTo,
-      },
+      mobile,
+      tablet,
+      desktop,
     };
   }
 );

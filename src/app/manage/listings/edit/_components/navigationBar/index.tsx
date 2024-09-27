@@ -29,7 +29,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
 }) => {
   const pathname = usePathname();
 
-  const { isWidthEqualTo } = useSelector(isWidthHandlerSelector);
+  const { mobile } = useSelector(isWidthHandlerSelector);
 
   const [isNavBarActive, setIsNavBarActive] = useState<boolean>(true);
   const [unsavedSelection, setUnsavedSelection] = useState<string[]>([]);
@@ -122,10 +122,10 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
     <>
       <div
         className={styles.mobile_navigation_background}
-        data-active={isNavBarActive && isWidthEqualTo.mobile}
+        data-active={isNavBarActive && mobile}
       />
 
-      {isWidthEqualTo.mobile && (
+      {mobile && (
         <Tooltip
           placement="top"
           content={isNavBarActive ? "Close" : "Open"}
@@ -149,14 +149,14 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
       <motion.header
         className={styles.navigationBar_container}
         initial={
-          isWidthEqualTo.mobile
+          mobile
             ? { left: 0 }
             : {
                 maxWidth: "clamp(160px, 9vw, 10dvw)",
               }
         }
         animate={
-          isWidthEqualTo.mobile
+          mobile
             ? isNavBarActive
               ? { left: "0%" }
               : { left: "-100%" }

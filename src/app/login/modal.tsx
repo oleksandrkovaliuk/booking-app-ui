@@ -63,11 +63,11 @@ export const LoginModal = () => {
         throw new Error("Email is not valid. Please try again");
       }
       const { data: res, error } = await store.dispatch(
-        checkAuthType.initiate({ email: btoa(emailValue) })
+        checkAuthType.initiate({ email: emailValue })
       );
 
-      if (!error && !res) {
-        throw new Error("Failed with move on. Please try again.");
+      if (error && !res) {
+        throw new Error((error as FetchBaseQueryError).data?.message);
       }
       setEmailValid(true);
     } catch (error) {
@@ -75,12 +75,7 @@ export const LoginModal = () => {
         emailRef.current.value = " ";
         setEmailValid(false);
       }
-      toast.error((error as Error).message, {
-        action: {
-          label: "Close",
-          onClick: () => {},
-        },
-      });
+      toast.error((error as Error).message);
     }
   };
 
@@ -91,7 +86,7 @@ export const LoginModal = () => {
     try {
       if (passRef.current && emailRef.current) {
         const res = await signIn("credentials", {
-          email: btoa(emailRef.current?.value),
+          email: emailRef.current?.value,
           password: btoa(passRef.current.value),
           redirect: false,
         });

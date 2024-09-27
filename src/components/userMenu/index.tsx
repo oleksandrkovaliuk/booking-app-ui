@@ -10,6 +10,7 @@ import {
   DropdownTrigger,
   User,
 } from "@nextui-org/react";
+import { useSearchParams } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 
 import { AdminFlag } from "@/svgs/AdminFlag";
@@ -20,8 +21,11 @@ import { FormState } from "@/app/manage/_components/type";
 
 import styles from "./userMenu.module.scss";
 import "./dropdown.scss";
+import { store } from "@/store";
+import { checkAuthType } from "@/store/api/endpoints/auth/checkAuthType";
 
 export const UserMenu: React.FC<{ showArrow?: boolean }> = ({ showArrow }) => {
+  const params = useSearchParams();
   const { data: session } = useSession();
   const [mobile, setMobile] = useState(false);
   const [listingInProgress] = useState<FormState | null>(() => {
@@ -39,6 +43,23 @@ export const UserMenu: React.FC<{ showArrow?: boolean }> = ({ showArrow }) => {
       return null;
     }
   });
+
+  const handleLogOut = async () => {
+    try {
+      console.log(session?.user.email, "email");
+      const { data: res, error } = await store.dispatch(
+        checkAuthType.initiate({ email: session?.user.email! })
+      );
+
+      if (error && !res) {
+        throw new Error((error as FetchBaseQueryError).data?.message);
+      } else {
+        await signOut({
+          callbackUrl: `/${params.toString()}`,
+        });
+      }
+    } catch (error) {}
+  };
   useEffect(() => {
     if (window.innerWidth <= 1080) {
       setMobile(true);
@@ -127,7 +148,7 @@ export const UserMenu: React.FC<{ showArrow?: boolean }> = ({ showArrow }) => {
               </DropdownItem>
               <DropdownItem
                 key="log out"
-                onClick={() => signOut({ callbackUrl: "/" })}
+                onClick={handleLogOut}
                 className={"drop_down_item"}
                 endContent={<LogOutIcon />}
               >

@@ -9,7 +9,6 @@ export const metadata: Metadata = {
   title: "Booking-app",
   description: "Creative booking app",
 };
-export const viewport = "width=device-width, initial-scale=1, maximum-scale=1";
 
 export default function RootLayout({
   children,

@@ -37,6 +37,7 @@ import { ParseLocalStorageDates } from "@/helpers/dateManagment";
 import { searchParamsKeys } from "@/layout/header/_lib/enums";
 
 import styles from "./filterSelection.module.scss";
+import { isWidthHandlerSelector } from "@/store/selectors/isWidthHandler";
 
 export const FilterSelection: React.FC = () => {
   const router = useRouter();
@@ -58,6 +59,7 @@ export const FilterSelection: React.FC = () => {
     filter_price_range,
     filter_type_of_place,
   } = useSelector(searchSelectionSelector);
+  const { mobile } = useSelector(isWidthHandlerSelector);
 
   const { listings } = useSelector((state) => state.listingSearchResponse);
 
@@ -273,7 +275,7 @@ export const FilterSelection: React.FC = () => {
         isOpen={isOpen}
         onClose={onClose}
         backdrop="opaque"
-        size="2xl"
+        size={mobile ? "full" : "2xl"}
         motionProps={{
           variants: {
             enter: {

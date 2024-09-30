@@ -125,10 +125,10 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   }, [id]);
 
   useEffect(() => {
-    if (!isComplete && !isInProccess) {
+    if (!isComplete && !isInProccess && !isPreview) {
       onOpen();
     }
-  }, [isComplete, isInProccess, onOpen]);
+  }, [isComplete, isInProccess, isPreview, onOpen]);
   return (
     <>
       {isPreview && (

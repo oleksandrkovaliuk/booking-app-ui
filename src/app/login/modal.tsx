@@ -67,7 +67,7 @@ export const LoginModal = () => {
       );
 
       if (error && !res) {
-        throw new Error((error as FetchBaseQueryError).data?.message);
+        throw new Error("Something went wrong. Please try again");
       }
       setEmailValid(true);
     } catch (error) {

@@ -76,11 +76,7 @@ export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
             <h1 className={styles.title}>{listing.title}</h1>
           </section>
 
-          <ImagesSection
-            images={listing.images}
-            aboutplace={listing.aboutplace}
-            placeis={listing.placeis}
-          />
+          <ImagesSection isPublic={isPublic!} images={listing.images} />
 
           <section className={styles.sub_title_text_content}>
             <h2 className={styles.sub_title_text}>

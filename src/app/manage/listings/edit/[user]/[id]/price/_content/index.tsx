@@ -88,20 +88,17 @@ export const PriceContent: React.FC<ContentProps> = ({ params }) => {
 
   return (
     <>
-      {selectedPrice !== "" &&
-        selectedPrice !== undefined &&
-        typeof selectedPrice === "string" &&
-        !isNaN(Number(selectedPrice.split(",").join(""))) && (
-          <Price
-            editPage
-            styles={styles}
-            register={register}
-            setValue={setValue}
-            selectedPrice={selectedPrice!}
-            onConfirmation={setEnableConfirmationButton}
-            handleUpdateFormAndLocalStorage={handleUpdateFormAndLocalStorage}
-          />
-        )}
+      {!isNaN(Number(selectedPrice?.split(",").join(""))) && (
+        <Price
+          editPage
+          styles={styles}
+          register={register}
+          setValue={setValue}
+          selectedPrice={selectedPrice!}
+          onConfirmation={setEnableConfirmationButton}
+          handleUpdateFormAndLocalStorage={handleUpdateFormAndLocalStorage}
+        />
+      )}
 
       <ConfirmationButton
         onConfirm={onConfirmation}

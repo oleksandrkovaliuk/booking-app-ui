@@ -38,7 +38,7 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
   const pathname = usePathname();
   const params = useSearchParams();
 
-  const { desktop } = useSelector(isWidthHandlerSelector);
+  const { desktop, mobile, tablet } = useSelector(isWidthHandlerSelector);
   const { search_date } = useSelector(searchSelectionSelector);
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -75,7 +75,7 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
   };
 
   const ModalComponent = (
-    <div className={styles.modal} data-is-mobile={desktop}>
+    <div className={styles.modal} data-is-mobile={!desktop}>
       <button
         aria-label="Close modal"
         className={styles.modal_bg}
@@ -100,7 +100,7 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
         <div className={styles.calendar_container}>
           <RangeCalendar
             aria-label="Booking dates"
-            visibleMonths={3}
+            visibleMonths={mobile ? 1 : tablet ? 2 : 3}
             onChange={(value: RangeValue<DateValue>) => {
               handleSetDateSelection(value);
             }}
@@ -159,11 +159,11 @@ const DateInputsContainer: React.FC<DateInputConrainerProps> = ({
 
   return (
     <>
-      {isModalOpen && !desktop ? (
+      {isModalOpen && desktop ? (
         ModalComponent
       ) : (
         <Modal
-          size="lg"
+          size="full"
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           backdrop="opaque"

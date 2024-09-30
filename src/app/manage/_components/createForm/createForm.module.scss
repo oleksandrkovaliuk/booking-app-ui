@@ -333,7 +333,7 @@
       &[data-invalid="true"] {
         .price_input,
         .price_label {
-          color: var(--booking-app-coral-color);
+          animation: paintTextInWarningColor 1.5s linear;
         }
       }
       &[data-animate="true"] {
@@ -522,6 +522,18 @@
 }
 .video {
   max-width: 60%;
+}
+
+@keyframes paintTextInWarningColor {
+  0% {
+    color: var(--booking-app-coral-color);
+  }
+  50% {
+    color: var(--booking-app-coral-color);
+  }
+  100% {
+    color: var(--booking-app-black-color);
+  }
 }
 @media (width <= 1400px) {
   .introducing {

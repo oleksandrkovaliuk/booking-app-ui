@@ -106,6 +106,7 @@ export const CalendarPageContent: React.FC<CalendarPageContentProps> = ({
 
       setEnableConfirmationButton(false);
       localStorage.removeItem(`${params.id}`);
+      router.push("/manage/listings");
     } catch (error) {
       toast.error("Something went wrong. Please try again", {
         action: {
@@ -204,15 +205,14 @@ export const CalendarPageContent: React.FC<CalendarPageContentProps> = ({
             <LeftArrow className={styles.go_back_button_icon} />
           </Button>
         </Tooltip>
-        <Link inert={!enableConfirmationButton} href="/manage/listings">
-          <ConfirmationButton
-            onConfirm={onConfirm}
-            enable={enableConfirmationButton}
-            position="bottom-right"
-          >
-            Confirm
-          </ConfirmationButton>
-        </Link>
+
+        <ConfirmationButton
+          onConfirm={onConfirm}
+          enable={enableConfirmationButton}
+          position="bottom-right"
+        >
+          Confirm
+        </ConfirmationButton>
       </div>
     </>
   );

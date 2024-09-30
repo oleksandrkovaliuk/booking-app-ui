@@ -203,9 +203,13 @@
 }
 @media (width <= 1080px) {
   .center_nagivation_menu {
-    padding: 25px;
+    padding: 100px 50px;
     max-width: unset;
     z-index: -1;
+    overflow: auto;
+    .center_nagivation_menu_buttons {
+      display: none;
+    }
   }
   .right_navigation_menu {
     justify-content: space-between;

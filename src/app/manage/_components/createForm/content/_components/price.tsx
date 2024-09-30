@@ -57,7 +57,6 @@ export const Price: React.FC<ContentProps> = ({
           onClick: () => {},
         },
       });
-      editPage && onConfirmation!(false);
       setInvalidPrice(true);
       return;
     }

@@ -353,10 +353,23 @@
   .price_calculator {
     display: none;
   }
+}
 
-  .mobile_modal_container {
-    width: 100%;
-    max-width: unset;
-    margin: unset;
+@media (width <= 1080px) {
+  .modal {
+    margin: auto;
+    .modal_container {
+      padding: unset !important;
+      .modal_header {
+        margin-bottom: 10px;
+        .modal_title {
+          font-size: 20px;
+        }
+      }
+
+      .modal_footer {
+        justify-content: flex-start;
+      }
+    }
   }
 }

@@ -7,6 +7,7 @@
   margin-bottom: 20px;
   position: relative;
 }
+
 .images {
   display: flex;
   flex-wrap: wrap;
@@ -31,6 +32,7 @@
     }
   }
 }
+
 .head_image {
   max-width: 36dvw;
   width: 100%;
@@ -129,6 +131,25 @@
 @media (width <= 1280px) {
   .images_section {
     max-width: unset;
+    &[data-is-not-public="true"] {
+      .head_image {
+        max-width: unset;
+        .image {
+          border-radius: 15px;
+        }
+      }
+      .images {
+        display: none;
+      }
+      .show_all_btn {
+        right: 8px;
+        max-width: 50px !important;
+        min-width: unset !important;
+        span {
+          display: none;
+        }
+      }
+    }
     .head_image {
       max-width: 58dvw;
     }

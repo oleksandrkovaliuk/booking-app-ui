@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   isFetched: true,
-  isSearchTriggered: true,
+  isSearchTriggered: false,
 };
 
 const isSearchTriggered = createSlice({

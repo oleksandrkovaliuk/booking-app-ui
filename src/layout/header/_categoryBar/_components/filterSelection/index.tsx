@@ -18,11 +18,10 @@ import {
   setFetch,
   setIsSearchTriggered,
 } from "@/store/slices/listings/isSearchTriggeredSlice";
+import { isWidthHandlerSelector } from "@/store/selectors/isWidthHandler";
 import { searchSelectionSelector } from "@/store/selectors/searchSelection";
 import { setSearchSelection } from "@/store/slices/search/searchSelectionSlice";
-import { setListings } from "@/store/slices/listings/listingSearchResponseSlice";
-import { useRequestListingSearchMutation } from "@/store/api/endpoints/listings/getVerifiedListings";
-import { useRequestAvailableCategoriesMutation } from "@/store/api/endpoints/listings/getCategories";
+import { useGetListingsCategoriesQuery } from "@/store/api/endpoints/listings/getCategories";
 
 import { OptionSelection } from "./content/optionSelection";
 import { TypeOfPlaceSelection } from "./content/typeOfPlaceSelection";
@@ -32,12 +31,9 @@ import { FilterIcon } from "@/svgs/FilterIcon";
 
 import { CreateNewQueryParams } from "@/helpers/paramsManagment";
 
-import { ParseLocalStorageDates } from "@/helpers/dateManagment";
-
 import { searchParamsKeys } from "@/layout/header/_lib/enums";
 
 import styles from "./filterSelection.module.scss";
-import { isWidthHandlerSelector } from "@/store/selectors/isWidthHandler";
 
 export const FilterSelection: React.FC = () => {
   const router = useRouter();
@@ -48,10 +44,6 @@ export const FilterSelection: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const {
-    search_place,
-    search_date,
-    search_amountOfGuests,
-    search_includePets,
     search_category_id,
 
     filter_accesable,
@@ -63,11 +55,9 @@ export const FilterSelection: React.FC = () => {
 
   const { listings } = useSelector((state) => state.listingSearchResponse);
 
-  const [_, { isLoading: isLoadingCategories }] =
-    useRequestAvailableCategoriesMutation();
-  const [requestAvailableCategories] = useRequestAvailableCategoriesMutation();
-
-  const [requestListingSearch] = useRequestListingSearchMutation();
+  const { isLoading } = useGetListingsCategoriesQuery({
+    options: Object.fromEntries(params.entries()),
+  });
 
   const [previewCountOfResults, setPreviewCountOfResults] = useState<
     number | null
@@ -77,6 +67,7 @@ export const FilterSelection: React.FC = () => {
   const [isListingRequested, setIsListingRequested] = useState<boolean>(false);
 
   const previewNumberOfResults = useCallback(() => {
+    const parsedCategorySelection = JSON.parse(search_category_id || "null");
     const parsedPriceRange = JSON.parse(filter_price_range || "null");
     const parsedTypeOfPlace = JSON.parse(filter_type_of_place || "null");
     const parsedAccesableOption = JSON.parse(filter_accesable || "false");
@@ -84,6 +75,9 @@ export const FilterSelection: React.FC = () => {
 
     setPreviewCountOfResults(
       listings!?.filter((listing) => {
+        const matchWithSelectedCategory = parsedCategorySelection
+          ? listing.category?.id === parsedCategorySelection
+          : true;
         const matchedPriceRange = parsedPriceRange
           ? Number(listing.price) >= Number(parsedPriceRange![0]) &&
             Number(listing.price) <= Number(parsedPriceRange![1])
@@ -101,16 +95,20 @@ export const FilterSelection: React.FC = () => {
           : true;
 
         return (
-          matchedPriceRange && matchedTypeOfPlace && matchedAccesableOption
+          matchWithSelectedCategory &&
+          matchedPriceRange &&
+          matchedTypeOfPlace &&
+          matchedAccesableOption
         );
       }).length
     );
   }, [
-    listings,
+    search_category_id,
     filter_price_range,
     filter_type_of_place,
     filter_accesable,
     filter_shared_room,
+    listings,
   ]);
 
   const handleClearFilterSelection = async () => {
@@ -119,8 +117,6 @@ export const FilterSelection: React.FC = () => {
 
       const updatedParams = CreateNewQueryParams({
         updatedParams: {
-          [searchParamsKeys.SEARCH_CATEGORY_ID]: null,
-
           [searchParamsKeys.FILTER_ACCESABLE]: null,
           [searchParamsKeys.FILTER_PRICE_RANGE]: null,
           [searchParamsKeys.FILTER_SHARED_ROOM]: null,
@@ -131,8 +127,6 @@ export const FilterSelection: React.FC = () => {
 
       dispatch(
         setSearchSelection({
-          [searchParamsKeys.SEARCH_CATEGORY_ID]: null,
-
           [searchParamsKeys.FILTER_ACCESABLE]: null,
           [searchParamsKeys.FILTER_SHARED_ROOM]: null,
           [searchParamsKeys.FILTER_PRICE_RANGE]: null,
@@ -144,25 +138,7 @@ export const FilterSelection: React.FC = () => {
         scroll: false,
       });
 
-      const { data: res, error } = await requestListingSearch({
-        search_place: search_place ? JSON.parse(search_place) : null,
-        search_date: search_date ? ParseLocalStorageDates(search_date) : null,
-        search_amountOfGuests: search_amountOfGuests
-          ? JSON.parse(search_amountOfGuests)
-          : null,
-        search_includePets: search_includePets
-          ? JSON.parse(search_includePets)
-          : null,
-        search_category_id: null,
-        options: Object.fromEntries(params.entries()),
-      });
-
-      if (error) throw new Error();
-
-      await requestAvailableCategories(res!);
-
       dispatch(setFetch(true));
-      dispatch(setListings(res!));
       dispatch(setIsSearchTriggered(false));
 
       setIsListingRequested(false);
@@ -185,34 +161,6 @@ export const FilterSelection: React.FC = () => {
   const handleApplyFilterSelections = async () => {
     try {
       setIsListingRequested(true);
-
-      const { data: res, error } = await requestListingSearch({
-        search_place: search_place ? JSON.parse(search_place) : null,
-        search_date: search_date ? ParseLocalStorageDates(search_date) : null,
-        search_amountOfGuests: search_amountOfGuests
-          ? JSON.parse(search_amountOfGuests)
-          : null,
-        search_includePets: search_includePets
-          ? JSON.parse(search_includePets)
-          : null,
-        search_category_id: search_category_id
-          ? JSON.parse(search_category_id)
-          : null,
-
-        returnFiltered: true,
-        accesable: filter_accesable ? JSON.parse(filter_accesable) : null,
-        shared_room: filter_shared_room ? JSON.parse(filter_shared_room) : null,
-        price_range: filter_price_range ? JSON.parse(filter_price_range) : null,
-        type_of_place: filter_type_of_place
-          ? JSON.parse(filter_type_of_place)
-          : null,
-
-        options: Object.fromEntries(params.entries()),
-      });
-
-      if (!res && error) throw new Error();
-
-      await requestAvailableCategories(res!);
       const updatedQueryParams = CreateNewQueryParams({
         updatedParams: {
           [searchParamsKeys.FILTER_ACCESABLE]: filter_accesable!,
@@ -231,8 +179,8 @@ export const FilterSelection: React.FC = () => {
         scroll: false,
       });
 
-      dispatch(setFetch(false));
-      dispatch(setListings(res!));
+      dispatch(setFetch(true));
+      // dispatch(setListings(res!));
       dispatch(setIsSearchTriggered(false));
 
       setIsListingRequested(false);
@@ -325,7 +273,7 @@ export const FilterSelection: React.FC = () => {
               onClick={handleClearFilterSelection}
               className={styles.clear_btn}
             >
-              {isLoadingCategories || isListingRequested ? (
+              {isLoading || isListingRequested ? (
                 <Spinner size="sm" color="default" />
               ) : (
                 "Clear all"

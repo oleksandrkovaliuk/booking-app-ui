@@ -1,97 +1,85 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useDispatch } from "react-redux";
-import { useSearchParams } from "next/navigation";
-import { ScrollShadow, Skeleton } from "@nextui-org/react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { ScrollShadow, Skeleton, Tooltip } from "@nextui-org/react";
 
 import { useSelector } from "@/store";
+import {
+  clearSearchSelection,
+  setSearchSelection,
+} from "@/store/slices/search/searchSelectionSlice";
 import {
   setFetch,
   setIsSearchTriggered,
 } from "@/store/slices/listings/isSearchTriggeredSlice";
-import { searchSelectionSelector } from "@/store/selectors/searchSelection";
-import { setSearchSelection } from "@/store/slices/search/searchSelectionSlice";
-import { useRequestListingSearchMutation } from "@/store/api/endpoints/listings/getVerifiedListings";
-import {
-  useGetListingsCategoriesQuery,
-  useRequestAvailableCategoriesMutation,
-} from "@/store/api/endpoints/listings/getCategories";
 
+import { useGetListingsCategoriesQuery } from "@/store/api/endpoints/listings/getCategories";
+
+import { CloseIcon } from "@/svgs/CloseIcon";
 import your_search from "@/assets/loan.png";
 import { skeletonData } from "@/information/data";
 
 import { FilterSelection } from "./_components/filterSelection";
-import { ParseLocalStorageDates } from "@/helpers/dateManagment";
+import { CreateNewQueryParams } from "@/helpers/paramsManagment";
 
 import { searchParamsKeys } from "../_lib/enums";
 
 import styles from "./categoryBar.module.scss";
 
 const Categories: React.FC = () => {
+  const router = useRouter();
+  const pathname = usePathname();
   const dispatch = useDispatch();
   const params = useSearchParams();
 
+  const [initParams, setInitParams] = useState<{
+    [key: string]: string | null;
+  }>(Object.fromEntries(params.entries()));
+
   const {
     data: categories,
-    isLoading,
+    refetch,
     isFetching,
-  } = useGetListingsCategoriesQuery();
-  const [requestListingSearch] = useRequestListingSearchMutation();
-  const [requestAvailableCategories] = useRequestAvailableCategoriesMutation();
+    isLoading,
+    isUninitialized,
+  } = useGetListingsCategoriesQuery({
+    options: initParams,
+  });
 
-  const {
-    search_place,
-    search_date,
-    search_amountOfGuests,
-    search_includePets,
-
-    filter_accesable,
-    filter_shared_room,
-    filter_price_range,
-    filter_type_of_place,
-  } = useSelector(searchSelectionSelector);
-
-  const { isSearchTriggered } = useSelector((state) => state.isSearchTriggered);
+  const { isSearchTriggered, isFetched } = useSelector(
+    (state) => state.isSearchTriggered
+  );
 
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
 
   const requestSearchBySelectedCategory = async (id: number) => {
     try {
       if (id === selectedCategory) return;
-      const { data: res, error } = await requestListingSearch({
-        search_place: search_place ? JSON.parse(search_place) : null,
-        search_date: search_date ? ParseLocalStorageDates(search_date) : null,
-        search_amountOfGuests: search_amountOfGuests
-          ? JSON.parse(search_amountOfGuests)
-          : null,
-        search_includePets: search_includePets
-          ? JSON.parse(search_includePets)
-          : null,
-        search_category_id: id,
 
-        returnFiltered: true,
-        accesable: filter_accesable ? JSON.parse(filter_accesable) : null,
-        shared_room: filter_shared_room ? JSON.parse(filter_shared_room) : null,
-        price_range: filter_price_range ? JSON.parse(filter_price_range) : null,
-        type_of_place: filter_type_of_place
-          ? JSON.parse(filter_type_of_place)
-          : null,
-
-        options: Object.fromEntries(params.entries()),
-      });
-      if (!res || error) throw new Error();
-
-      setSelectedCategory(id);
+      dispatch(setFetch(true));
+      dispatch(setIsSearchTriggered(false));
 
       dispatch(
         setSearchSelection({
           [searchParamsKeys.SEARCH_CATEGORY_ID]: JSON.stringify(id),
         })
       );
-      dispatch(setFetch(true));
-      dispatch(setIsSearchTriggered(false));
+
+      const updatedParams = CreateNewQueryParams({
+        updatedParams: {
+          [searchParamsKeys.SEARCH_CATEGORY_ID]: JSON.stringify(id),
+        },
+        params,
+      });
+
+      router.replace(`${pathname}?${updatedParams}`, {
+        scroll: false,
+      });
+
+      setSelectedCategory(id);
     } catch (error) {
       toast(
         `🫣 We couldn't find any listings for this specific category in your area. `,
@@ -106,44 +94,35 @@ const Categories: React.FC = () => {
     }
   };
 
-  const handleResetCategory = useCallback(async () => {
-    if (params.size === 0) {
-      const { data: res } = await requestListingSearch({
-        search_place: null,
-        search_date: null,
-        search_amountOfGuests: null,
-        search_includePets: null,
+  const handleClearSearchSelection = () => {
+    router.push("/");
+    dispatch(setFetch(true));
+    dispatch(clearSearchSelection());
+    dispatch(setIsSearchTriggered(false));
+  };
 
-        options: Object.fromEntries(params.entries()),
-      });
-
-      await requestAvailableCategories(res!);
-
+  useEffect(() => {
+    if (!params.get(searchParamsKeys.SEARCH_CATEGORY_ID)) {
       setSelectedCategory(null);
-      dispatch(
-        setSearchSelection({
-          [searchParamsKeys.SEARCH_CATEGORY_ID]: JSON.stringify(null),
-        })
-      );
+      if (isFetched && !isSearchTriggered) {
+        setInitParams(Object.fromEntries(params.entries()));
+        refetch();
+      }
     } else {
-      return;
-    }
-  }, [dispatch, params, requestAvailableCategories, requestListingSearch]);
-
-  useEffect(() => {
-    if (isSearchTriggered) {
-      setSelectedCategory(null);
+      setSelectedCategory(
+        params.get(searchParamsKeys.SEARCH_CATEGORY_ID)
+          ? Number(params.get(searchParamsKeys.SEARCH_CATEGORY_ID))
+          : null
+      );
       dispatch(
         setSearchSelection({
-          [searchParamsKeys.SEARCH_CATEGORY_ID]: JSON.stringify(null),
+          [searchParamsKeys.SEARCH_CATEGORY_ID]: params.get(
+            searchParamsKeys.SEARCH_CATEGORY_ID
+          ),
         })
       );
     }
-  }, [dispatch, isSearchTriggered]);
-
-  useEffect(() => {
-    handleResetCategory();
-  }, [handleResetCategory]);
+  }, [dispatch, isFetched, isSearchTriggered, params, refetch]);
 
   return (
     <ScrollShadow
@@ -151,7 +130,7 @@ const Categories: React.FC = () => {
       orientation="horizontal"
       className={styles.category_wrap}
     >
-      {isLoading || isFetching || !categories?.length ? (
+      {isFetching || isLoading || isUninitialized || !categories?.length ? (
         skeletonData?.map((item) => (
           <div className={styles.skeleton_macket} key={item}>
             <Skeleton className={styles.skeleton}>
@@ -164,7 +143,7 @@ const Categories: React.FC = () => {
         ))
       ) : (
         <>
-          {isSearchTriggered && !selectedCategory && (
+          {isSearchTriggered && (
             <div className={`${styles.category} ${styles.search}`}>
               <Image
                 src={your_search}
@@ -174,6 +153,24 @@ const Categories: React.FC = () => {
                 className={styles.category_img}
               />
               <span className={styles.category_text}>Your search</span>
+              <Tooltip
+                showArrow
+                placement="top"
+                content={"Clear search"}
+                color="default"
+                size="sm"
+                delay={200}
+                classNames={{
+                  content: ["text-#2f2f2f font-medium rounded-md py-0.5 px-1 "],
+                }}
+              >
+                <button
+                  className={styles.clear_search_selection}
+                  onClick={handleClearSearchSelection}
+                >
+                  <CloseIcon />
+                </button>
+              </Tooltip>
             </div>
           )}
           {categories?.map((category) => (
@@ -181,9 +178,7 @@ const Categories: React.FC = () => {
               key={category.id}
               className={styles.category}
               onClick={() => requestSearchBySelectedCategory(category.id)}
-              data-selected={
-                selectedCategory === category.id && !isSearchTriggered
-              }
+              data-selected={selectedCategory === category.id}
             >
               <Image
                 src={category.category_icon as string}

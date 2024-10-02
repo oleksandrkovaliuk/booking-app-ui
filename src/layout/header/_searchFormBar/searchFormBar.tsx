@@ -10,14 +10,9 @@ import {
   setFetch,
   setIsSearchTriggered,
 } from "@/store/slices/listings/isSearchTriggeredSlice";
-import {
-  useGetVerifiedListingByParamsQuery,
-  useRequestListingSearchMutation,
-} from "@/store/api/endpoints/listings/getVerifiedListings";
+import { useGetVerifiedListingByParamsQuery } from "@/store/api/endpoints/listings/getVerifiedListings";
 import { isWidthHandlerSelector } from "@/store/selectors/isWidthHandler";
 import { searchSelectionSelector } from "@/store/selectors/searchSelection";
-import { setListings } from "@/store/slices/listings/listingSearchResponseSlice";
-import { useRequestAvailableCategoriesMutation } from "@/store/api/endpoints/listings/getCategories";
 
 import { Search } from "@/svgs/Search";
 
@@ -25,7 +20,6 @@ import { DatesSelectionComponent } from "./_components/datesSelection";
 import { GuestsSelectionComponent } from "./_components/guestSelection";
 import { RegionSelectionComponent } from "./_components/regionSelection";
 
-import { ParseLocalStorageDates } from "@/helpers/dateManagment";
 import { CreateNewQueryParams } from "@/helpers/paramsManagment";
 
 import {
@@ -57,7 +51,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
     search_date,
     search_amountOfGuests,
     search_includePets,
-    search_category_id,
+
     filter_accesable,
     filter_shared_room,
     filter_price_range,
@@ -69,8 +63,6 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
     options: Object.fromEntries(params.entries()),
   });
   const { setIsCategoryChanged } = useStaysButtonContextApi();
-  const [requestListingSearch] = useRequestListingSearchMutation();
-  const [requestAvailableCategories] = useRequestAvailableCategoriesMutation();
 
   const [triggeredSelection, setTriggeredSelection] =
     useState<TypesOfSelections>(TypesOfSelections.UNSELECTED);
@@ -105,36 +97,6 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
   const requestSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const { data: res, error } = await requestListingSearch({
-        search_place: search_place ? JSON.parse(search_place) : null,
-        search_date: search_date ? ParseLocalStorageDates(search_date) : null,
-        search_amountOfGuests: search_amountOfGuests
-          ? JSON.parse(search_amountOfGuests)
-          : null,
-        search_includePets: search_includePets
-          ? JSON.parse(search_includePets)
-          : null,
-        search_category_id: null,
-
-        returnFiltered:
-          filter_accesable ||
-          filter_shared_room ||
-          filter_price_range ||
-          filter_type_of_place
-            ? true
-            : false,
-        accesable: filter_accesable ? JSON.parse(filter_accesable) : null,
-        shared_room: filter_shared_room ? JSON.parse(filter_shared_room) : null,
-        price_range: filter_price_range ? JSON.parse(filter_price_range) : null,
-        type_of_place: filter_type_of_place
-          ? JSON.parse(filter_type_of_place)
-          : null,
-
-        options: Object.fromEntries(params.entries()),
-      });
-
-      if (error || !res?.length) throw new Error();
-
       const updatedParams = CreateNewQueryParams({
         updatedParams: {
           [searchParamsKeys.SEARCH_PLACE]: search_place ? search_place : null,
@@ -145,9 +107,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
           [searchParamsKeys.SEARCH_INCLUDE_PETS]: search_includePets
             ? search_includePets
             : null,
-          [searchParamsKeys.SEARCH_CATEGORY_ID]: search_category_id
-            ? search_category_id
-            : null,
+          [searchParamsKeys.SEARCH_CATEGORY_ID]: null,
           [searchParamsKeys.FILTER_ACCESABLE]: filter_accesable
             ? filter_accesable
             : null,
@@ -168,9 +128,6 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
         scroll: false,
       });
 
-      requestAvailableCategories(res!);
-
-      dispatch(setListings(res!));
       dispatch(setFetch(true));
       dispatch(setIsSearchTriggered(true));
 

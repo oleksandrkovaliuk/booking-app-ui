@@ -5,10 +5,9 @@ export const ApiUrlsListings = {
   getCurrentListing: "/listings/get/current",
   getListingsCategories: "/listings/categories",
   getListingsTypeOfPlace: "/listings/typeofplace",
-  getVerifiedListingByParams: "/listings/verified/by/params",
+  getVerifiedListingByParams: "/listings/searched/by/params",
   getFullListOfListingCategories: "/listings/categories/all",
 
-  requestListingSearch: "/listings/request/search",
   requestUpdateListing: "/listings/request/update",
   requestDeleteListing: "/listings/listing/delete",
   requestCreateListing: "/listings/listing/create",
@@ -25,6 +24,8 @@ export const ApiUrlsAuth = {
   auth_oauth_user: "auth/oauthUser",
   auth_acces_user: "auth/accessUser",
   check_auth_type: "/auth/checkAuthType",
+
+  update_tokens_blacklist: "/auth/update/tokens/blacklist",
 };
 
 export const ApiUrlsUser = {

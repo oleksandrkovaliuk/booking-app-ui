@@ -35,26 +35,7 @@
   gap: 10px;
   padding-block: 20px;
   flex-shrink: 0;
-  &.search {
-    pointer-events: none;
-    &::after {
-      content: "";
-      position: absolute;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      right: -20px;
-      width: 1px;
-      height: 50%;
-      background-color: var(--booking-app-lightgrey-color);
-    }
-    &::before {
-      opacity: 1;
-      background-color: var(--booking-app-black-color);
-    }
-    .category_text {
-      color: var(--booking-app-black-color);
-    }
-  }
+
   &[data-selected="true"] {
     &::before {
       opacity: 1;
@@ -64,6 +45,7 @@
       color: var(--booking-app-black-color);
     }
   }
+
   &::before {
     content: "";
     position: absolute;
@@ -78,11 +60,13 @@
     will-change: opacity;
     opacity: 0;
   }
+
   &:hover {
     &::before {
       opacity: 1;
     }
   }
+
   .category_img {
     width: 24px;
     height: 24px;
@@ -98,6 +82,52 @@
     line-height: 100%;
     color: var(--booking-app-grey-color);
     text-transform: capitalize;
+  }
+}
+
+.category.search {
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    right: -20px;
+    width: 1px;
+    height: 50%;
+    background-color: var(--booking-app-lightgrey-color);
+  }
+  &::before {
+    opacity: 1;
+    background-color: var(--booking-app-black-color);
+  }
+
+  .category_text {
+    color: var(--booking-app-black-color);
+  }
+}
+
+.clear_search_selection {
+  position: absolute;
+  right: -5px;
+  top: 10px;
+  padding: 2px;
+  border-radius: 50%;
+  border: 1px solid var(--booking-app-lightgrey-color);
+  opacity: 1;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.2s ease-in-out;
+  svg {
+    width: 10px;
+    height: 10px;
+    flex-shrink: 0;
+
+    path {
+      fill: var(--booking-app-black-color);
+    }
+  }
+  &:hover {
+    border-color: var(--booking-app-black-color);
   }
 }
 

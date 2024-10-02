@@ -6,6 +6,35 @@
     gap: 25px;
     justify-content: flex-start;
   }
+  .no_listings_found {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    height: 65dvh;
+    .no_listings_found_text {
+      font-size: 16px;
+      font-weight: 550;
+      font-family: var(--booking-app-Nunito-Sans-font);
+      color: var(--booking-app-black-color);
+    }
+    .discarb_button {
+      padding: 5px 10px;
+      border-radius: 5px;
+      background-color: var(--booking-app-coral-color);
+
+      font-size: 13px;
+      font-weight: 600;
+      font-family: var(--booking-app-Nunito-Sans-font);
+      color: var(--booking-app-white-color);
+      transition: 0.2s ease-in-out;
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+  }
 }
 
 @media (width <= 768px) {

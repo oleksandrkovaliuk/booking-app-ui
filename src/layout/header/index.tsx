@@ -3,7 +3,7 @@ import React, { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useDispatch } from "react-redux";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   Modal,
   ModalContent,
@@ -12,8 +12,9 @@ import {
 } from "@nextui-org/react";
 
 import { useSelector } from "@/store";
-import { clearSearchSelection } from "@/store/slices/search/searchSelectionSlice";
 import { isWidthHandlerSelector } from "@/store/selectors/isWidthHandler";
+import { clearSearchSelection } from "@/store/slices/search/searchSelectionSlice";
+import { setIsSearchTriggered } from "@/store/slices/listings/isSearchTriggeredSlice";
 
 import { Search } from "@/svgs/Search";
 import { AddHouseIcon } from "@/svgs/AddHouseIcon";
@@ -116,6 +117,7 @@ const RightNavigationMenu = ({
 };
 
 export const Header = () => {
+  const router = useRouter();
   const dispatch = useDispatch();
   const params = useSearchParams();
   const headerRef = useRef<HTMLDivElement>(null);
@@ -164,8 +166,10 @@ export const Header = () => {
         <Suspense fallback="LOADING .....">
           {desktop && (
             <LogoLink
-              href={params.size >= 1 ? "/" : "#"}
+              href={params.size !== 0 ? "/" : "#"}
               handleOnClick={() => {
+                router.refresh();
+                dispatch(setIsSearchTriggered(false));
                 dispatch(clearSearchSelection());
               }}
             />
@@ -189,7 +193,7 @@ export const Header = () => {
               <button onClick={onOpen} className={styles.mobile_search_button}>
                 <Search className={styles.mobile_search_icon} />{" "}
                 <span className={styles.mobile_search_text}>
-                  Where do we go?
+                  Where are we traveling today?
                 </span>
               </button>
               <Modal

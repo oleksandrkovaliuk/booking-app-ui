@@ -4,6 +4,9 @@ import Slider from "react-slick";
 import { useSearchParams } from "next/navigation";
 import { useDisclosure } from "@nextui-org/react";
 
+import { useSelector } from "@/store";
+import { searchSelectionSelector } from "@/store/selectors/searchSelection";
+
 import { Arrow } from "@/svgs/RightArrow";
 
 import { StatusBadge } from "../statusBadge";
@@ -11,9 +14,11 @@ import { ManageModal } from "./components/modals/manage";
 import { PreviewModal } from "./components/modals/preview";
 
 import { CalculatePriceIncludingTax } from "@/helpers/priceManagment";
+import { CountNights, ParseLocalStorageDates } from "@/helpers/dateManagment";
 import { formattedAddressComponent } from "@/helpers/address/formattedAddressVariants";
 
 import { ListingCardProps } from "./type";
+import { searchParamsKeys } from "@/layout/header/_lib/enums";
 
 import "./additional.scss";
 import "slick-carousel/slick/slick.css";
@@ -36,7 +41,6 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   isManagable,
   isInProccess,
   pets_allowed,
-  calculated_nights,
 }) => {
   const params = useSearchParams();
 
@@ -56,6 +60,13 @@ export const ListingCard: React.FC<ListingCardProps> = ({
     unsaved_changes: false,
   });
 
+  const { search_date } = useSelector(searchSelectionSelector);
+  const calculateNights =
+    search_date &&
+    CountNights(
+      ParseLocalStorageDates(search_date).start,
+      ParseLocalStorageDates(search_date).end
+    );
   // CONDITIONS
   const isLastSlider = currentSlide === images?.length - 1;
   const isFirstSlider = currentSlide === 0;
@@ -241,15 +252,21 @@ export const ListingCard: React.FC<ListingCardProps> = ({
                 </b>{" "}
                 night
               </span>
-              {calculated_nights && (
-                <span className={styles.total}>
-                  $
-                  {CalculatePriceIncludingTax(
-                    Number(price) * calculated_nights
-                  ).total_price.toLocaleString()}{" "}
-                  total
-                </span>
-              )}
+              {params.get(searchParamsKeys.SEARCH_DATE) &&
+                isPublic &&
+                !isManagable &&
+                !isPreview &&
+                !isInProccess &&
+                price &&
+                calculateNights && (
+                  <span className={styles.total}>
+                    $
+                    {CalculatePriceIncludingTax(
+                      Number(price) * calculateNights
+                    ).total_price.toLocaleString()}{" "}
+                    total
+                  </span>
+                )}
             </div>
           )}
         </div>

@@ -304,7 +304,7 @@ const RegionSelection: React.FC<SelectionComponentsProps> = ({
                     data-is-only-element={!userSearchRegionHistory?.length}
                   >
                     <span className={styles.region_preview_text}>
-                      Where do we heading today?
+                      Where are we traveling today?
                     </span>
                     <Image
                       src={boat_with_people}
@@ -378,7 +378,7 @@ const RegionSelection: React.FC<SelectionComponentsProps> = ({
       </div>
 
       <label htmlFor="searchRegionInput" className={styles.search_bar_label}>
-        Where
+        Which city
       </label>
     </div>
   );

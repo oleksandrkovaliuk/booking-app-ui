@@ -51,7 +51,7 @@ export const authConfig: AuthOptions = {
     }),
   ],
   callbacks: {
-    async signIn({ user, account, profile, credentials }: any) {
+    async signIn({ user, account, profile }: any) {
       if (account?.provider === "google" || account?.provider === "facebook") {
         try {
           const res = await AccesOAuthUser({

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
 import {
   Button,
   Modal,
@@ -9,8 +9,9 @@ import {
 } from "@nextui-org/react";
 import Image from "next/image";
 
-import { Arrow } from "@/svgs/RightArrow";
 import { ShowMoreIcon } from "@/svgs/ShowMoreIcon";
+
+import { RoundButton } from "@/components/roundButton";
 
 import styles from "./imagesSection.module.scss";
 
@@ -52,9 +53,14 @@ export const ImagesSection: React.FC<{
       >
         <ModalContent>
           <ModalHeader>
-            <button className={styles.close_btn} onClick={onClose}>
-              <Arrow className={styles.close_icon} />
-            </button>
+            <RoundButton
+              showToolTip
+              action={onClose}
+              arrow_direction="left"
+              toolTipPlacement={"right"}
+              toolTipContent="Close"
+              toolTipDelay={200}
+            />
           </ModalHeader>
 
           <div className={styles.show_case_container}>

@@ -104,89 +104,6 @@
   }
 }
 
-.modal {
-  &[data-is-mobile="true"] {
-    .modal_bg {
-      display: none;
-    }
-    .modal_container {
-      position: static;
-      background-color: unset;
-      box-shadow: unset;
-      border: unset;
-      padding: 20px 0px;
-    }
-  }
-
-  .modal_bg {
-    position: fixed;
-    inset: 0;
-    z-index: 4;
-  }
-
-  .modal_container {
-    padding: 14px 20px;
-    position: absolute;
-    right: 10px;
-    top: 46px;
-    z-index: 5;
-
-    background-color: var(--booking-app-white-color);
-    border: 1px solid var(--booking-app-lightgrey-color);
-    border-radius: 20px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-
-    .modal_header {
-      margin-bottom: 30px;
-      .modal_title {
-        display: block;
-        font-size: 25px;
-        font-family: var(--booking-app-Nunito-Sans-font);
-        font-weight: 600;
-        color: var(--booking-app-black-color);
-        line-height: 100%;
-        margin-bottom: 5px;
-      }
-      .modal_subtitle {
-        font-size: 15px;
-        font-family: var(--booking-app-Nunito-Sans-font);
-        font-weight: 400;
-        color: var(--booking-app-grey-color);
-        line-height: 100%;
-      }
-    }
-    .calendar_container {
-      margin-bottom: 10px;
-    }
-    .modal_footer {
-      display: flex;
-      gap: 10px;
-      justify-content: flex-end;
-      align-items: flex-end;
-      .modal_button {
-        padding: 5px 15px;
-        border-radius: 5px;
-        font-size: 15px;
-        font-family: var(--booking-app-Nunito-Sans-font);
-        font-weight: 500;
-        outline: none;
-
-        transition: all 0.2s ease-in-out;
-        &.clear_button {
-          text-decoration: underline;
-        }
-        &.close_button {
-          color: var(--booking-app-white-color);
-          background-color: var(--booking-app-black-color);
-          &:hover {
-            scale: 0.97;
-          }
-        }
-      }
-    }
-  }
-}
-
 .guest_block {
   display: flex;
   padding: 10px 15px;
@@ -228,6 +145,7 @@
 
 .request_reserve {
   text-align: center;
+  margin-bottom: 10px;
   &[data-date-is-selected="true"] {
     margin-bottom: 15px;
   }
@@ -245,9 +163,14 @@
 
     margin-bottom: 10px;
 
+    transition: all 0.2s ease-in-out;
+
     &:disabled {
       opacity: 0.5;
       cursor: not-allowed;
+    }
+    &:hover {
+      scale: 0.98;
     }
   }
   .reserve_text {
@@ -256,6 +179,8 @@
     font-weight: 400;
     color: var(--booking-app-grey-color);
     line-height: 100%;
+
+    text-decoration: underline;
   }
 }
 
@@ -313,29 +238,6 @@
 
   .reserve_listing_main_block {
     flex-grow: 1;
-  }
-
-  .date_inputs_container {
-    gap: 5px;
-    padding: 0px;
-    .date_inputs_wrap {
-      display: block;
-      padding: unset;
-      background-color: unset;
-      border: unset;
-      border-radius: unset;
-      &::before {
-        content: unset;
-      }
-      .date_label {
-        display: none;
-      }
-      .date_input {
-        max-width: 50px;
-        text-decoration: underline;
-        color: var(--booking-app-black-color);
-      }
-    }
   }
 
   .guest_block {

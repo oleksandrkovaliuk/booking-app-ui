@@ -1,0 +1,347 @@
+.leave_confirmation_modal {
+  .leave_confirmation_modal_body {
+    padding-block: 20px;
+    .leave_confirmation_modal_title {
+      font-size: 20px;
+      font-family: var(--booking-app-Nunito-Sans-font);
+      font-weight: 600;
+      color: var(--booking-app-black-color);
+      line-height: 100%;
+    }
+    .leave_confirmation_modal_description {
+      font-size: 17px;
+      font-family: var(--booking-app-Nunito-Sans-font);
+      font-weight: 500;
+      color: var(--booking-app-grey-color);
+      line-height: 100%;
+    }
+  }
+  .leave_confirmation_modal_footer {
+    border-top: 1px solid var(--booking-app-lightgrey-color);
+    justify-content: space-between;
+    .clear_btn,
+    .apply_btn {
+      font-family: var(--booking-app-Nunito-Sans-font);
+      font-size: 17px;
+      font-weight: 600;
+      border-radius: 6px;
+
+      outline-color: none;
+
+      &:disabled {
+        background-color: var(--booking-app-lightgrey-color);
+        cursor: not-allowed;
+      }
+    }
+    .apply_btn {
+      color: var(--booking-app-white-color);
+      background-color: var(--booking-app-black-color);
+    }
+  }
+}
+
+.reservation_content {
+  padding-block: 50px;
+  max-width: 70dvw;
+  margin: auto;
+}
+
+.reservation_content_container {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 50px;
+}
+
+.title,
+.description,
+.sub_title,
+.sub_description {
+  font-family: var(--booking-app-Nunito-Sans-font);
+  color: var(--booking-app-black-color);
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.description {
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  line-height: 110%;
+}
+
+.sub_title {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 100%;
+}
+.sub_description,
+.with_host_name {
+  font-size: 14px;
+  font-weight: 400;
+}
+.with_host_name {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+  .host_name {
+    text-transform: capitalize;
+  }
+  .host_name_skeleton {
+    width: 50px;
+    height: 15px;
+    border-radius: 5px;
+  }
+}
+
+.reservation_title_block {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 30px;
+  .reservation_title {
+    font-size: 35px;
+    font-family: var(--booking-app-Nunito-Sans-font);
+    font-weight: 600;
+    color: var(--booking-app-black-color);
+  }
+}
+
+.left_reservation_info_block {
+  max-width: 32dvw;
+  width: 100%;
+
+  .rare_find {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid var(--booking-app-lightgrey-color);
+
+    margin-bottom: 30px;
+
+    .rare_diamond_svg {
+      width: 50px;
+      height: 50px;
+      flex-shrink: 0;
+    }
+  }
+  .comment_to_host {
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px solid var(--booking-app-lightgrey-color);
+    box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    .comment_to_host_header {
+      .comment_to_host_text {
+        .sub_description {
+          margin-bottom: 15px;
+        }
+      }
+
+      .host_card {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 15px;
+        .host_img_container {
+          position: relative;
+          .host_img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            &.no_host_img {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 16px;
+              font-weight: 500;
+              font-family: var(--booking-app-Nunito-Sans-font);
+              color: var(--booking-app-white-color);
+              text-transform: capitalize;
+              background-color: var(--booking-app-black-color);
+            }
+          }
+          .host_badge {
+            position: absolute;
+            bottom: -10%;
+            right: -10%;
+            width: 25px;
+            height: 25px;
+          }
+        }
+        .host_info {
+          .host_type {
+            font-size: 13px;
+            font-family: var(--booking-app-Nunito-Sans-font);
+            font-weight: 500;
+            color: var(--booking-app-grey-color);
+            line-height: 100%;
+          }
+          .host_name {
+            font-size: 17px;
+            font-family: var(--booking-app-Nunito-Sans-font);
+            font-weight: 700;
+            color: var(--booking-app-black-color);
+            line-height: 100%;
+            margin-bottom: 5px;
+            span {
+              text-transform: capitalize;
+            }
+          }
+        }
+      }
+    }
+
+    .comment_to_host_textarea {
+      font-size: 16px;
+      font-weight: 600;
+      font-family: var(--booking-app-Nunito-Sans-font);
+      color: var(--booking-app-black-color);
+    }
+  }
+}
+.right_reservation_info_block {
+  position: sticky;
+  top: 150px;
+  flex-grow: 1;
+  .reservation_listing_info,
+  .reservation_listing_info_skeleton {
+    padding: 20px;
+    background-color: var(--booking-app-white-color);
+    border: 1px solid var(--booking-app-lightgrey-color);
+    border-radius: 10px;
+
+    flex-grow: 1;
+    max-width: 450px;
+  }
+
+  .reservation_listing_info_skeleton {
+    min-height: 432px;
+
+    width: 100%;
+  }
+
+  .reservation_listing_title_info {
+    padding-bottom: 20px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--booking-app-lightgrey-color);
+  }
+  .reservation_listing_title_info {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    .listing_image {
+      width: 110px;
+      height: 110px;
+      flex-shrink: 0;
+      border-radius: 10px;
+    }
+    .listing_info {
+      .listing_title,
+      .listing_description {
+        font-family: var(--booking-app-Nunito-Sans-font);
+        color: var(--booking-app-black-color);
+      }
+      .listing_title {
+        font-size: 18px;
+        font-weight: 500;
+      }
+      .listing_description {
+        font-size: 14px;
+        font-weight: 400;
+      }
+    }
+
+    .listing_accomplishments {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      .super_host {
+        .host_badge {
+          width: 20px;
+          height: 20px;
+          flex-shrink: 0;
+        }
+        .super_host_text {
+          font-size: 14px;
+          font-weight: 400;
+          color: var(--booking-app-black-color);
+          font-family: var(--booking-app-Nunito-Sans-font);
+        }
+      }
+    }
+  }
+
+  .price_details {
+    .calculate_price_block,
+    .calculate_total_block {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 15px;
+
+      .price_label,
+      .price_result {
+        font-size: 16px;
+        font-family: var(--booking-app-Nunito-Sans-font);
+        font-weight: 400;
+        color: var(--booking-app-black-color);
+      }
+      .price_label {
+        text-decoration: underline;
+      }
+    }
+    .calculate_total_block {
+      padding-block: 10px;
+      border-top: 1px solid var(--booking-app-lightgrey-color);
+      .price_label,
+      .price_result {
+        font-weight: 700;
+        font-size: 18px;
+      }
+      .price_label {
+        text-decoration: none;
+      }
+    }
+  }
+}
+
+@media (width <= 1080px) {
+  .reservation_content {
+    max-width: unset;
+    padding-inline: 40px;
+  }
+  .reservation_content_container {
+    gap: 20px;
+  }
+  .left_reservation_info_block {
+    max-width: 40dvw;
+  }
+}
+
+@media (width <= 768px) {
+  .reservation_content {
+    padding-inline: 20px;
+  }
+  .reservation_content_container {
+    flex-direction: column-reverse;
+    gap: 30px;
+  }
+  .right_reservation_info_block {
+    position: static;
+    width: 100%;
+  }
+  .left_reservation_info_block {
+    max-width: unset;
+  }
+}

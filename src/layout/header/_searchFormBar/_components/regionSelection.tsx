@@ -10,6 +10,7 @@ import {
   updateUserSearchRegionHistory,
   useGetUserSearchRegionHistoryQuery,
 } from "@/store/api/endpoints/search/getUserSearchRegionHistory";
+import { isWidthHandlerSelector } from "@/store/selectors/isWidthHandler";
 import { setFetch } from "@/store/slices/listings/isSearchTriggeredSlice";
 import { setSearchSelection } from "@/store/slices/search/searchSelectionSlice";
 
@@ -36,7 +37,6 @@ import { regionResponceType } from "../../_lib/types";
 import { getCountriesByRequest } from "../../_lib/getCountriesByRequest";
 
 import styles from "../search_form_bar.module.scss";
-import { isWidthHandlerSelector } from "@/store/selectors/isWidthHandler";
 
 const RegionSelection: React.FC<SelectionComponentsProps> = ({
   searchBarRef,

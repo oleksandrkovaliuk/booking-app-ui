@@ -15,10 +15,9 @@ import { ShowMoreIcon } from "@/svgs/ShowMoreIcon";
 import styles from "./imagesSection.module.scss";
 
 export const ImagesSection: React.FC<{
+  isPublic: boolean;
   images: { url: string }[];
-  aboutplace: string;
-  placeis: string;
-}> = ({ images }) => {
+}> = ({ images, isPublic }) => {
   const { isOpen, onClose, onOpen } = useDisclosure();
 
   return (
@@ -78,7 +77,7 @@ export const ImagesSection: React.FC<{
           </div>
         </ModalContent>
       </Modal>
-      <section className={styles.images_section}>
+      <section className={styles.images_section} data-is-not-public={!isPublic}>
         <div className={styles.head_image}>
           <div
             style={{ backgroundImage: `url(${images[0].url})` }}

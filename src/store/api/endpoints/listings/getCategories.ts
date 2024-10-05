@@ -12,44 +12,29 @@ const getListingsCategoriesApi = api.injectEndpoints({
       }),
       providesTags: [ApiTags.FULL_CATEGORIES_LIST],
     }),
-    getListingsCategories: builder.query<Category[], void>({
-      query: () => ({
-        url: ApiUrlsListings.getListingsCategories,
+    getListingsCategories: builder.query<
+      Category[],
+      {
+        options: {
+          [key: string]: string | null | boolean;
+        };
+      }
+    >({
+      query: ({ options }) => ({
+        url: `${ApiUrlsListings.getListingsCategories}?options=${JSON.stringify(
+          options
+        )}`,
       }),
       providesTags: [ApiTags.LISTING_CATEGORIES],
-    }),
-    requestAvailableCategories: builder.mutation<Category[], ListingState[]>({
-      query: (listings) => ({
-        url: ApiUrlsListings.requestAvailableCategories,
-        method: "POST",
-        body: { listings },
-      }),
-      async onQueryStarted(_, { dispatch, queryFulfilled }) {
-        try {
-          const { data: updateCategories } = await queryFulfilled;
-          dispatch(
-            api.util.updateQueryData(
-              "getListingsCategories" as never,
-              undefined as never,
-              () => updateCategories
-            )
-          );
-        } catch {
-          return;
-        }
-      },
     }),
   }),
   overrideExisting: true,
 });
 
-export const {
-  useGetListingsCategoriesQuery,
-  useGetFullCategoriesListQuery,
-  useRequestAvailableCategoriesMutation,
-} = getListingsCategoriesApi;
+export const { useGetListingsCategoriesQuery, useGetFullCategoriesListQuery } =
+  getListingsCategoriesApi;
 export const {
   getListingsCategories,
-  requestAvailableCategories,
+
   getFullCategoriesList,
 } = getListingsCategoriesApi.endpoints;

@@ -1,7 +1,5 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
 import {
   Dropdown,
   DropdownItem,
@@ -10,8 +8,14 @@ import {
   DropdownTrigger,
   User,
 } from "@nextui-org/react";
+import Link from "next/link";
+import Image from "next/image";
+import { toast } from "sonner";
 import { useSearchParams } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
+
+import { store } from "@/store";
+import { updateTokensBlackList } from "@/store/api/endpoints/auth/updateTokensBlackList";
 
 import { AdminFlag } from "@/svgs/AdminFlag";
 import { UserIcon } from "@/svgs/UserIcon";
@@ -44,10 +48,19 @@ export const UserMenu: React.FC<{ showArrow?: boolean }> = ({ showArrow }) => {
 
   const handleLogOut = async () => {
     try {
+      const { data: res, error } = await store.dispatch(
+        updateTokensBlackList.initiate()
+      );
+
+      if (error && !res) {
+        throw new Error("Something went wrong. Please try again");
+      }
       await signOut({
         callbackUrl: `/${params.toString()}`,
       });
-    } catch (error) {}
+    } catch (error) {
+      toast.error((error as Error).message);
+    }
   };
   useEffect(() => {
     if (window.innerWidth <= 1080) {

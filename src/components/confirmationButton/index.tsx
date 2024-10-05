@@ -14,6 +14,7 @@ export const ConfirmationButton: React.FC<ConfirmationButtonProps> = ({
   return (
     <Button
       variant="solid"
+      inert={!enable}
       disabled={!enable}
       className={styles.confirmation_button}
       data-position={position}

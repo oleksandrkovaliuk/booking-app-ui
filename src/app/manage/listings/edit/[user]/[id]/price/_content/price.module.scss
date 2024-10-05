@@ -19,7 +19,7 @@
       &[data-invalid="true"] {
         .price_input,
         .price_label {
-          color: var(--booking-app-coral-color);
+          animation: paintTextInWarningColor 1.5s linear;
         }
       }
       &[data-animate="true"] {
@@ -83,6 +83,18 @@
         transition: scale 0.2s ease-in-out;
       }
     }
+  }
+}
+
+@keyframes paintTextInWarningColor {
+  0% {
+    color: var(--booking-app-coral-color);
+  }
+  50% {
+    color: var(--booking-app-coral-color);
+  }
+  100% {
+    color: var(--booking-app-black-color);
   }
 }
 

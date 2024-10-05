@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useDispatch } from "react-redux";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-import { store } from "@/store";
+import { store, useSelector } from "@/store";
 import { UserSearchRegionHistory } from "@/store/api/lib/type";
 import {
   updateUserSearchRegionHistory,
@@ -36,6 +36,7 @@ import { regionResponceType } from "../../_lib/types";
 import { getCountriesByRequest } from "../../_lib/getCountriesByRequest";
 
 import styles from "../search_form_bar.module.scss";
+import { isWidthHandlerSelector } from "@/store/selectors/isWidthHandler";
 
 const RegionSelection: React.FC<SelectionComponentsProps> = ({
   searchBarRef,
@@ -46,6 +47,7 @@ const RegionSelection: React.FC<SelectionComponentsProps> = ({
   const dispatch = useDispatch();
   const params = useSearchParams();
 
+  const { mobile, tablet } = useSelector(isWidthHandlerSelector);
   const { staysButtonState } = useStaysButtonContextData();
 
   const { setTriggeredSelection } = useTriggeredSelectionApi();
@@ -218,6 +220,12 @@ const RegionSelection: React.FC<SelectionComponentsProps> = ({
     }
   }, [dispatch, params]);
 
+  useEffect(() => {
+    if (tablet || mobile) {
+      setTriggeredSelection(TypesOfSelections.WHERE);
+    }
+  }, [mobile, setTriggeredSelection, tablet]);
+
   return (
     <div
       role="button"
@@ -228,7 +236,7 @@ const RegionSelection: React.FC<SelectionComponentsProps> = ({
       data-triggered={triggeredSelection === TypesOfSelections.WHERE}
     >
       {triggeredSelection === TypesOfSelections.WHERE &&
-        searchBarRef.current && (
+        searchBarRef?.current && (
           <ModalPanel
             triggeredElementHeight={
               searchBarRef?.current?.getBoundingClientRect().height
@@ -296,7 +304,7 @@ const RegionSelection: React.FC<SelectionComponentsProps> = ({
                     data-is-only-element={!userSearchRegionHistory?.length}
                   >
                     <span className={styles.region_preview_text}>
-                      Where do we heading today?
+                      Where are we traveling today?
                     </span>
                     <Image
                       src={boat_with_people}
@@ -350,7 +358,9 @@ const RegionSelection: React.FC<SelectionComponentsProps> = ({
         )}
       <div className={styles.input_wrap}>
         <input
+          inert
           type="text"
+          autoFocus={triggeredSelection === TypesOfSelections.WHERE}
           id="searchRegionInput"
           className={styles.search_bar_input}
           placeholder="Search destinations"
@@ -368,7 +378,7 @@ const RegionSelection: React.FC<SelectionComponentsProps> = ({
       </div>
 
       <label htmlFor="searchRegionInput" className={styles.search_bar_label}>
-        Where
+        Which city
       </label>
     </div>
   );

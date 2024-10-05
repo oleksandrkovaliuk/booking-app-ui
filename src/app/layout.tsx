@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   title: "Booking-app",
   description: "Creative booking app",
 };
+
 export default function RootLayout({
   children,
 }: {

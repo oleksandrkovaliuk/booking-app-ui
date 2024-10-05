@@ -1,3 +1,45 @@
+.leave_confirmation_modal {
+  .leave_confirmation_modal_body {
+    padding-block: 20px;
+    .leave_confirmation_modal_title {
+      font-size: 20px;
+      font-family: var(--booking-app-Nunito-Sans-font);
+      font-weight: 600;
+      color: var(--booking-app-black-color);
+      line-height: 100%;
+    }
+    .leave_confirmation_modal_description {
+      font-size: 17px;
+      font-family: var(--booking-app-Nunito-Sans-font);
+      font-weight: 500;
+      color: var(--booking-app-grey-color);
+      line-height: 100%;
+    }
+  }
+  .leave_confirmation_modal_footer {
+    border-top: 1px solid var(--booking-app-lightgrey-color);
+    justify-content: space-between;
+    .clear_btn,
+    .apply_btn {
+      font-family: var(--booking-app-Nunito-Sans-font);
+      font-size: 17px;
+      font-weight: 600;
+      border-radius: 6px;
+
+      outline-color: none;
+
+      &:disabled {
+        background-color: var(--booking-app-lightgrey-color);
+        cursor: not-allowed;
+      }
+    }
+    .apply_btn {
+      color: var(--booking-app-white-color);
+      background-color: var(--booking-app-black-color);
+    }
+  }
+}
+
 .reservation_content {
   padding-block: 50px;
   max-width: 70dvw;

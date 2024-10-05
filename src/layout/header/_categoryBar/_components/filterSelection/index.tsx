@@ -179,7 +179,8 @@ export const FilterSelection: React.FC = () => {
         scroll: false,
       });
 
-      dispatch(setFetch(true));
+      dispatch(setFetch(false));
+
       dispatch(setIsSearchTriggered(false));
 
       setIsListingRequested(false);

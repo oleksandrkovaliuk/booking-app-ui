@@ -10,8 +10,8 @@ import {
   updateUserSearchRegionHistory,
   useGetUserSearchRegionHistoryQuery,
 } from "@/store/api/endpoints/search/getUserSearchRegionHistory";
-import { setFetch } from "@/store/slices/listings/isSearchTriggeredSlice";
 import { isWidthHandlerSelector } from "@/store/selectors/isWidthHandler";
+import { setFetch } from "@/store/slices/listings/isSearchTriggeredSlice";
 import { setSearchSelection } from "@/store/slices/search/searchSelectionSlice";
 
 import { Location } from "@/svgs/Location";

@@ -11,8 +11,8 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { toast } from "sonner";
-import { usePathname, useSearchParams } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
+import { usePathname, useSearchParams } from "next/navigation";
 
 import { store } from "@/store";
 import { updateTokensBlackList } from "@/store/api/endpoints/auth/updateTokensBlackList";

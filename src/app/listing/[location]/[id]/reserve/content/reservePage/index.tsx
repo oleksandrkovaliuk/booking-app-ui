@@ -75,6 +75,27 @@ export const ReserveContent: React.FC<ReservePageProps> = ({ params }) => {
     Number(Number(listing?.price).toLocaleString().split(",").join("")) *
     countChosenNightsRange;
 
+  const handleSetPendingRedirect = (url: string) => {
+    if (messageToHost.length > 0) {
+      setPendingUrl(url);
+      setIsModalOpen(true);
+    } else {
+      router.push(url);
+    }
+  };
+
+  const handleConfirmRedirect = () => {
+    if (pendingUrl.length) {
+      router.push(pendingUrl);
+      setIsModalOpen(false);
+    }
+  };
+
+  const handleCancelRedirect = () => {
+    setIsModalOpen(false);
+    setPendingUrl("");
+  };
+
   useEffect(() => {
     const setUpPage = async () => {
       const user = await store
@@ -100,27 +121,6 @@ export const ReserveContent: React.FC<ReservePageProps> = ({ params }) => {
     if (!listing?.host_email && !listing?.host_name) return;
     setUpPage();
   }, [listing?.host_email, listing?.host_name]);
-
-  const handleSetPendingRedirect = (url: string) => {
-    if (messageToHost.length > 0) {
-      setPendingUrl(url);
-      setIsModalOpen(true);
-    } else {
-      router.push(url);
-    }
-  };
-
-  const handleConfirmRedirect = () => {
-    if (pendingUrl.length) {
-      router.push(pendingUrl);
-      setIsModalOpen(false);
-    }
-  };
-
-  const handleCancelRedirect = () => {
-    setIsModalOpen(false);
-    setPendingUrl("");
-  };
 
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {

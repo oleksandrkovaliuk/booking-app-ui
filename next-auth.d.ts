@@ -1,6 +1,6 @@
 import { NextAuth } from "next-auth";
 import { User as NextAuthUser } from "next-auth";
-import { Roles } from "@/_utilities/enums"; // Make sure Roles is imported correctly
+import { Roles } from "@/_utilities/enums";
 
 declare module "next-auth" {
   interface User {

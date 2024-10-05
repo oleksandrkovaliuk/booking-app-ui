@@ -180,7 +180,6 @@ export const FilterSelection: React.FC = () => {
       });
 
       dispatch(setFetch(true));
-      // dispatch(setListings(res!));
       dispatch(setIsSearchTriggered(false));
 
       setIsListingRequested(false);

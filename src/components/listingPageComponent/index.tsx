@@ -18,12 +18,10 @@ import super_host from "@/assets/medal-of-honor.png";
 import super_host_black from "@/assets/medal-of-honor-black.png";
 import regular_host from "@/assets/renter.png";
 
-import { ParseLocalStorageDates } from "@/helpers/dateManagment";
 import { formattedAddressComponent } from "@/helpers/address/formattedAddressVariants";
 
 import { ShowCaseUser } from "@/_utilities/interfaces";
 import { ListingPageComponentProps } from "./_lib/type";
-import { searchParamsKeys } from "@/layout/header/_lib/enums";
 
 import styles from "./listing.module.scss";
 
@@ -68,7 +66,7 @@ export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
 
   return (
     <div className={styles.listing_container}>
-      {!listing || !host ? (
+      {!listing || !host.email ? (
         <Spinner size="md" color="primary" className={styles.loader} />
       ) : (
         <div className={styles.listing_content}>
@@ -152,7 +150,7 @@ export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
                   <h3 className={styles.host_name}>
                     Hosted by <span>{host.user_name?.split(" ")[0]}</span>
                   </h3>
-                  <p className={styles.host_title}>
+                  <p className={styles.host_type}>
                     {host.role === "super_host" ? "Super Host" : "Host"}
                   </p>
                 </div>

@@ -4,7 +4,7 @@ import { Skeleton } from "@nextui-org/react";
 import styles from "./skeleton.module.scss";
 
 interface Skeleton {
-  item: number;
+  item?: number;
   size: "sm" | "lg";
 }
 

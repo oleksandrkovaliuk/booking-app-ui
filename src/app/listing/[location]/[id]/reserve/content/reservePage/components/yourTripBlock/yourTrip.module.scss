@@ -1,0 +1,83 @@
+.your_trip_block {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &:not(:last-child) {
+    margin-bottom: 20px;
+  }
+
+  &:last-child {
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--booking-app-lightgrey-color);
+    margin-bottom: 20px;
+  }
+  .your_trip_edit_button {
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: underline;
+  }
+}
+
+.counter_block {
+  display: flex;
+  padding: 10px 15px;
+  justify-content: space-between;
+  align-items: center;
+
+  border: 1px solid var(--booking-app-lightgrey-color);
+  border-radius: 10px;
+  position: relative;
+
+  margin-bottom: 15px;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 9px 9px;
+    background-color: transparent;
+    border: 2px solid var(--booking-app-black-color);
+    opacity: 0;
+  }
+  &[data-is-counter-active="true"] {
+    &::before {
+      opacity: 1;
+    }
+  }
+  .counter_label {
+    font-size: 13px;
+    font-family: var(--booking-app-Nunito-Sans-font);
+    font-weight: 700;
+    color: var(--booking-app-black-color);
+    line-height: 100%;
+    text-transform: uppercase;
+  }
+}
+
+.counter_modal {
+  .modal_footer {
+    border-top: 1px solid var(--booking-app-lightgrey-color);
+    justify-content: space-between;
+    .clear_btn,
+    .apply_btn {
+      font-family: var(--booking-app-Nunito-Sans-font);
+      font-size: 17px;
+      font-weight: 600;
+      border-radius: 6px;
+
+      outline-color: none;
+
+      &:disabled {
+        background-color: var(--booking-app-lightgrey-color);
+        cursor: not-allowed;
+      }
+    }
+    .apply_btn {
+      color: var(--booking-app-white-color);
+      background-color: var(--booking-app-black-color);
+    }
+  }
+}

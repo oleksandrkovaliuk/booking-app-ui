@@ -20,9 +20,7 @@ const GuestsSelection: React.FC<SelectionComponentsProps> = ({
   searchBarRef,
   handlePopUpMenuOpening,
 }) => {
-  const router = useRouter();
   const dispatch = useDispatch();
-  const pathname = usePathname();
   const params = useSearchParams();
 
   const { triggeredSelection } = useTriggeredSelectionData();

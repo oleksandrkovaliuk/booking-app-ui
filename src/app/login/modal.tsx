@@ -12,8 +12,7 @@ import { toast } from "sonner";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { signIn } from "next-auth/react";
-import { useSearchParams, useRouter } from "next/navigation";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { store } from "@/store";
 import { checkAuthType } from "@/store/api/endpoints/auth/checkAuthType";
@@ -33,6 +32,9 @@ import styles from "./authorization.module.scss";
 import "./modalStyles.scss";
 
 export const LoginModal = () => {
+  const router = useRouter();
+  const params = useSearchParams();
+
   const emailRef = useRef<HTMLInputElement>(null);
   const passRef = useRef<HTMLInputElement>(null);
 
@@ -40,14 +42,18 @@ export const LoginModal = () => {
   const [emailValid, setEmailValid] = useState(false);
   const [passValid, setPassValid] = useState(false);
 
-  const router = useRouter();
-  const searchParam = useSearchParams();
-  const callBackUrl = searchParam.get("callbackUrl") || "/";
+  // CONSTANTS
+
+  const callbackUrl = `${params.get("callbackUrl")}` || "/";
 
   const oAuthSignIn = async (e: ReactEvent, oauth_type: string) => {
     e.preventDefault();
     try {
-      await signIn(oauth_type, { callbackUrl: callBackUrl });
+      const res = await signIn(oauth_type, {
+        callbackUrl: decodeURIComponent(callbackUrl),
+      });
+
+      if (res?.error) throw new Error(res?.error);
     } catch (error) {
       toast.error((error as Error).message);
     }
@@ -90,16 +96,18 @@ export const LoginModal = () => {
           password: btoa(passRef.current.value),
           redirect: false,
         });
-        if (res?.error) throw Error(res?.error);
-        router.push("/");
+        if (res?.error) throw new Error(res?.error);
+
+        router.push(callbackUrl);
       }
     } catch (error) {
       toast.error((error as Error).message);
     }
   };
+
   const closeModalMenu = () => {
     onClose();
-    router.push("/");
+    router.back();
   };
   useEffect(() => {
     onOpen();

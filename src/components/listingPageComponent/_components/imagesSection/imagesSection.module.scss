@@ -89,21 +89,6 @@
   }
 }
 
-.show_case_modal {
-  .close_btn {
-    padding: 5px;
-    background-color: transparent;
-    border-radius: 50%;
-    transition: background-color 0.2s ease-in-out;
-    .close_icon {
-      width: 25px;
-      height: 25px;
-    }
-    &:hover {
-      background-color: var(--booking-app-background-hover-color);
-    }
-  }
-}
 .show_case_container {
   padding-block: 60px;
   padding-inline: 50px;

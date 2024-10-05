@@ -61,6 +61,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   });
 
   const { search_date } = useSelector(searchSelectionSelector);
+
   const calculateNights =
     search_date &&
     CountNights(
@@ -71,9 +72,14 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   const isLastSlider = currentSlide === images?.length - 1;
   const isFirstSlider = currentSlide === 0;
 
+  const preparedListingLocation = formattedAddressComponent({
+    detailedAddressComponent: address?.detailedAddressComponent,
+    variant: "country",
+  });
+
   const preparedRedirectParams = params
-    ? `/listing/${address?.shorterAddress}/${id}?${params.toString()}`
-    : `/listing/${address?.shorterAddress}/${id}`;
+    ? `/listing/${preparedListingLocation}/${id}?${params.toString()}`
+    : `/listing/${preparedListingLocation}/${id}`;
 
   const mainHref = !isPreview
     ? !isPublic && isInProccess

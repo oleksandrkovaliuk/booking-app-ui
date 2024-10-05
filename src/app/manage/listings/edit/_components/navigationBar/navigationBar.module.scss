@@ -7,7 +7,7 @@
   justify-content: flex-start;
   width: 100%;
   flex-shrink: 0;
-  z-index: 11;
+  z-index: 1;
 }
 .navigationBar_wrap {
   display: flex;
@@ -169,7 +169,7 @@
     background-color: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(1px);
     opacity: 0;
-    z-index: 11;
+    z-index: 1;
     pointer-events: none;
     transition: opacity 0.4s ease-in-out;
     &[data-active="true"] {
@@ -185,7 +185,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 12;
+    z-index: 2;
     border-radius: 10px;
     background-color: var(--booking-app-white-color);
     border: 1px solid var(--booking-app-lightgrey-color);

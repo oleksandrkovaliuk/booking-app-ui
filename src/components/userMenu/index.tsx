@@ -11,7 +11,7 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { toast } from "sonner";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 
 import { store } from "@/store";
@@ -27,6 +27,7 @@ import styles from "./userMenu.module.scss";
 import "./dropdown.scss";
 
 export const UserMenu: React.FC<{ showArrow?: boolean }> = ({ showArrow }) => {
+  const pathname = usePathname();
   const params = useSearchParams();
   const { data: session } = useSession();
   const [mobile, setMobile] = useState(false);
@@ -55,9 +56,7 @@ export const UserMenu: React.FC<{ showArrow?: boolean }> = ({ showArrow }) => {
       if (error && !res) {
         throw new Error("Something went wrong. Please try again");
       }
-      await signOut({
-        callbackUrl: `/${params.toString()}`,
-      });
+      await signOut({ callbackUrl: `/${pathname}?${params.toString()}` });
     } catch (error) {
       toast.error((error as Error).message);
     }
@@ -72,7 +71,7 @@ export const UserMenu: React.FC<{ showArrow?: boolean }> = ({ showArrow }) => {
   return (
     <>
       {!session?.user ? (
-        <Link href="/login">
+        <Link href={`/login?callbackUrl=${pathname}`}>
           <button className={styles.right_navigation_button}>
             <UserIcon className={styles.user_icon} />
           </button>

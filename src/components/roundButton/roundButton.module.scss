@@ -1,0 +1,18 @@
+.round_button {
+  padding: 5px;
+  background-color: transparent;
+  border-radius: 50%;
+  transition: background-color 0.2s ease-in-out;
+  &[data-arrow-direction="right"] {
+    .round_icon {
+      rotate: 180deg;
+    }
+  }
+  .round_icon {
+    width: 25px;
+    height: 25px;
+  }
+  &:hover {
+    background-color: var(--booking-app-background-hover-color);
+  }
+}

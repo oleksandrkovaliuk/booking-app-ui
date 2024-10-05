@@ -7,6 +7,7 @@ export const requirmentForAddressComponent = [
 ];
 
 const formatsOfAddress = {
+  country: ["country"],
   cityCountry: ["locality", "country"],
   cityStateCountry: ["locality", "administrative_area_level_1", "country"],
   neighborhoodCityStateCountry: [
@@ -26,6 +27,7 @@ const formatsOfAddress = {
 interface FormattedAddressProps {
   detailedAddressComponent: google.maps.places.PlaceResult["address_components"];
   variant:
+    | "country"
     | "cityCountry"
     | "cityStateCountry"
     | "neighborhoodCityStateCountry"

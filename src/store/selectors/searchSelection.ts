@@ -1,5 +1,8 @@
 import { RootState } from "..";
 import { createSelector } from "@reduxjs/toolkit";
+import { today, getLocalTimeZone } from "@internationalized/date";
+
+import { ParseLocalStorageDates } from "@/helpers/dateManagment";
 
 const searchSelection = (state: RootState) => state.searchSelection;
 
@@ -16,9 +19,16 @@ export const searchSelectionSelector = createSelector(
     filter_accesable,
     filter_shared_room,
   }) => {
+    const parsedSearchDate = search_date
+      ? ParseLocalStorageDates(search_date)
+      : {
+          start: today(getLocalTimeZone()),
+          end: today(getLocalTimeZone()).add({ weeks: 1 }),
+        };
     return {
       search_place,
       search_date,
+      parsedSearchDate,
       search_amountOfGuests,
       search_includePets,
       search_category_id,

@@ -18,7 +18,8 @@
   }
   .leave_confirmation_modal_footer {
     border-top: 1px solid var(--booking-app-lightgrey-color);
-    justify-content: space-between;
+    justify-content: flex-start;
+    gap: 10px;
     .clear_btn,
     .apply_btn {
       font-family: var(--booking-app-Nunito-Sans-font);
@@ -137,8 +138,8 @@
   .comment_to_host {
     padding: 20px;
     border-radius: 10px;
-    border: 2px solid var(--booking-app-lightgrey-color);
-    box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--booking-app-lightgrey-color);
+
     margin-bottom: 20px;
     .comment_to_host_header {
       .comment_to_host_text {

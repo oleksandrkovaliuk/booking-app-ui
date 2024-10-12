@@ -7,7 +7,7 @@ const getWindowState = () => {
     return {
       mobile: width <= 768,
       tablet: width <= 1080,
-      desktop: width >= 1280,
+      desktop: width >= 1081,
     };
   }
 

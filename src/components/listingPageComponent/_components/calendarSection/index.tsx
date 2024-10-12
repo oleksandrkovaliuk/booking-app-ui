@@ -26,13 +26,7 @@ export const CalendarSection: React.FC<CalendarSelectionProps> = ({
 }) => {
   const dispatch = useDispatch();
 
-  const { search_date } = useSelector(searchSelectionSelector);
-  const parsedSearchDate = search_date
-    ? ParseLocalStorageDates(search_date)
-    : {
-        start: today(getLocalTimeZone()),
-        end: today(getLocalTimeZone()).add({ weeks: 1 }),
-      };
+  const { parsedSearchDate } = useSelector(searchSelectionSelector);
 
   const [triggeredSelection, setTriggeredSelection] = useState<
     "checkIn" | "checkOut" | "both"

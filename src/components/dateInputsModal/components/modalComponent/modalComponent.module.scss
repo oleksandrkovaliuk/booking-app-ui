@@ -1,0 +1,135 @@
+.modal {
+  &[data-is-mobile="true"] {
+    .modal_bg {
+      display: none;
+    }
+    .modal_container {
+      position: static;
+      background-color: unset;
+      box-shadow: unset;
+      border: unset;
+      padding: 20px 0px;
+    }
+  }
+
+  .modal_bg {
+    position: fixed;
+    inset: 0;
+    z-index: 4;
+  }
+
+  .modal_container {
+    padding: 14px 20px;
+    position: absolute;
+    right: 10px;
+    top: 46px;
+    z-index: 5;
+
+    background-color: var(--booking-app-white-color);
+    border: 1px solid var(--booking-app-lightgrey-color);
+    border-radius: 20px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+
+    .modal_header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 30px;
+      .modal_header_text {
+        .modal_title {
+          display: block;
+          font-size: 25px;
+          font-family: var(--booking-app-Nunito-Sans-font);
+          font-weight: 600;
+          color: var(--booking-app-black-color);
+          line-height: 100%;
+          margin-bottom: 5px;
+        }
+        .modal_subtitle {
+          font-size: 15px;
+          font-family: var(--booking-app-Nunito-Sans-font);
+          font-weight: 400;
+          color: var(--booking-app-grey-color);
+          line-height: 100%;
+        }
+      }
+    }
+    .calendar_container {
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: center;
+    }
+    .modal_footer {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      align-items: flex-end;
+      .modal_button {
+        padding: 5px 15px;
+        border-radius: 5px;
+        font-size: 15px;
+        font-family: var(--booking-app-Nunito-Sans-font);
+        font-weight: 500;
+        outline: none;
+
+        transition: all 0.2s ease-in-out;
+        &.clear_button {
+          text-decoration: underline;
+        }
+        &.close_button {
+          color: var(--booking-app-white-color);
+          background-color: var(--booking-app-black-color);
+          &:hover {
+            scale: 0.97;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (width <= 1080px) {
+  .modal {
+    &[data-is-modal-separate="false"] {
+      .modal_container {
+        padding: unset !important;
+        .modal_header {
+          margin-bottom: 20px;
+          .modal_title {
+            font-size: 20px;
+          }
+        }
+
+        .modal_footer {
+          justify-content: flex-start;
+        }
+      }
+    }
+  }
+}
+
+@media (width <= 700px) {
+  .modal {
+    padding-block: 20px;
+    align-items: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    &[data-is-modal-separate="true"] {
+      .modal_container {
+        padding: unset !important;
+        .modal_header {
+          margin-bottom: 10px;
+          flex-direction: column;
+          .modal_title {
+            font-size: 20px;
+          }
+        }
+
+        .modal_footer {
+          justify-content: flex-start;
+        }
+      }
+    }
+  }
+}

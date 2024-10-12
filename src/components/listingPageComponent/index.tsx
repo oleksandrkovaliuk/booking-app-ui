@@ -43,7 +43,6 @@ export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
       const user = await store
         .dispatch(
           getUser.initiate({
-            user_name: listing?.host_name!,
             user_email: listing?.host_email!,
           })
         )
@@ -52,7 +51,9 @@ export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
       setHost((prev) => {
         if (!user.data) return prev;
         return {
-          user_name: user.data.user_name,
+          user_name: user.data.user_name
+            ? user.data.user_name
+            : user.data.user_email,
           email: user.data.user_email,
           img_url: user.data.img_url,
           role: user.data.role,
@@ -109,14 +110,14 @@ export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
                 <div className={styles.host_img_container}>
                   {host.img_url ? (
                     <Image
-                      src={host.img_url}
+                      src={host.img_url!}
                       alt="host_avatar"
                       width={100}
                       height={100}
                       className={styles.host_img}
                     />
                   ) : (
-                    <div className={`${styles.host_img} ${styles.host_img}`}>
+                    <div className={`${styles.host_img} ${styles.no_host_img}`}>
                       {" "}
                       {host.user_name
                         ? host.user_name.split("")[0]

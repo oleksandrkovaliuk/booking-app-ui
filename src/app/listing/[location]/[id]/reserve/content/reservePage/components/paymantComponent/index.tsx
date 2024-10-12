@@ -1,30 +1,45 @@
-import React from "react";
-import Link from "next/link";
-import { Button } from "@nextui-org/react";
-import { useSession } from "next-auth/react";
-import { usePathname, useSearchParams } from "next/navigation";
+import React, { useState } from "react";
+
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
+
+import { CheckoutForm } from "./checkoutForm";
+
+import { PaymantComponentProps } from "./_lib/interfaces";
 
 import styles from "./paymantComponent.module.scss";
 
-export const PaymantComponent: React.FC = () => {
-  const pathname = usePathname();
-  const params = useSearchParams();
-  const { data: session } = useSession();
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISH_KEY!);
+
+export const PaymantComponent: React.FC<PaymantComponentProps> = ({
+  total,
+  listing_id,
+}) => {
   return (
     <div className={styles.paymant_section}>
-      {session?.user ? (
-        <button>buy now</button>
-      ) : (
-        <div className={styles.login_to_procces}>
-          <span className={styles.title}>
-            In order to procces the reservation , please authorize your account.
-          </span>
-          <Link href={`/login?callbackUrl=${pathname}?${params.toString()}`}>
-            <Button size="lg" className={styles.login_button}>
-              Authorize
-            </Button>
-          </Link>
-        </div>
+      {!Number.isNaN(total) && (
+        <Elements
+          stripe={stripePromise}
+          options={{
+            mode: "payment",
+            amount: total,
+            currency: "usd",
+            capture_method: "manual",
+            appearance: {
+              labels: "floating",
+              variables: {
+                fontFamily:
+                  "https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap",
+
+                colorPrimary: "#ff395c",
+                colorText: "#2f2f2f",
+                borderRadius: "10px",
+              },
+            },
+          }}
+        >
+          <CheckoutForm total={total} listing_id={listing_id} />
+        </Elements>
       )}
     </div>
   );

@@ -69,6 +69,22 @@ export const ListingCard: React.FC<ListingCardProps> = ({
       ParseLocalStorageDates(search_date).end
     );
   // CONDITIONS
+  const isPreviewCard = isPreview && !isManagable;
+  const isRequiredAvailability =
+    !isComplete && !isInProccess && !isPublic && !isPreview;
+
+  const hasUnsavedChanges =
+    isComplete && isManagable && listingHasUnsavedChanges.unsaved_changes;
+
+  const showTotalPrice =
+    params.get(searchParamsKeys.SEARCH_DATE) &&
+    isPublic &&
+    !isManagable &&
+    !isPreview &&
+    !isInProccess &&
+    price &&
+    calculateNights;
+
   const isLastSlider = currentSlide === images?.length - 1;
   const isFirstSlider = currentSlide === 0;
 
@@ -190,18 +206,16 @@ export const ListingCard: React.FC<ListingCardProps> = ({
           onWheel={handleWheelScroll}
         >
           {isInProccess && <StatusBadge status="In progress" color="#ffa836" />}
-          {!isComplete && !isInProccess && !isPublic && !isPreview && (
+          {isRequiredAvailability && (
             <StatusBadge
               status="Required avalability approval"
               color="#800000"
             />
           )}
-          {isComplete &&
-            isManagable &&
-            listingHasUnsavedChanges.unsaved_changes && (
-              <StatusBadge status="Unsaved changes" color="#ffa836" />
-            )}
-          {isPreview && !isManagable && (
+          {hasUnsavedChanges && (
+            <StatusBadge status="Unsaved changes" color="#ffa836" />
+          )}
+          {isPreviewCard && (
             <span className={styles.show_preview}>show preview</span>
           )}
 
@@ -252,27 +266,21 @@ export const ListingCard: React.FC<ListingCardProps> = ({
               <span>
                 <b>
                   $
-                  {isNaN(Number(price))
+                  {Number.isNaN(Number(price))
                     ? Number(price.split(",").join("")).toLocaleString()
                     : price.toLocaleString()}
                 </b>{" "}
                 night
               </span>
-              {params.get(searchParamsKeys.SEARCH_DATE) &&
-                isPublic &&
-                !isManagable &&
-                !isPreview &&
-                !isInProccess &&
-                price &&
-                calculateNights && (
-                  <span className={styles.total}>
-                    $
-                    {CalculatePriceIncludingTax(
-                      Number(price) * calculateNights
-                    ).total_price.toLocaleString()}{" "}
-                    total
-                  </span>
-                )}
+              {showTotalPrice && (
+                <span className={styles.total}>
+                  $
+                  {CalculatePriceIncludingTax(
+                    Number(price) * calculateNights
+                  ).total_price.toLocaleString()}{" "}
+                  total
+                </span>
+              )}
             </div>
           )}
         </div>

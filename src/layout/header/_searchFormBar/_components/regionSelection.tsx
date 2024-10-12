@@ -70,6 +70,19 @@ const RegionSelection: React.FC<SelectionComponentsProps> = ({
   const [responseForRegion, setResponseForRegion] = useState<[]>([]);
   const [isResponseLoading, setIsResponseLoading] = useState<boolean>(false);
 
+  // CONSTANTS
+  const showRecentSearch =
+    !isResponseLoading &&
+    userSearchRegionHistory?.length &&
+    !isUserSearchRegionHistoryLoading &&
+    !responseForRegion.length;
+
+  const showPreviewCard =
+    !isResponseLoading &&
+    !isUserSearchRegionHistoryLoading &&
+    !regionSelection.value &&
+    !responseForRegion.length;
+
   const getData = async () => {
     try {
       setIsResponseLoading(true);
@@ -253,68 +266,62 @@ const RegionSelection: React.FC<SelectionComponentsProps> = ({
             className={styles.modal_menu}
           >
             <div className={styles.search_region_modal}>
-              {!isResponseLoading &&
-                userSearchRegionHistory?.length &&
-                !isUserSearchRegionHistoryLoading &&
-                !responseForRegion.length && (
-                  <ul className={styles.user_search_history}>
-                    <li className={styles.user_search_history_title}>
-                      <span className={styles.user_search_history_title_text}>
-                        Recent search
-                      </span>
-                    </li>
-                    {userSearchRegionHistory?.map(
-                      (history: UserSearchRegionHistory, i) => (
-                        <li
-                          className={styles.user_search_history_block}
-                          key={`${history.requestedAt} + ${i}`}
-                          onClick={(e) =>
-                            handleUserRegionSelection(
-                              e,
-                              history.region,
-                              history.formattedValue
-                            )
-                          }
-                        >
-                          <div className={styles.user_search_history_icon}>
-                            <SearchHistoryIcon />
-                          </div>
-                          <div
-                            className={styles.user_search_history_text_content}
-                          >
-                            <span className={styles.user_search_history_region}>
-                              {history.formattedValue}
-                            </span>
-                            <span className={styles.user_search_history_date}>
-                              {history.requestedAt}
-                            </span>
-                          </div>
-                        </li>
-                      )
-                    )}
-                  </ul>
-                )}
-
-              {!isResponseLoading &&
-                !isUserSearchRegionHistoryLoading &&
-                !regionSelection.value &&
-                !responseForRegion.length && (
-                  <div
-                    className={styles.region_preview_container}
-                    data-is-only-element={!userSearchRegionHistory?.length}
-                  >
-                    <span className={styles.region_preview_text}>
-                      Where are we traveling today?
+              {showRecentSearch && (
+                <ul className={styles.user_search_history}>
+                  <li className={styles.user_search_history_title}>
+                    <span className={styles.user_search_history_title_text}>
+                      Recent search
                     </span>
-                    <Image
-                      src={boat_with_people}
-                      alt="boat_with_people"
-                      width={500}
-                      height={500}
-                      className={styles.region_preview_main_img}
-                    />
-                  </div>
-                )}
+                  </li>
+                  {userSearchRegionHistory?.map(
+                    (history: UserSearchRegionHistory, i) => (
+                      <li
+                        className={styles.user_search_history_block}
+                        key={`${history.requestedAt} + ${i}`}
+                        onClick={(e) =>
+                          handleUserRegionSelection(
+                            e,
+                            history.region,
+                            history.formattedValue
+                          )
+                        }
+                      >
+                        <div className={styles.user_search_history_icon}>
+                          <SearchHistoryIcon />
+                        </div>
+                        <div
+                          className={styles.user_search_history_text_content}
+                        >
+                          <span className={styles.user_search_history_region}>
+                            {history.formattedValue}
+                          </span>
+                          <span className={styles.user_search_history_date}>
+                            {history.requestedAt}
+                          </span>
+                        </div>
+                      </li>
+                    )
+                  )}
+                </ul>
+              )}
+
+              {showPreviewCard && (
+                <div
+                  className={styles.region_preview_container}
+                  data-is-only-element={!userSearchRegionHistory?.length}
+                >
+                  <span className={styles.region_preview_text}>
+                    Where are we traveling today?
+                  </span>
+                  <Image
+                    src={boat_with_people}
+                    alt="boat_with_people"
+                    width={500}
+                    height={500}
+                    className={styles.region_preview_main_img}
+                  />
+                </div>
+              )}
 
               {isResponseLoading && (
                 <div

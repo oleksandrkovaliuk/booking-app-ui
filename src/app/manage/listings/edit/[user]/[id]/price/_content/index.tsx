@@ -88,7 +88,7 @@ export const PriceContent: React.FC<ContentProps> = ({ params }) => {
 
   return (
     <>
-      {!isNaN(Number(selectedPrice?.split(",").join(""))) && (
+      {!Number.isNaN(Number(selectedPrice?.split(",").join(""))) && (
         <Price
           editPage
           styles={styles}

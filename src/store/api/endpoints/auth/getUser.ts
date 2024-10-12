@@ -5,14 +5,8 @@ import { ApiUrlsAuth } from "../../lib/constants";
 const GetUser = api.injectEndpoints({
   endpoints: (builder) => ({
     getUser: builder.query({
-      query: ({
-        user_name,
-        user_email,
-      }: {
-        user_name: string;
-        user_email: string;
-      }) => ({
-        url: `${ApiUrlsAuth.getUser}/${user_email}/${user_name}`,
+      query: ({ user_email }: { user_email: string }) => ({
+        url: `${ApiUrlsAuth.getUser}/${user_email}`,
       }),
       providesTags: [ApiTags.CURRENT_USER],
     }),

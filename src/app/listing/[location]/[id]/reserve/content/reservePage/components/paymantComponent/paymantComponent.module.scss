@@ -3,36 +3,3 @@
   border-bottom: 1px solid var(--booking-app-lightgrey-color);
   margin-bottom: 20px;
 }
-.login_to_procces {
-  .title {
-    display: block;
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--booking-app-black-color);
-    font-family: var(--booking-app-Nunito-Sans-font);
-    line-height: 100%;
-    margin-bottom: 15px;
-  }
-  .login_button {
-    width: 100%;
-    padding: 10px 20px;
-
-    border-radius: 10px;
-    background-color: var(--booking-app-coral-color);
-
-    font-size: 16px;
-    font-family: var(--booking-app-Nunito-Sans-font);
-    font-weight: 600;
-    color: var(--booking-app-white-color);
-
-    transition: all 0.2s ease-in-out;
-
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-    &:hover {
-      scale: 0.98;
-    }
-  }
-}

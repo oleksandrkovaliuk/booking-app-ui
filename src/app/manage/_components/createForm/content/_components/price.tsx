@@ -32,7 +32,7 @@ export const Price: React.FC<ContentProps> = ({
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     const price = e.target.value.split(",").join("");
-    if (isNaN(Number(price))) {
+    if (Number.isNaN(Number(price))) {
       toast("🤔 It looks like you trying to enter non numeric character.", {
         position: "top-center",
         action: {

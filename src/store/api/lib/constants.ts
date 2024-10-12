@@ -12,6 +12,8 @@ export const ApiUrlsListings = {
   requestDeleteListing: "/listings/listing/delete",
   requestCreateListing: "/listings/listing/create",
   requestUpdateCalendar: "/listings/calendar/update",
+  requestSetRangeOfDisabledDates:
+    "/listings/calendar/set/range/of/disabledDates",
   requestDeleteUserListingImages: "/listings/images/delete",
   requestAvailableCategories: "/listings/request/available/categories",
   requestDeleteIndividualListingImage: "/listings/images/delete/individual",
@@ -31,6 +33,12 @@ export const ApiUrlsAuth = {
 export const ApiUrlsUser = {
   getUserSearchRegionHistory: "/user/get/search/region/history",
   updateUserSearchRegionHistory: "/user/update/search/region/history",
+
+  updateUserReservations: "/user/update/reservations",
+};
+
+export const ApiUrlsPayment = {
+  getClientSecret: "/payment/get/clientSecret",
 };
 
 export const ApiTagsTypes = [

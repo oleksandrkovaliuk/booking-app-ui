@@ -106,7 +106,7 @@ export const CreateForm: React.FC = () => {
   // CONDITIONS
   const enumsKeys = Object.keys(CreateListingSteps)
     .map((item) => Number(item))
-    .filter((item) => !isNaN(Number(item)));
+    .filter((item) => !Number.isNaN(Number(item)));
 
   const isLastStep = formStep === Number(enumsKeys[enumsKeys.length - 1]);
 

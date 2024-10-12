@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import {
   Button,
@@ -11,7 +11,7 @@ import {
   Textarea,
   Tooltip,
 } from "@nextui-org/react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { today, getLocalTimeZone } from "@internationalized/date";
 
 import { store } from "@/store";
@@ -35,9 +35,12 @@ import { ReservePageProps } from "../_lib/interfaces";
 import { searchParamsKeys } from "@/layout/header/_lib/enums";
 
 import styles from "./reservePage.module.scss";
+import { CreateNewQueryParams } from "@/helpers/paramsManagment";
+import { useDebounce } from "@/hooks/useDebounce";
 
 export const ReserveContent: React.FC<ReservePageProps> = ({ params }) => {
   const router = useRouter();
+  const pathname = usePathname();
   const paramsUrl = useSearchParams();
 
   const convertedParams = Object.fromEntries(paramsUrl.entries()) as {
@@ -75,8 +78,23 @@ export const ReserveContent: React.FC<ReservePageProps> = ({ params }) => {
     Number(Number(listing?.price).toLocaleString().split(",").join("")) *
     countChosenNightsRange;
 
+  const assignMessageToHost = () => {
+    const updatedParams = CreateNewQueryParams({
+      updatedParams: {
+        message: messageToHost,
+      },
+      params: paramsUrl,
+    });
+
+    router.replace(`${pathname}?${updatedParams}`, {
+      scroll: false,
+    });
+  };
+
+  const debaouncedAssignMessageToHost = useDebounce(assignMessageToHost, 500);
+
   const handleSetPendingRedirect = (url: string) => {
-    if (messageToHost.length > 0) {
+    if (paramsUrl.get("message")) {
       setPendingUrl(url);
       setIsModalOpen(true);
     } else {
@@ -85,7 +103,7 @@ export const ReserveContent: React.FC<ReservePageProps> = ({ params }) => {
   };
 
   const handleConfirmRedirect = () => {
-    if (pendingUrl.length) {
+    if (pendingUrl.length || paramsUrl.get("payment_proccesing")) {
       router.push(pendingUrl);
       setIsModalOpen(false);
     }
@@ -101,7 +119,6 @@ export const ReserveContent: React.FC<ReservePageProps> = ({ params }) => {
       const user = await store
         .dispatch(
           getUser.initiate({
-            user_name: listing?.host_name!,
             user_email: listing?.host_email!,
           })
         )
@@ -109,8 +126,11 @@ export const ReserveContent: React.FC<ReservePageProps> = ({ params }) => {
 
       setHost((prev) => {
         if (!user.data) return prev;
+
         return {
-          user_name: user.data.user_name,
+          user_name: user.data.user_name
+            ? user.data.user_name.split(" ")[0]
+            : user.data.user_email,
           email: user.data.user_email,
           img_url: user.data.img_url,
           role: user.data.role,
@@ -121,18 +141,6 @@ export const ReserveContent: React.FC<ReservePageProps> = ({ params }) => {
     if (!listing?.host_email && !listing?.host_name) return;
     setUpPage();
   }, [listing?.host_email, listing?.host_name]);
-
-  useEffect(() => {
-    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-      event.preventDefault();
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, [router]);
 
   return (
     <>
@@ -159,7 +167,7 @@ export const ReserveContent: React.FC<ReservePageProps> = ({ params }) => {
               className={styles.clear_btn}
               onClick={handleCancelRedirect}
             >
-              Cancel
+              Stay
             </Button>
             <Button
               size="md"
@@ -201,9 +209,7 @@ export const ReserveContent: React.FC<ReservePageProps> = ({ params }) => {
                     {!host.user_name ? (
                       <Skeleton className={styles.host_name_skeleton} />
                     ) : (
-                      <span className={styles.host_name}>
-                        {host.user_name?.split(" ")[0]}
-                      </span>
+                      <span className={styles.host_name}>{host.user_name}</span>
                     )}
                     &apos;s place is usually booked.
                   </p>
@@ -228,11 +234,11 @@ export const ReserveContent: React.FC<ReservePageProps> = ({ params }) => {
                         className={styles.host_img}
                       />
                     ) : (
-                      <div className={`${styles.host_img} ${styles.host_img}`}>
+                      <div
+                        className={`${styles.host_img} ${styles.no_host_img}`}
+                      >
                         {" "}
-                        {host.user_name
-                          ? host.user_name.split("")[0]
-                          : host.email?.split("")[0]}
+                        {host.email.split("")[0]}
                       </div>
                     )}
                     {host.role === "super_host" && (
@@ -260,7 +266,7 @@ export const ReserveContent: React.FC<ReservePageProps> = ({ params }) => {
                   </div>
                   <div className={styles.host_info}>
                     <h3 className={styles.host_name}>
-                      <span>{host.user_name?.split(" ")[0]}</span>
+                      <span>{host.user_name}</span>
                     </h3>
                     <p className={styles.host_type}>
                       {host.role === "super_host" ? "Super Host" : "Host"}
@@ -284,15 +290,20 @@ export const ReserveContent: React.FC<ReservePageProps> = ({ params }) => {
                 className="additional_details"
                 placeholder="..."
                 value={messageToHost}
-                onValueChange={setMessageToHost}
+                onValueChange={(value: string) => {
+                  setMessageToHost(value);
+                  debaouncedAssignMessageToHost();
+                }}
                 classNames={{ input: styles.comment_to_host_textarea }}
               />
             </div>
-
-            <PaymantComponent />
+            <PaymantComponent
+              total={calculationOfPrice}
+              listing_id={JSON.parse(params.id)}
+            />
           </section>
           <section className={styles.right_reservation_info_block}>
-            {!convertedParams || isNaN(calculationOfPrice) ? (
+            {!convertedParams || Number.isNaN(calculationOfPrice) ? (
               <Skeleton className={styles.reservation_listing_info_skeleton} />
             ) : (
               <ul className={styles.reservation_listing_info}>

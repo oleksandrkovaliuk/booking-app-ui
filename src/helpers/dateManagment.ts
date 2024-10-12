@@ -64,13 +64,22 @@ export const isDateValueEqual = (dateSelection: RangeValue<DateValue>) => {
   );
 };
 
-export const ConverIntoDateValueFormat = (
-  incomingDate: Date
-): DateFormatingProps => {
+export const ConverIntoDateValueFormat = (incomingDate: Date): DateValue => {
   const date = new Date(incomingDate);
-  return {
-    year: date.getFullYear(),
-    month: date.getMonth() + 1,
-    day: date.getDate(),
-  };
+  return new CalendarDate(
+    date.getFullYear(),
+    date.getMonth() + 1,
+    date.getDate()
+  );
+};
+
+export const GetEveryDateFromRange = (start: Date, end: Date) => {
+  const result = [];
+
+  while (start <= end) {
+    result.push(ConverIntoDateValueFormat(new Date(start)));
+    start.setDate(start.getDate() + 1);
+  }
+
+  return result;
 };

@@ -40,7 +40,7 @@ export const YourTripBlock: React.FC<YourTripBlockProps> = ({
   };
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { search_amountOfGuests } = useSelector(searchSelectionSelector);
+  const { search_amountOfGuests } = useSelector(searchSelectionSelector());
 
   const [isCounterActive, setIsCounterActive] = useState<boolean>(false);
   const [guestsAmount, setGuestsAmount] = useState<number>(

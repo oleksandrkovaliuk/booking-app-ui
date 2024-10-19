@@ -25,12 +25,14 @@
 }
 .submit_checkout_button {
   width: 100%;
+  display: grid;
+  place-content: center;
 
   padding: 10px 15px;
   border-radius: 10px;
-  border: 1px solid var(--booking-app-focused-background-color);
   font-size: 17px;
   font-weight: 600;
+  line-height: 120%;
   font-family: var(--booking-app-Nunito-Sans-font);
 
   color: var(--booking-app-white-color);

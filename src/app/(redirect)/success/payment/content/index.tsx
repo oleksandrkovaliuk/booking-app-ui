@@ -66,9 +66,26 @@ export const PaymentContent: React.FC = () => {
           primary: "#ff453a",
         };
 
+  const handleReturnUserToReservePage = () => {
+    router.back();
+  };
   const handleSetDisabledDates = useCallback(async () => {
     try {
       const incomingParams = Object.fromEntries(params.entries());
+
+      if (
+        !incomingParams.disabled_dates &&
+        incomingParams.redirect_status === "succeeded"
+      ) {
+        return setReservationStatus((prev) => ({
+          ...prev,
+          success: true,
+          loading: false,
+          status: "Complete",
+          beenProcessedAt: new Date(),
+          message: "Your Reservation created and sent successfully",
+        }));
+      }
 
       if (
         !incomingParams ||
@@ -89,6 +106,7 @@ export const PaymentContent: React.FC = () => {
         ...prev,
         loading: true,
       }));
+
       const { data: res, error: disabledDatesUpdateError } =
         await store.dispatch(
           requestSetRangeOfDisabledDates.initiate({
@@ -97,10 +115,11 @@ export const PaymentContent: React.FC = () => {
           })
         );
 
-      if (disabledDatesUpdateError && !res)
+      if (disabledDatesUpdateError && !res) {
         throw new Error(
           "Failed to update disabled dates and procces your request. Please try again"
         );
+      }
 
       const { data: reservationUpdateRes, error: reservationUpdateError } =
         await store.dispatch(
@@ -115,10 +134,11 @@ export const PaymentContent: React.FC = () => {
           })
         );
 
-      if (reservationUpdateError && !reservationUpdateRes)
+      if (reservationUpdateError && !reservationUpdateRes) {
         throw new Error(
-          "Failed to procces your request. Possibale reasone that reservation assigned to this account or this pecific listing already exist. Please contact host or customer support if you have any questions."
+          "Failed to procces your request. Possibly the reason is that reservation assigned to this account or this specific listing already exist. Please contact host or customer support if you have any questions."
         );
+      }
 
       setReservationStatus((prev) => ({
         ...prev,
@@ -145,8 +165,7 @@ export const PaymentContent: React.FC = () => {
         message: "Your Reservation created and sent successfully",
       }));
     } catch (error) {
-      console.log(error, "error");
-      setReservationStatus((prev) => ({
+      return setReservationStatus((prev) => ({
         ...prev,
         error: true,
         loading: false,
@@ -157,19 +176,8 @@ export const PaymentContent: React.FC = () => {
   }, [params, pathname, router, session?.user.email]);
 
   useEffect(() => {
-    if (params.get("disabled_dates") && session?.user.email) {
-      handleSetDisabledDates();
-    } else {
-      setReservationStatus((prev) => ({
-        ...prev,
-        success: true,
-        loading: false,
-        status: "Complete",
-        beenProcessedAt: new Date(),
-        message: "Your Reservation created and sent successfully",
-      }));
-    }
-  }, [handleSetDisabledDates, params, session?.user.email]);
+    handleSetDisabledDates();
+  }, [handleSetDisabledDates]);
 
   useEffect(() => {
     const setUpPage = async () => {
@@ -270,9 +278,7 @@ export const PaymentContent: React.FC = () => {
                             color="default"
                             size="sm"
                             delay={1000}
-                            classNames={{
-                              content: ["text-#2f2f2f font-medium rounded-lg"],
-                            }}
+                            className="custome_tooltip info"
                           >
                             <div>
                               <Image
@@ -323,7 +329,32 @@ export const PaymentContent: React.FC = () => {
                     </span>
                   </li>
                 )}
+              {params.get("message") && (
+                <li
+                  className={`${styles.reservation_info_details_block} ${styles.message_block}`}
+                >
+                  <span className={styles.reservation_details_title}>
+                    Your Message:
+                  </span>
+                  <p className={styles.reservation_details_description}>
+                    {params.get("message")}
+                  </p>
+                </li>
+              )}
             </ul>
+            <button
+              disabled={reservationStatus.loading!}
+              className={styles.next_step_button}
+              onClick={
+                reservationStatus.success
+                  ? () => {}
+                  : handleReturnUserToReservePage
+              }
+            >
+              {reservationStatus.success
+                ? "Chat with host"
+                : "Back to reservation"}
+            </button>
           </div>
         </div>
       </div>

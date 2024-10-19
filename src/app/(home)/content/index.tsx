@@ -7,7 +7,10 @@ import { useDispatch } from "react-redux";
 import { useSearchParams } from "next/navigation";
 
 import { useSelector } from "@/store";
-import { setFetch } from "@/store/slices/listings/isSearchTriggeredSlice";
+import {
+  setFetch,
+  setIsSearchTriggered,
+} from "@/store/slices/listings/isSearchTriggeredSlice";
 import { setListings } from "@/store/slices/listings/listingSearchResponseSlice";
 import { clearSearchSelection } from "@/store/slices/search/searchSelectionSlice";
 
@@ -62,8 +65,9 @@ export const HomeContent: React.FC = () => {
             href={"/"}
             onClick={() => {
               if (params.size > 0) {
-                dispatch(clearSearchSelection());
                 dispatch(setFetch(true));
+                dispatch(clearSearchSelection());
+                dispatch(setIsSearchTriggered(false));
               }
             }}
             className={styles.discarb_button}

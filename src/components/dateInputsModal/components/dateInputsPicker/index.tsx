@@ -1,4 +1,5 @@
 import React from "react";
+import { useSearchParams } from "next/navigation";
 
 import { useSelector } from "@/store";
 import { searchSelectionSelector } from "@/store/selectors/searchSelection";
@@ -15,7 +16,8 @@ export const DateInputsPicker: React.FC<DateInputsPickerProps> = ({
   inputSelection,
   setInputSelection,
 }) => {
-  const { parsedSearchDate } = useSelector(searchSelectionSelector);
+  const params = useSearchParams();
+  const { parsedSearchDate } = useSelector(searchSelectionSelector(params));
 
   return (
     <button

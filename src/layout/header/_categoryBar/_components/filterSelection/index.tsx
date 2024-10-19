@@ -50,7 +50,7 @@ export const FilterSelection: React.FC = () => {
     filter_shared_room,
     filter_price_range,
     filter_type_of_place,
-  } = useSelector(searchSelectionSelector);
+  } = useSelector(searchSelectionSelector());
   const { mobile } = useSelector(isWidthHandlerSelector);
 
   const { listings } = useSelector((state) => state.listingSearchResponse);
@@ -118,6 +118,7 @@ export const FilterSelection: React.FC = () => {
       const updatedParams = CreateNewQueryParams({
         updatedParams: {
           [searchParamsKeys.FILTER_ACCESABLE]: null,
+          [searchParamsKeys.SEARCH_CATEGORY_ID]: null,
           [searchParamsKeys.FILTER_PRICE_RANGE]: null,
           [searchParamsKeys.FILTER_SHARED_ROOM]: null,
           [searchParamsKeys.FILTER_TYPE_OF_PLACE]: null,
@@ -128,6 +129,7 @@ export const FilterSelection: React.FC = () => {
       dispatch(
         setSearchSelection({
           [searchParamsKeys.FILTER_ACCESABLE]: null,
+          [searchParamsKeys.SEARCH_CATEGORY_ID]: null,
           [searchParamsKeys.FILTER_SHARED_ROOM]: null,
           [searchParamsKeys.FILTER_PRICE_RANGE]: null,
           [searchParamsKeys.FILTER_TYPE_OF_PLACE]: null,
@@ -179,8 +181,7 @@ export const FilterSelection: React.FC = () => {
         scroll: false,
       });
 
-      dispatch(setFetch(false));
-
+      dispatch(setFetch(true));
       dispatch(setIsSearchTriggered(false));
 
       setIsListingRequested(false);

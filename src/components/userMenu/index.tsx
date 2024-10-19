@@ -110,11 +110,11 @@ export const UserMenu: React.FC<{ showArrow?: boolean }> = ({ showArrow }) => {
             <DropdownSection showDivider>
               <DropdownItem isReadOnly key="profile">
                 <User
-                  name={session?.user?.name}
+                  name={session?.user?.name || session?.user?.email}
                   description={session?.user?.email}
                   avatarProps={{
                     size: "sm",
-                    src: session?.user?.image ? session?.user?.image : "N",
+                    src: session?.user?.image ? session?.user?.image : "",
                   }}
                 />
                 {session?.user?.role === Roles.ADMIN && (

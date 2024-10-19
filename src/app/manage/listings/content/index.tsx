@@ -79,9 +79,7 @@ export const ListingsPage: React.FC = () => {
               color="primary"
               size="sm"
               delay={1500}
-              classNames={{
-                content: ["text-white font-medium bg-[#2f2f2f]"],
-              }}
+              className="custome_tooltip black"
             >
               <motion.div {...appearAnimation} transition={motion_transition}>
                 <NotFoundIcon className={styles.not_found_icon} />

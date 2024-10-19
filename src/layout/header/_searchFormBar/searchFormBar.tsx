@@ -56,7 +56,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
     filter_shared_room,
     filter_price_range,
     filter_type_of_place,
-  } = useSelector(searchSelectionSelector);
+  } = useSelector(searchSelectionSelector());
   const { tablet } = useSelector(isWidthHandlerSelector);
 
   const { isLoading } = useGetVerifiedListingByParamsQuery({

@@ -325,9 +325,7 @@ export const Images: React.FC<ContentProps> = ({
             color="primary"
             size="sm"
             delay={1500}
-            classNames={{
-              content: ["text-white bg-[#2f2f2f]"],
-            }}
+            className="custome_tooltip black"
           >
             <label
               className="images_modal_add_images"

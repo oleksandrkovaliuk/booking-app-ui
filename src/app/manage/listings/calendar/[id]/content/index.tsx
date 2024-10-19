@@ -193,9 +193,7 @@ export const CalendarPageContent: React.FC<CalendarPageContentProps> = ({
           color="default"
           size="sm"
           delay={200}
-          classNames={{
-            content: ["text-#2f2f2f font-medium rounded-lg"],
-          }}
+          className="custome_tooltip info"
         >
           <Button
             variant="ghost"

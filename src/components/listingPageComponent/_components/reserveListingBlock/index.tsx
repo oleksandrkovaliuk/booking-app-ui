@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useDispatch } from "react-redux";
-import { today, getLocalTimeZone } from "@internationalized/date";
 import { usePathname, useSearchParams } from "next/navigation";
 
 import { useSelector } from "@/store";
@@ -11,7 +10,7 @@ import { setSearchSelection } from "@/store/slices/search/searchSelectionSlice";
 import { Counter } from "@/components/counter";
 import { DateInputsModal } from "@/components/dateInputsModal";
 
-import { CountNights, ParseLocalStorageDates } from "@/helpers/dateManagment";
+import { CountNights } from "@/helpers/dateManagment";
 
 import { CalculatePriceIncludingTax } from "@/helpers/priceManagment";
 
@@ -20,6 +19,7 @@ import { searchParamsKeys } from "@/layout/header/_lib/enums";
 
 import styles from "./reserveListing.module.scss";
 import "./additionalStyles.scss";
+import { Tooltip } from "@nextui-org/react";
 
 export const ReserveListingBlock: React.FC<ReserveListingBlockProps> = ({
   price,
@@ -31,7 +31,9 @@ export const ReserveListingBlock: React.FC<ReserveListingBlockProps> = ({
   const dispatch = useDispatch();
   const params = useSearchParams();
 
-  const { search_amountOfGuests } = useSelector(searchSelectionSelector);
+  const { search_amountOfGuests, parsedSearchDate } = useSelector(
+    searchSelectionSelector(params)
+  );
 
   const [guestsAmount, setGuestsAmount] = useState<number>(
     JSON.parse(search_amountOfGuests || "1")
@@ -42,18 +44,30 @@ export const ReserveListingBlock: React.FC<ReserveListingBlockProps> = ({
   >("none");
 
   // CONSTANTS
-  const parsedSearchDate = params.get(searchParamsKeys.SEARCH_DATE)
-    ? ParseLocalStorageDates(params.get(searchParamsKeys.SEARCH_DATE)!)
-    : {
-        start: today(getLocalTimeZone()),
-        end: today(getLocalTimeZone()).add({ weeks: 1 }),
-      };
+
+  const isDateIncludingUnavailableDates = disabledDates.some((date) => {
+    const disabled = new Date(date.year, date.month - 1, date.day);
+    const start = new Date(
+      parsedSearchDate.start.year,
+      parsedSearchDate.start.month - 1,
+      parsedSearchDate.start.day
+    );
+    const end = new Date(
+      parsedSearchDate.end.year,
+      parsedSearchDate.end.month - 1,
+      parsedSearchDate.end.day
+    );
+
+    return disabled >= start && disabled <= end;
+  });
 
   const calculationOfPrice =
     Number(Number(price).toLocaleString().split(",").join("")) *
     CountNights(parsedSearchDate.start, parsedSearchDate.end);
 
-  const reserveRedirectionLink = `${pathname}/reserve?${params}&calculation=${calculationOfPrice}&guests_limit=${guests_limit}`;
+  const reserveRedirectionLink = isDateIncludingUnavailableDates
+    ? "#"
+    : `${pathname}/reserve?${params}&calculation=${calculationOfPrice}&guests_limit=${guests_limit}`;
 
   useEffect(() => {
     dispatch(
@@ -109,9 +123,23 @@ export const ReserveListingBlock: React.FC<ReserveListingBlockProps> = ({
         data-date-is-selected={inputSelection === "checkOut"}
       >
         <Link href={reserveRedirectionLink}>
-          <button className={styles.reserve_button} disabled={!isPublic}>
-            Reserve
-          </button>
+          <Tooltip
+            isDisabled={!isDateIncludingUnavailableDates}
+            placement="top"
+            content={"Date is unavailable for reservation"}
+            color="default"
+            size="sm"
+            delay={100}
+            className="custome_tooltip warning"
+          >
+            <button
+              inert={isDateIncludingUnavailableDates}
+              className={styles.reserve_button}
+              disabled={!isPublic || isDateIncludingUnavailableDates}
+            >
+              Reserve
+            </button>
+          </Tooltip>
         </Link>
         <p className={styles.reserve_text}>You will not be charged yet.</p>
       </div>

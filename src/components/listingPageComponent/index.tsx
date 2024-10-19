@@ -131,9 +131,7 @@ export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
                       color="default"
                       size="sm"
                       delay={1000}
-                      classNames={{
-                        content: ["text-#2f2f2f font-medium rounded-lg"],
-                      }}
+                      className="custome_tooltip info"
                     >
                       <div>
                         <Image
@@ -219,9 +217,7 @@ export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
                     color="default"
                     size="md"
                     delay={300}
-                    classNames={{
-                      content: ["text-#2f2f2f font-medium rounded-lg"],
-                    }}
+                    className="custome_tooltip info"
                   >
                     <div className={styles.more_details_img}>
                       <Image
@@ -244,9 +240,7 @@ export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
                     color="default"
                     size="md"
                     delay={300}
-                    classNames={{
-                      content: ["text-#2f2f2f font-medium rounded-lg"],
-                    }}
+                    className="custome_tooltip info"
                   >
                     <div className={styles.more_details_img}>
                       <Image

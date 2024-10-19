@@ -248,9 +248,7 @@ export const ReserveContent: React.FC<ReservePageProps> = ({ params }) => {
                         color="default"
                         size="sm"
                         delay={1000}
-                        classNames={{
-                          content: ["text-#2f2f2f font-medium rounded-lg"],
-                        }}
+                        className="custome_tooltip info"
                       >
                         <div>
                           <Image
@@ -329,9 +327,7 @@ export const ReserveContent: React.FC<ReservePageProps> = ({ params }) => {
                             color="default"
                             size="sm"
                             delay={1000}
-                            classNames={{
-                              content: ["text-#2f2f2f font-medium rounded-lg"],
-                            }}
+                            className="custome_tooltip info"
                           >
                             <div>
                               <Image

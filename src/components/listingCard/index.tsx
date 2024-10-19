@@ -24,6 +24,7 @@ import "./additional.scss";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import styles from "./listingCard.module.scss";
+import Image from "next/image";
 
 export const ListingCard: React.FC<ListingCardProps> = ({
   id,
@@ -220,11 +221,15 @@ export const ListingCard: React.FC<ListingCardProps> = ({
           )}
 
           <Slider {...options} ref={sliderRef}>
-            {images?.map((image) => (
+            {images?.map((image, i) => (
               <div key={image.url} className={styles.slider_content}>
-                <div
+                <Image
+                  src={image.url}
+                  width={300}
+                  height={300}
+                  loading="lazy"
+                  alt={`${title + i}`}
                   className={styles.slider_image}
-                  style={{ backgroundImage: `url(${image.url})` }}
                 />
               </div>
             ))}

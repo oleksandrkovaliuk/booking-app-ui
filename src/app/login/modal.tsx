@@ -44,16 +44,20 @@ export const LoginModal = () => {
 
   // CONSTANTS
 
-  const callbackUrl = `${params.get("callbackUrl")}` || "/";
+  const callbackUrl = `${params.get("callbackUrl") || "/"}`;
 
   const oAuthSignIn = async (e: ReactEvent, oauth_type: string) => {
     e.preventDefault();
     try {
       const res = await signIn(oauth_type, {
         callbackUrl: decodeURIComponent(callbackUrl),
+        redirect: true,
       });
 
-      if (res?.error) throw new Error(res?.error);
+      if (res && res?.error) {
+        throw new Error(res?.error);
+      }
+      console.log(res, "resolved");
     } catch (error) {
       toast.error((error as Error).message);
     }
@@ -81,7 +85,9 @@ export const LoginModal = () => {
         emailRef.current.value = " ";
         setEmailValid(false);
       }
-      toast.error((error as Error).message);
+      toast.error(
+        (error as Error).message || "Something went wrong. Please try again."
+      );
     }
   };
 
@@ -98,10 +104,12 @@ export const LoginModal = () => {
         });
         if (res?.error) throw new Error(res?.error);
 
-        router.push(callbackUrl);
+        router.replace(callbackUrl);
       }
     } catch (error) {
-      toast.error((error as Error).message);
+      toast.error(
+        (error as Error).message || "Something went wrong. Please try again."
+      );
     }
   };
 

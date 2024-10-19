@@ -34,7 +34,7 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
 
   const { data: session } = useSession();
 
-  const { search_date } = useSelector(searchSelectionSelector);
+  const { search_date } = useSelector(searchSelectionSelector());
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
@@ -90,9 +90,9 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
         confirmParams: {
           return_url: `${APP_ROOT_URL}/success/payment?disabled_dates=${JSON.stringify(
             disabledDates
-          )}&listing_id=${listing_id}&host_email=${
-            session?.user?.email
-          }&message=${params?.get("message")}`,
+          )}&listing_id=${listing_id}&host_email=${session?.user?.email}${
+            params?.get("message") ? `&message=${params?.get("message")}` : ""
+          }`,
         },
       });
 
@@ -137,7 +137,17 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
 
   return (
     <>
-      {clientSecret ? (
+      {!clientSecret && session?.user?.email && (
+        <div className={styles.paymet_skeleton}>
+          <Skeleton className={styles.main_skeleton} />
+          <div className={styles.date_cvv_container}>
+            <Skeleton className={styles.date_cvv_skeleton} />
+            <Skeleton className={styles.date_cvv_skeleton} />
+          </div>
+          <Skeleton className={styles.main_skeleton} />
+        </div>
+      )}
+      {clientSecret && (
         <form
           onSubmit={handleSubmitPayment}
           className={styles.checkout_container}
@@ -148,17 +158,8 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
             {isLoading ? <Spinner size="sm" color="white" /> : "Reserve"}
           </button>
         </form>
-      ) : (
-        <div className={styles.paymet_skeleton}>
-          <Skeleton className={styles.main_skeleton} />
-          <div className={styles.date_cvv_container}>
-            <Skeleton className={styles.date_cvv_skeleton} />
-            <Skeleton className={styles.date_cvv_skeleton} />
-          </div>
-          <Skeleton className={styles.main_skeleton} />
-        </div>
       )}
-      {!clientSecret && !session?.user.email && (
+      {!session?.user.email && (
         <div className={styles.login_to_procces}>
           <span className={styles.title}>
             In order to procces the reservation , please authorize your account.

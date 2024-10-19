@@ -14,7 +14,7 @@ import {
 import { useSelector } from "@/store";
 import { isWidthHandlerSelector } from "@/store/selectors/isWidthHandler";
 import { clearSearchSelection } from "@/store/slices/search/searchSelectionSlice";
-import { setIsSearchTriggered } from "@/store/slices/listings/isSearchTriggeredSlice";
+import { setFetch, setIsSearchTriggered } from "@/store/slices/listings/isSearchTriggeredSlice";
 
 import { Search } from "@/svgs/Search";
 import { AddHouseIcon } from "@/svgs/AddHouseIcon";
@@ -169,8 +169,9 @@ export const Header = () => {
               href={params.size !== 0 ? "/" : "#"}
               handleOnClick={() => {
                 router.refresh();
-                dispatch(setIsSearchTriggered(false));
+                dispatch(setFetch(true));
                 dispatch(clearSearchSelection());
+                dispatch(setIsSearchTriggered(false));
               }}
             />
           )}

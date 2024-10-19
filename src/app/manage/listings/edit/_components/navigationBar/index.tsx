@@ -132,9 +132,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
           color="primary"
           size="sm"
           delay={1000}
-          classNames={{
-            content: ["text-white font-medium bg-[#2f2f2f]"],
-          }}
+          className="custome_tooltip black"
         >
           <button
             className={styles.mobile_navigation_show_button}
@@ -199,9 +197,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
                     color="default"
                     size="sm"
                     delay={200}
-                    classNames={{
-                      content: ["text-#2f2f2f font-small rounded-md"],
-                    }}
+                    className="custome_tooltip info"
                   >
                     <div className={styles.tab_icon}>{tab.icon}</div>
                   </Tooltip>
@@ -227,9 +223,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
             color="primary"
             size="sm"
             delay={1000}
-            classNames={{
-              content: ["text-white font-medium bg-[#2f2f2f]"],
-            }}
+            className="custome_tooltip black"
           >
             <div className={styles.close_icon} />
           </Tooltip>

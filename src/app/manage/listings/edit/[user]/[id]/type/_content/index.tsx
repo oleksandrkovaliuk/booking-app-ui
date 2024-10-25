@@ -14,13 +14,13 @@ import { TypeOfPlace } from "@/app/manage/_components/createForm/content/_compon
 
 import { handleUpdateFormAndLocalStorage } from "@/helpers/updateFormAndStorageStates";
 
-import { ContentProps, EditFormValues } from "../../type";
+import { ContentProps, IEditFormValues } from "../../type";
 
 import styles from "./type.module.scss";
 import "../../shared/sharedStyles.scss";
 
 export const TypeContent: React.FC<ContentProps> = ({ params }) => {
-  const setValueRef = useRef<UseFormSetValue<EditFormValues> | null>(null);
+  const setValueRef = useRef<UseFormSetValue<IEditFormValues> | null>(null);
 
   const { data: typeOfPlace } = useGetListingsTypeOfPlaceQuery();
   const { data: listing } = useGetCurrentListingQuery({
@@ -33,7 +33,7 @@ export const TypeContent: React.FC<ContentProps> = ({ params }) => {
   const { register, watch, setValue } = useForm({
     defaultValues: {
       edit_type: {},
-    } as EditFormValues,
+    } as IEditFormValues,
   });
 
   const selectedTypeOfPlace = watch("edit_type");

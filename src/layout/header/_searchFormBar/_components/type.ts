@@ -1,15 +1,15 @@
 import { TypesOfSelections } from "@/_utilities/enums";
 
-export interface HandlePopUpMenuOpening {
+export interface IHandlePopUpMenuOpening {
   (e: React.MouseEvent, type: TypesOfSelections): void;
 }
-export interface SelectionComponentsProps {
+export interface ISelectionComponentsProps {
   searchBarRef: React.RefObject<HTMLFormElement>;
 
-  handlePopUpMenuOpening: HandlePopUpMenuOpening;
+  handlePopUpMenuOpening: IHandlePopUpMenuOpening;
 }
 
-export interface ClearDateSelectionProps {
+export interface IClearDateSelectionProps {
   callback: (...args: any[]) => void;
   show: boolean;
   disabled: boolean;

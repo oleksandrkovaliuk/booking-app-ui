@@ -5,7 +5,6 @@ import { useDispatch } from "react-redux";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { store, useSelector } from "@/store";
-import { UserSearchRegionHistory } from "@/store/api/lib/type";
 import {
   updateUserSearchRegionHistory,
   useGetUserSearchRegionHistoryQuery,
@@ -29,16 +28,16 @@ import {
 
 import { ClearInputSelectionButton } from "./clearInputSelection";
 
-import { SelectionComponentsProps } from "./type";
+import { ISelectionComponentsProps } from "./type";
 import { searchParamsKeys } from "../../_lib/enums";
 import { TypesOfSelections } from "@/_utilities/enums";
-
-import { regionResponceType } from "../../_lib/types";
+import { IRegionResponceType } from "../../_lib/types";
+import { IUserSearchRegionHistory } from "@/store/api/lib/interfaces";
 import { getCountriesByRequest } from "../../_lib/getCountriesByRequest";
 
 import styles from "../search_form_bar.module.scss";
 
-const RegionSelection: React.FC<SelectionComponentsProps> = ({
+const RegionSelection: React.FC<ISelectionComponentsProps> = ({
   searchBarRef,
   handlePopUpMenuOpening,
 }) => {
@@ -132,7 +131,7 @@ const RegionSelection: React.FC<SelectionComponentsProps> = ({
 
   const handleUserRegionSelection = async (
     e: React.MouseEvent,
-    region: regionResponceType,
+    region: IRegionResponceType,
     formattedValue: string
   ) => {
     try {
@@ -274,7 +273,7 @@ const RegionSelection: React.FC<SelectionComponentsProps> = ({
                     </span>
                   </li>
                   {userSearchRegionHistory?.map(
-                    (history: UserSearchRegionHistory, i) => (
+                    (history: IUserSearchRegionHistory, i) => (
                       <li
                         className={styles.user_search_history_block}
                         key={`${history.requestedAt} + ${i}`}
@@ -332,7 +331,7 @@ const RegionSelection: React.FC<SelectionComponentsProps> = ({
 
               {!isResponseLoading && !!responseForRegion?.length && (
                 <div className={styles.search_results_selections_container}>
-                  {responseForRegion?.map((countires: regionResponceType) => {
+                  {responseForRegion?.map((countires: IRegionResponceType) => {
                     const formattedValue =
                       countires.city.length + countires.country.length > 20
                         ? `${countires.city}, ${countires.countryCode}`

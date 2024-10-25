@@ -12,12 +12,12 @@ import { Basics } from "@/app/manage/_components/createForm/content/_components/
 
 import { handleUpdateFormAndLocalStorage } from "@/helpers/updateFormAndStorageStates";
 
-import { ContentProps, EditFormValues } from "../../type";
+import { ContentProps, IEditFormValues } from "../../type";
 
 import styles from "./basic.module.scss";
 
 export const BasicContent: React.FC<ContentProps> = ({ params }) => {
-  const setValueRef = useRef<UseFormSetValue<EditFormValues> | null>(null);
+  const setValueRef = useRef<UseFormSetValue<IEditFormValues> | null>(null);
 
   const { data: listing } = useGetCurrentListingQuery({
     id: Number(params?.id),
@@ -31,7 +31,7 @@ export const BasicContent: React.FC<ContentProps> = ({ params }) => {
       edit_guests: 0,
       edit_pets_allowed: false,
       edit_accesable: false,
-    } as EditFormValues,
+    } as IEditFormValues,
   });
 
   const selectedGuests = watch("edit_guests");

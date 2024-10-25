@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useDispatch } from "react-redux";
+import { Tooltip } from "@nextui-org/react";
 import { usePathname, useSearchParams } from "next/navigation";
 
 import { useSelector } from "@/store";
@@ -11,18 +12,17 @@ import { Counter } from "@/components/counter";
 import { DateInputsModal } from "@/components/dateInputsModal";
 
 import { CountNights } from "@/helpers/dateManagment";
-
 import { CalculatePriceIncludingTax } from "@/helpers/priceManagment";
 
-import { ReserveListingBlockProps } from "../../_lib/type";
 import { searchParamsKeys } from "@/layout/header/_lib/enums";
+import { IReserveListingBlockProps } from "../../_lib/interfaces";
 
 import styles from "./reserveListing.module.scss";
 import "./additionalStyles.scss";
-import { Tooltip } from "@nextui-org/react";
 
-export const ReserveListingBlock: React.FC<ReserveListingBlockProps> = ({
+export const ReserveListingBlock: React.FC<IReserveListingBlockProps> = ({
   price,
+  disabled,
   isPublic,
   guests_limit,
   disabledDates,
@@ -31,13 +31,21 @@ export const ReserveListingBlock: React.FC<ReserveListingBlockProps> = ({
   const dispatch = useDispatch();
   const params = useSearchParams();
 
-  const { search_amountOfGuests, parsedSearchDate } = useSelector(
-    searchSelectionSelector(params)
-  );
+  const { parsedSearchDate } = useSelector(searchSelectionSelector(params));
 
-  const [guestsAmount, setGuestsAmount] = useState<number>(
-    JSON.parse(search_amountOfGuests || "1")
-  );
+  const [guestsAmount, setGuestsAmount] = useState<number>(() => {
+    const guests = JSON.parse(
+      params.get(searchParamsKeys.SEARCH_AMOUNT_OF_GUESTS) || "1"
+    );
+
+    dispatch(
+      setSearchSelection({
+        [searchParamsKeys.SEARCH_AMOUNT_OF_GUESTS]: guests,
+      })
+    );
+
+    return guests;
+  });
 
   const [inputSelection, setInputSelection] = useState<
     "checkIn" | "checkOut" | "guests" | "none"
@@ -65,32 +73,21 @@ export const ReserveListingBlock: React.FC<ReserveListingBlockProps> = ({
     Number(Number(price).toLocaleString().split(",").join("")) *
     CountNights(parsedSearchDate.start, parsedSearchDate.end);
 
-  const reserveRedirectionLink = isDateIncludingUnavailableDates
-    ? "#"
-    : `${pathname}/reserve?${params}&calculation=${calculationOfPrice}&guests_limit=${guests_limit}`;
+  const reserveRedirectionLink =
+    isDateIncludingUnavailableDates || disabled
+      ? "#"
+      : `${pathname}/reserve?${params}&calculation=${calculationOfPrice}&guests_limit=${guests_limit}`;
 
   useEffect(() => {
     dispatch(
       setSearchSelection({
-        [searchParamsKeys.SEARCH_AMOUNT_OF_GUESTS]:
-          guestsAmount !== 0 ? JSON.stringify(guestsAmount) : null,
+        [searchParamsKeys.SEARCH_AMOUNT_OF_GUESTS]: guestsAmount
+          ? JSON.stringify(guestsAmount)
+          : null,
       })
     );
   }, [guestsAmount, dispatch]);
 
-  useEffect(() => {
-    const guests = JSON.parse(
-      params.get(searchParamsKeys.SEARCH_AMOUNT_OF_GUESTS) || "0"
-    );
-
-    dispatch(
-      setSearchSelection({
-        [searchParamsKeys.SEARCH_AMOUNT_OF_GUESTS]: guests,
-      })
-    );
-
-    setGuestsAmount(guests);
-  }, [dispatch, params]);
   return (
     <div className={styles.reserve_listing_container}>
       <div className={styles.reserve_listing_main_block}>
@@ -124,18 +121,24 @@ export const ReserveListingBlock: React.FC<ReserveListingBlockProps> = ({
       >
         <Link href={reserveRedirectionLink}>
           <Tooltip
-            isDisabled={!isDateIncludingUnavailableDates}
+            isDisabled={!isDateIncludingUnavailableDates && !disabled}
             placement="top"
-            content={"Date is unavailable for reservation"}
+            content={
+              disabled
+                ? "You cant reserve your own place"
+                : "Date is unavailable for reservation"
+            }
             color="default"
             size="sm"
             delay={100}
             className="custome_tooltip warning"
           >
             <button
-              inert={isDateIncludingUnavailableDates}
+              inert={isDateIncludingUnavailableDates || disabled}
               className={styles.reserve_button}
-              disabled={!isPublic || isDateIncludingUnavailableDates}
+              disabled={
+                !isPublic || isDateIncludingUnavailableDates || disabled
+              }
             >
               Reserve
             </button>

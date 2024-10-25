@@ -1,7 +1,7 @@
-import { SvgProps } from "@/_utilities/interfaces";
+import { ISvgProps } from "@/_utilities/interfaces";
 import React from "react";
 
-export const ThreeDots: React.FC<SvgProps> = (props) => {
+export const ThreeDots: React.FC<ISvgProps> = (props) => {
   return (
     <svg
       version="1.1"

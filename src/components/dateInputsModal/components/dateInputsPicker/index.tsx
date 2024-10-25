@@ -5,11 +5,11 @@ import { useSelector } from "@/store";
 import { searchSelectionSelector } from "@/store/selectors/searchSelection";
 
 import { DateFormatingMonthDay } from "@/helpers/dateManagment";
-import { DateInputsPickerProps } from "../../_lib/interfaces";
+import { IDateInputsPickerProps } from "../../_lib/interfaces";
 
 import styles from "./dateInputsPicker.module.scss";
 
-export const DateInputsPicker: React.FC<DateInputsPickerProps> = ({
+export const DateInputsPicker: React.FC<IDateInputsPickerProps> = ({
   isSeparateModal,
   isModalOpen,
   setIsModalOpen,

@@ -1,9 +1,9 @@
-import { FormState } from "@/app/manage/_components/type";
+import { IFormState } from "@/app/manage/_components/type";
 
 type optionalTypes = "guests" | "placeis" | "notes" | "aboutplace" | "address";
-export interface ListingCardProps
-  extends Omit<FormState, optionalTypes>,
-    Partial<Pick<FormState, optionalTypes>> {
+export interface IListingCardProps
+  extends Omit<IFormState, optionalTypes>,
+    Partial<Pick<IFormState, optionalTypes>> {
   id?: number;
   isPreview?: boolean;
   isPublic?: boolean;

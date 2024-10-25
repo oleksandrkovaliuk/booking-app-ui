@@ -8,11 +8,11 @@ import { isWidthHandlerSelector } from "@/store/selectors/isWidthHandler";
 import { ModalComponent } from "./components/modalComponent";
 import { DateInputsPicker } from "./components/dateInputsPicker";
 
-import { DateInputsModalProps } from "./_lib/interfaces";
+import { IDateInputsModalProps } from "./_lib/interfaces";
 
 import styles from "./dateInputsModal.module.scss";
 
-export const DateInputsModal: React.FC<DateInputsModalProps> = ({
+export const DateInputsModal: React.FC<IDateInputsModalProps> = ({
   isSeparateModal,
   disabledDates,
   inputSelection,

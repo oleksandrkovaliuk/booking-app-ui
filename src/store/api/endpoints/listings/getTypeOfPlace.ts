@@ -1,11 +1,11 @@
 import { api } from "../../api";
 import { ApiTags } from "../../lib/enums";
 import { ApiUrlsListings } from "../../lib/constants";
-import { TypeOfPlace } from "../../lib/type";
+import { ITypeOfPlace } from "../../lib/interfaces";
 
 const getListingsTypeOfPlaceApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    getListingsTypeOfPlace: builder.query<TypeOfPlace[], void>({
+    getListingsTypeOfPlace: builder.query<ITypeOfPlace[], void>({
       query: () => ({
         url: ApiUrlsListings.getListingsTypeOfPlace,
       }),

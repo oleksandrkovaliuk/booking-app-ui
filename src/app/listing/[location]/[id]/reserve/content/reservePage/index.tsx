@@ -12,14 +12,14 @@ import {
   Tooltip,
 } from "@nextui-org/react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { today, getLocalTimeZone } from "@internationalized/date";
 
-import { store } from "@/store";
+import { store, useSelector } from "@/store";
 import { getUser } from "@/store/api/endpoints/auth/getUser";
+import { searchSelectionSelector } from "@/store/selectors/searchSelection";
 import { useGetCurrentListingQuery } from "@/store/api/endpoints/listings/getCurrentListing";
 
-import { RareDiamondSvg } from "@/svgs/RareDiaomondSvg";
 import super_host from "@/assets/medal-of-honor.png";
+import { RareDiamondSvg } from "@/svgs/RareDiaomondSvg";
 import super_host_black from "@/assets/medal-of-honor-black.png";
 
 import { RoundButton } from "@/components/roundButton";
@@ -27,31 +27,28 @@ import { YourTripBlock } from "./components/yourTripBlock";
 import { RulesAndPolicy } from "./components/rulesAndPolicy";
 import { PaymantComponent } from "./components/paymantComponent";
 
-import { CountNights, ParseLocalStorageDates } from "@/helpers/dateManagment";
+import { CountNights } from "@/helpers/dateManagment";
 import { CalculatePriceIncludingTax } from "@/helpers/priceManagment";
 
-import { ShowCaseUser } from "@/_utilities/interfaces";
-import { ReservePageProps } from "../_lib/interfaces";
-import { searchParamsKeys } from "@/layout/header/_lib/enums";
+import { useDebounce } from "@/hooks/useDebounce";
+import { IReservePageProps } from "../_lib/interfaces";
+import { IShowCaseUser } from "@/_utilities/interfaces";
+import { CreateNewQueryParams } from "@/helpers/paramsManagment";
 
 import styles from "./reservePage.module.scss";
-import { CreateNewQueryParams } from "@/helpers/paramsManagment";
-import { useDebounce } from "@/hooks/useDebounce";
 
-export const ReserveContent: React.FC<ReservePageProps> = ({ params }) => {
+export const ReserveContent: React.FC<IReservePageProps> = ({ params }) => {
   const router = useRouter();
   const pathname = usePathname();
   const paramsUrl = useSearchParams();
 
-  const convertedParams = Object.fromEntries(paramsUrl.entries()) as {
-    [key in searchParamsKeys]: string;
-  };
+  const { parsedSearchDate } = useSelector(searchSelectionSelector(paramsUrl));
 
   const { data: listing } = useGetCurrentListingQuery({
     id: Number(params.id),
   });
 
-  const [host, setHost] = useState<ShowCaseUser>({
+  const [host, setHost] = useState<IShowCaseUser>({
     user_name: "",
     email: "",
     img_url: "",
@@ -63,16 +60,9 @@ export const ReserveContent: React.FC<ReservePageProps> = ({ params }) => {
 
   // CONSTANTS
 
-  const searchDateSelection = convertedParams.search_date
-    ? convertedParams.search_date
-    : JSON.stringify({
-        start: today(getLocalTimeZone()),
-        end: today(getLocalTimeZone()).add({ weeks: 1 }),
-      });
-
   const countChosenNightsRange = CountNights(
-    ParseLocalStorageDates(searchDateSelection).start,
-    ParseLocalStorageDates(searchDateSelection).end
+    parsedSearchDate.start,
+    parsedSearchDate.end
   );
   const calculationOfPrice =
     Number(Number(listing?.price).toLocaleString().split(",").join("")) *
@@ -142,6 +132,25 @@ export const ReserveContent: React.FC<ReservePageProps> = ({ params }) => {
     setUpPage();
   }, [listing?.host_email, listing?.host_name]);
 
+  useEffect(() => {
+    const updatedParams = CreateNewQueryParams({
+      updatedParams: {
+        host_email: null,
+        payment_intent: null,
+        payment_intent_client_secret: null,
+        redirect_status: null,
+        disabled_dates: null,
+        result: null,
+        res_message: null,
+      },
+      params: paramsUrl,
+    });
+
+    router.push(`${pathname}?${updatedParams}`, {
+      scroll: false,
+    });
+  }, [paramsUrl, pathname, router]);
+
   return (
     <>
       <Modal
@@ -203,7 +212,7 @@ export const ReserveContent: React.FC<ReservePageProps> = ({ params }) => {
               <div className={styles.rare_find}>
                 <div className={styles.rare_find_text}>
                   <h4 className={styles.sub_title}>Rare find!</h4>
-                  <p
+                  <div
                     className={`${styles.sub_description} ${styles.with_host_name}`}
                   >
                     {!host.user_name ? (
@@ -212,7 +221,7 @@ export const ReserveContent: React.FC<ReservePageProps> = ({ params }) => {
                       <span className={styles.host_name}>{host.user_name}</span>
                     )}
                     &apos;s place is usually booked.
-                  </p>
+                  </div>
                 </div>
                 <RareDiamondSvg className={styles.rare_diamond_svg} />
               </div>
@@ -250,15 +259,13 @@ export const ReserveContent: React.FC<ReservePageProps> = ({ params }) => {
                         delay={1000}
                         className="custome_tooltip info"
                       >
-                        <div>
-                          <Image
-                            alt="super_host_badge"
-                            src={super_host}
-                            className={styles.host_badge}
-                            width={100}
-                            height={100}
-                          />
-                        </div>
+                        <Image
+                          alt="super_host_badge"
+                          src={super_host}
+                          className={styles.host_badge}
+                          width={100}
+                          height={100}
+                        />
                       </Tooltip>
                     )}
                   </div>
@@ -297,11 +304,12 @@ export const ReserveContent: React.FC<ReservePageProps> = ({ params }) => {
             </div>
             <PaymantComponent
               total={calculationOfPrice}
+              host_email={host.email}
               listing_id={JSON.parse(params.id)}
             />
           </section>
           <section className={styles.right_reservation_info_block}>
-            {!convertedParams || Number.isNaN(calculationOfPrice) ? (
+            {!parsedSearchDate || Number.isNaN(calculationOfPrice) ? (
               <Skeleton className={styles.reservation_listing_info_skeleton} />
             ) : (
               <ul className={styles.reservation_listing_info}>

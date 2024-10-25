@@ -1,11 +1,11 @@
 import React from "react";
 import { CloseIcon } from "@/svgs/CloseIcon";
 
-import { ClearDateSelectionProps } from "./type";
+import { IClearDateSelectionProps } from "./type";
 
 import styles from "../search_form_bar.module.scss";
 
-export const ClearInputSelectionButton: React.FC<ClearDateSelectionProps> = ({
+export const ClearInputSelectionButton: React.FC<IClearDateSelectionProps> = ({
   callback,
   show,
   disabled,

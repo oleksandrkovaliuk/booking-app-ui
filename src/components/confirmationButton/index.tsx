@@ -1,11 +1,11 @@
 import React from "react";
 import { Button } from "@nextui-org/react";
 
-import { ConfirmationButtonProps } from "./type";
+import { IConfirmationButtonProps } from "./type";
 
 import styles from "./confirmationButton.module.scss";
 
-export const ConfirmationButton: React.FC<ConfirmationButtonProps> = ({
+export const ConfirmationButton: React.FC<IConfirmationButtonProps> = ({
   children,
   onConfirm,
   enable,

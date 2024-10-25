@@ -19,23 +19,21 @@ import { useGetFullCategoriesListQuery } from "@/store/api/endpoints/listings/ge
 import { useGetListingsTypeOfPlaceQuery } from "@/store/api/endpoints/listings/getTypeOfPlace";
 import { requestDeleteUserListingImages } from "@/store/api/endpoints/listings/requestDeleteUserListingImages";
 
-import { GoogleMapProps } from "@/components/googleMap/type";
+import { Content } from "./content";
+import { IGoogleMapProps } from "@/components/googleMap/type";
 
-import { requirmentForAddressComponent } from "@/helpers/address/formattedAddressVariants";
 import { handleUpdateFormAndLocalStorage } from "@/helpers/updateFormAndStorageStates";
+import { requirmentForAddressComponent } from "@/helpers/address/formattedAddressVariants";
 
 import {
   motion_transition,
   appearAnimation,
   deepAppearAnimation,
 } from "../consts";
-
-import { Category, TypeOfPlace } from "@/store/api/lib/type";
+import { IFormState } from "../type";
 import { clearAllStorage } from "./utils";
 import { CreateListingSteps } from "../enums";
-import { FormState } from "../type";
-
-import { Content } from "./content";
+import { ICategory, ITypeOfPlace } from "@/store/api/lib/interfaces";
 
 // FORMAT DATE TO DD/MM/HH/MM
 
@@ -53,7 +51,7 @@ import styles from "./createForm.module.scss";
 import "./additionalStyles.scss";
 
 export const CreateForm: React.FC = () => {
-  const setValueRef = useRef<UseFormSetValue<FormState> | null>(null);
+  const setValueRef = useRef<UseFormSetValue<IFormState> | null>(null);
 
   const router = useRouter();
   const { data: session } = useSession();
@@ -66,9 +64,9 @@ export const CreateForm: React.FC = () => {
   const { register, watch, setValue } = useForm({
     defaultValues: {
       step: CreateListingSteps.INTRODUCING as CreateListingSteps,
-      category: null as Category | null,
-      type: null as TypeOfPlace | null,
-      cordinates: { lat: 50, lng: 14 } as GoogleMapProps["cordinates"],
+      category: null as ICategory | null,
+      type: null as ITypeOfPlace | null,
+      cordinates: { lat: 50, lng: 14 } as IGoogleMapProps["cordinates"],
       address: {
         formattedAddress: "",
         shorterAddress: "",
@@ -84,7 +82,7 @@ export const CreateForm: React.FC = () => {
       placeis: "",
       notes: "",
       price: "14",
-    } as FormState,
+    } as IFormState,
   });
 
   // WATCH VALUES
@@ -179,7 +177,9 @@ export const CreateForm: React.FC = () => {
   };
 
   // CORDINATES
-  const handleCordinatesChange = (cordinates: GoogleMapProps["cordinates"]) => {
+  const handleCordinatesChange = (
+    cordinates: IGoogleMapProps["cordinates"]
+  ) => {
     const detailedAddressComponent =
       cordinates.address?.address_components?.reduce<
         google.maps.places.PlaceResult["address_components"]
@@ -351,10 +351,10 @@ export const CreateForm: React.FC = () => {
           key={formStep as CreateListingSteps}
           selectedCategory={selectedCategory!}
           type={formStep as CreateListingSteps}
-          categories={categories as Category[]}
+          categories={categories as ICategory[]}
           selectedCordinates={selectedCordinates!}
           selectedTypeOfPlace={selectedTypeOfPlace!}
-          typeOfPlace={typeOfPlace as TypeOfPlace[]}
+          typeOfPlace={typeOfPlace as ITypeOfPlace[]}
           handleCordinatesChange={handleCordinatesChange}
           selectedAccesable={selectedAccesable!}
           selectedPetsAllowed={selectedPetsAllowed!}

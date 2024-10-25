@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { Toaster } from "sonner";
 
 import { Providers } from "./providers";
-import { Toaster } from "sonner";
+
+import { NotificationModal } from "@/components/notificationModal";
 
 import "./globals.scss";
 
@@ -20,6 +22,7 @@ export default function RootLayout({
       <body className="red-primary-color text-foreground bg-background">
         <Providers>
           <Toaster />
+          <NotificationModal />
           <div className="wrapper">{children}</div>
         </Providers>
       </body>

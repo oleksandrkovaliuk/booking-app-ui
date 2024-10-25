@@ -10,13 +10,14 @@ import { NotFoundIcon } from "@/svgs/NotFoundIcon";
 
 import { useGetUserListingsQuery } from "@/store/api/endpoints/listings/getUserListings";
 
-import { FormState } from "../../_components/type";
 import { ListingCard } from "@/components/listingCard";
 import { StatusBadge } from "@/components/statusBadge";
-import { appearAnimation, motion_transition } from "../../_components/consts";
 import { SkeletonListingCard } from "@/components/listingCard/components/skeleton";
 
 import { skeletonData } from "@/information/data";
+
+import { IFormState } from "../../_components/type";
+import { appearAnimation, motion_transition } from "../../_components/consts";
 
 import styles from "./listings.module.scss";
 
@@ -25,7 +26,7 @@ export const ListingsPage: React.FC = () => {
 
   const { data: listings, isLoading } = useGetUserListingsQuery();
 
-  const [listingInProccess, setListingInProgress] = useState<FormState | null>(
+  const [listingInProccess, setListingInProgress] = useState<IFormState | null>(
     null
   );
 
@@ -49,7 +50,7 @@ export const ListingsPage: React.FC = () => {
           title: title && JSON.parse(title),
           images: images && JSON.parse(images),
           price: price && JSON.parse(price),
-        } as FormState | null);
+        } as IFormState | null);
       }
     }
   }, []);

@@ -1,25 +1,29 @@
 "use client";
 import React, { useCallback, useEffect, useState } from "react";
-import { toast } from "sonner";
+import Image from "next/image";
 import { useSession } from "next-auth/react";
+import { skipToken } from "@reduxjs/toolkit/query";
+import { Skeleton, Tooltip } from "@nextui-org/react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { store } from "@/store";
+import { getUser } from "@/store/api/endpoints/auth/getUser";
 import { updateUserReservation } from "@/store/api/endpoints/user/updateUserReservations";
 import { requestSetRangeOfDisabledDates } from "@/store/api/endpoints/listings/requestSetRangeOfDisabledDates";
+import { useGetCurrentListingQuery } from "@/store/api/endpoints/listings/getCurrentListing";
 
 import sittingB from "@/assets/sittingB.webp";
 import super_host_black from "@/assets/medal-of-honor-black.png";
 
+import { socket } from "@/helpers/sockets";
+import { DateFormatingMonthDay } from "@/helpers/dateManagment";
 import { CreateNewQueryParams } from "@/helpers/paramsManagment";
 
+import { IShowCaseUser } from "@/_utilities/interfaces";
+import { IReservationStatus } from "../_lib/interfaces";
+import { getStatusColors } from "../_lib/helpers/getStatusColor";
+
 import styles from "./paymentContent.module.scss";
-import Image from "next/image";
-import { StatusBadge } from "@/components/statusBadge";
-import { Skeleton, Spinner, Tooltip } from "@nextui-org/react";
-import { useGetCurrentListingQuery } from "@/store/api/endpoints/listings/getCurrentListing";
-import { getUser } from "@/store/api/endpoints/auth/getUser";
-import { ShowCaseUser } from "@/_utilities/interfaces";
 
 export const PaymentContent: React.FC = () => {
   const router = useRouter();
@@ -27,110 +31,69 @@ export const PaymentContent: React.FC = () => {
   const params = useSearchParams();
 
   const { data: session } = useSession();
-  const { data: listing, isLoading } = useGetCurrentListingQuery({
-    id: Number(params.get("listing_id")),
-  });
+  const { data: listing, isLoading } = useGetCurrentListingQuery(
+    Number.isNaN(params.get("listing_id")) || params.get("result")
+      ? skipToken
+      : {
+          id: Number(params.get("listing_id")),
+        }
+  );
 
-  const [host, setHost] = useState<ShowCaseUser>({
+  const [host, setHost] = useState<IShowCaseUser>({
     user_name: "",
     email: "",
     img_url: "",
     role: "",
   });
-  const [reservationStatus, setReservationStatus] = useState<{
-    loading: boolean | null;
-    success: boolean | null;
-    error: boolean | null;
-    status: string | null;
-    message: string | null;
-    beenProcessedAt: Date | null;
-  }>({
-    loading: true,
-    success: null,
-    error: null,
-    status: "Proccesing",
-    beenProcessedAt: null,
-    message: "Proccesing your request",
-  });
+  const [reservationStatus, setReservationStatus] =
+    useState<IReservationStatus>({
+      loading: true,
+      success: JSON.parse(params.get("result") || "null"),
+      error: null,
+      status: "Proccesing",
+      beenProcessedAt: null,
+      message: params.get("res_message")
+        ? JSON.parse(params.get("res_message")!)
+        : "Your reservation is being processing",
+    });
+
   //   CONSTANTS
-
   const colorBasedOnStatus: { secondary: string; primary: string } =
-    reservationStatus.status === "Proccesing"
-      ? { secondary: "rgba(255, 165, 0, 0.3)", primary: "#ffa500" }
-      : reservationStatus.status === "Almost done"
-      ? { secondary: "rgba(173, 216, 230, 0.3)", primary: "#add8e6" }
-      : reservationStatus.status === "Complete"
-      ? { secondary: "rgba(34, 139, 34, 0.3)", primary: "#228b22" }
-      : {
-          secondary: "rgba(255, 69, 58, 0.3)",
-          primary: "#ff453a",
-        };
+    getStatusColors(reservationStatus.status);
 
-  const handleReturnUserToReservePage = () => {
-    router.back();
-  };
-  const handleSetDisabledDates = useCallback(async () => {
-    try {
-      const incomingParams = Object.fromEntries(params.entries());
+  const handleSetUserReservation = useCallback(async () => {
+    const incomingParams = Object.fromEntries(params.entries());
 
-      if (
-        !incomingParams.disabled_dates &&
-        incomingParams.redirect_status === "succeeded"
-      ) {
-        return setReservationStatus((prev) => ({
-          ...prev,
-          success: true,
-          loading: false,
-          status: "Complete",
-          beenProcessedAt: new Date(),
-          message: "Your Reservation created and sent successfully",
-        }));
-      }
-
-      if (
-        !incomingParams ||
-        !incomingParams.disabled_dates ||
-        !incomingParams.listing_id
-      ) {
-        throw new Error("We could not procces your request. Please try again");
-      }
-
-      if (
-        !JSON.parse(incomingParams.disabled_dates).length ||
-        Number.isNaN(JSON.parse(incomingParams.listing_id))
-      ) {
-        throw new Error("We could not procces your request. Please try again");
-      }
-
+    if (!incomingParams.disabled_dates) {
       setReservationStatus((prev) => ({
         ...prev,
-        loading: true,
+        loading: false,
+        status: prev.success ? "Complete" : "Failed",
       }));
+      return;
+    }
+    const parsedDisabledDates = JSON.parse(incomingParams.disabled_dates);
+    const bookedDates = `${DateFormatingMonthDay(
+      parsedDisabledDates[0]
+    )} - ${DateFormatingMonthDay(
+      parsedDisabledDates[parsedDisabledDates.length - 1]
+    )}`;
 
-      const { data: res, error: disabledDatesUpdateError } =
-        await store.dispatch(
-          requestSetRangeOfDisabledDates.initiate({
-            disabledDates: JSON.parse(incomingParams.disabled_dates),
-            id: JSON.parse(incomingParams.listing_id),
-          })
-        );
-
-      if (disabledDatesUpdateError && !res) {
-        throw new Error(
-          "Failed to update disabled dates and procces your request. Please try again"
-        );
-      }
-
+    setReservationStatus((prev) => ({
+      ...prev,
+      loading: true,
+    }));
+    try {
       const { data: reservationUpdateRes, error: reservationUpdateError } =
         await store.dispatch(
           updateUserReservation.initiate({
-            guest_email: session?.user.email!,
             guest_message: incomingParams.message,
             host_email: incomingParams.host_email,
             listing_id: Number(incomingParams.listing_id),
             payment_intent: incomingParams.payment_intent,
             payment_intent_client_secret:
               incomingParams.payment_intent_client_secret,
+            reservation_dates: bookedDates,
           })
         );
 
@@ -140,14 +103,28 @@ export const PaymentContent: React.FC = () => {
         );
       }
 
-      setReservationStatus((prev) => ({
-        ...prev,
-        status: "Almost done",
-        message: "Final touches left",
-      }));
+      const { data: updatedDisabledDates, error: disabledDatesUpdateError } =
+        await store.dispatch(
+          requestSetRangeOfDisabledDates.initiate({
+            disabledDates: JSON.parse(incomingParams.disabled_dates),
+            id: JSON.parse(incomingParams.listing_id),
+          })
+        );
+
+      if (disabledDatesUpdateError && !updatedDisabledDates) {
+        throw new Error(
+          "Failed to update disabled dates and procces your request. Please try again"
+        );
+      }
+
       const clearedParams = CreateNewQueryParams({
         updatedParams: {
           disabled_dates: null,
+          result: JSON.stringify(true),
+          res_message: JSON.stringify(
+            "Your reservation created and sent successfully"
+          ),
+          chatId: JSON.stringify(reservationUpdateRes?.chatId),
         },
         params,
       });
@@ -162,22 +139,47 @@ export const PaymentContent: React.FC = () => {
         loading: false,
         status: "Complete",
         beenProcessedAt: new Date(),
-        message: "Your Reservation created and sent successfully",
+        message: "Your reservation created and sent successfully",
       }));
+
+      socket.emit("newReservationReq", {
+        type: "INBOX_MESSAGE",
+        message: "New reservation request.",
+        user_email: incomingParams.host_email,
+        listing_id: Number(incomingParams.listing_id),
+        redirect_href: `/manage/inbox?chatId=${reservationUpdateRes?.chatId}`,
+      });
     } catch (error) {
-      return setReservationStatus((prev) => ({
+      setReservationStatus((prev) => ({
         ...prev,
         error: true,
         loading: false,
         status: "Failed",
         message: (error as Error).message,
       }));
-    }
-  }, [params, pathname, router, session?.user.email]);
 
-  useEffect(() => {
-    handleSetDisabledDates();
-  }, [handleSetDisabledDates]);
+      const clearedParams = CreateNewQueryParams({
+        updatedParams: {
+          disabled_dates: null,
+          result: null,
+          res_message: null,
+        },
+        params,
+      });
+
+      router.replace(`${pathname}?${clearedParams}`, {
+        scroll: false,
+      });
+    }
+  }, [params, pathname, router]);
+
+  const handleRedirectUser = () => {
+    if (reservationStatus.success) {
+      router.replace(`/manage/inbox?chatId=${params.get("chatId")}`);
+    } else {
+      router.back();
+    }
+  };
 
   useEffect(() => {
     const setUpPage = async () => {
@@ -203,9 +205,23 @@ export const PaymentContent: React.FC = () => {
       });
     };
 
-    if (!listing?.host_email && !listing?.host_name) return;
-    setUpPage();
-  }, [listing?.host_email, listing?.host_name]);
+    if (!listing?.host_email && !listing?.host_name) {
+      return;
+    } else {
+      setUpPage();
+    }
+
+    if (reservationStatus.success) {
+      return;
+    } else {
+      handleSetUserReservation();
+    }
+  }, [
+    handleSetUserReservation,
+    listing?.host_email,
+    listing?.host_name,
+    reservationStatus.success,
+  ]);
 
   return (
     <div className={styles.payment_succes_container}>
@@ -218,6 +234,7 @@ export const PaymentContent: React.FC = () => {
             height={50}
             className={styles.sittingB}
           />
+
           <div className={styles.status_and_message}>
             <div
               className={styles.status}
@@ -345,11 +362,7 @@ export const PaymentContent: React.FC = () => {
             <button
               disabled={reservationStatus.loading!}
               className={styles.next_step_button}
-              onClick={
-                reservationStatus.success
-                  ? () => {}
-                  : handleReturnUserToReservePage
-              }
+              onClick={handleRedirectUser}
             >
               {reservationStatus.success
                 ? "Chat with host"

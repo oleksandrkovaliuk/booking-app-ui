@@ -1,7 +1,7 @@
-import { ParamsProps } from "../../[user]/[id]/type";
+import { IParamsProps } from "../../[user]/[id]/type";
 
 export interface NavigationBarProps {
-  params: ParamsProps;
+  params: IParamsProps;
   children?: React.ReactNode;
 }
 

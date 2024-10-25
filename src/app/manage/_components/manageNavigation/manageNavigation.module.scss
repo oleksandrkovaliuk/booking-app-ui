@@ -26,19 +26,17 @@
     gap: 10px;
     flex-grow: 1;
     .navigation_links {
-      font-family: var(--booking-app-Nunito-Sans-font);
-      font-weight: 600;
-      font-size: 15px;
-      color: var(--booking-app-black-color);
+      position: relative;
+
       padding: 10px 15px;
       border-radius: 20px;
+
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--booking-app-black-color);
+      font-family: var(--booking-app-Nunito-Sans-font);
+
       transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
-      position: relative;
-      &[data-selected="true"] {
-        &::before {
-          opacity: 1;
-        }
-      }
       &::before {
         content: "";
         position: absolute;
@@ -53,11 +51,26 @@
         will-change: opacity;
         opacity: 0;
       }
+
       &:hover {
         background-color: var(--booking-app-background-hover-color);
         &::before {
           opacity: 0;
         }
+      }
+
+      &[data-selected="true"] {
+        &::before {
+          opacity: 1;
+        }
+      }
+
+      .notification_badge {
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background-color: var(--booking-app-coral-color);
       }
     }
   }

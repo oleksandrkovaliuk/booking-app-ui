@@ -74,4 +74,10 @@ a {
     color: var(--booking-app-white-color);
     background-color: var(--booking-app-black-color);
   }
+
+  &.small {
+    font-size: 10px;
+    border-radius: 5px;
+    background-color: var(--booking-app-background-hover-color);
+  }
 }

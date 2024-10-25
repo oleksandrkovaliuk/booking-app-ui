@@ -1,10 +1,10 @@
 import { Dispatch, SetStateAction } from "react";
 import { UseFormRegister } from "react-hook-form";
 
-import { FormState } from "@/app/manage/_components/type";
-import { EditFormValues } from "@/app/manage/listings/edit/[user]/[id]/type";
+import { IFormState } from "@/app/manage/_components/type";
+import { IEditFormValues } from "@/app/manage/listings/edit/[user]/[id]/type";
 
-export interface GoogleMapProps {
+export interface IGoogleMapProps {
   isOnlyMap?: boolean;
   cordinates: {
     lat: number;
@@ -22,5 +22,5 @@ export interface GoogleMapProps {
   }) => void;
   editPage?: boolean;
   onConfirmation?: Dispatch<SetStateAction<boolean>>;
-  register?: UseFormRegister<FormState | EditFormValues>;
+  register?: UseFormRegister<IFormState | IEditFormValues>;
 }

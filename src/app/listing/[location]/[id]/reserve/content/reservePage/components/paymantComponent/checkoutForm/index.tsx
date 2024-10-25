@@ -18,12 +18,13 @@ import { getClientSecret } from "@/store/api/endpoints/payment/getClientSecret";
 import { APP_ROOT_URL } from "@/helpers/constants";
 import { GetEveryDateFromRange } from "@/helpers/dateManagment";
 
-import { CheckoutFormProps } from "../_lib/interfaces";
+import { ICheckoutFormProps } from "../_lib/interfaces";
 
 import styles from "./checkoutForm.module.scss";
 
-export const CheckoutForm: React.FC<CheckoutFormProps> = ({
+export const CheckoutForm: React.FC<ICheckoutFormProps> = ({
   total,
+  host_email,
   listing_id,
 }) => {
   const stripe = useStripe();
@@ -34,17 +35,17 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
 
   const { data: session } = useSession();
 
-  const { search_date } = useSelector(searchSelectionSelector());
+  const { parsedSearchDate } = useSelector(searchSelectionSelector(params));
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
 
-  const todayDate = search_date
-    ? JSON.parse(search_date).start
+  const todayDate = parsedSearchDate
+    ? parsedSearchDate.start
     : today(getLocalTimeZone());
 
-  const endDate = search_date
-    ? JSON.parse(search_date).end
+  const endDate = parsedSearchDate
+    ? parsedSearchDate.end
     : today(getLocalTimeZone()).add({ weeks: 1 });
 
   const formattedSelectedDateStart = new Date(
@@ -90,7 +91,7 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
         confirmParams: {
           return_url: `${APP_ROOT_URL}/success/payment?disabled_dates=${JSON.stringify(
             disabledDates
-          )}&listing_id=${listing_id}&host_email=${session?.user?.email}${
+          )}&listing_id=${listing_id}&host_email=${host_email}${
             params?.get("message") ? `&message=${params?.get("message")}` : ""
           }`,
         },
@@ -154,7 +155,10 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
         >
           <PaymentElement className={styles.payment_element} />
 
-          <button disabled={!stripe} className={styles.submit_checkout_button}>
+          <button
+            disabled={!stripe || !parsedSearchDate}
+            className={styles.submit_checkout_button}
+          >
             {isLoading ? <Spinner size="sm" color="white" /> : "Reserve"}
           </button>
         </form>

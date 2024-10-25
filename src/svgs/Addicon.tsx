@@ -1,6 +1,6 @@
 import React from "react";
-import { SvgProps } from "@/_utilities/interfaces";
-export const AddIcon: React.FC<SvgProps> = (props) => {
+import { ISvgProps } from "@/_utilities/interfaces";
+export const AddIcon: React.FC<ISvgProps> = (props) => {
   return (
     <svg
       aria-hidden="true"

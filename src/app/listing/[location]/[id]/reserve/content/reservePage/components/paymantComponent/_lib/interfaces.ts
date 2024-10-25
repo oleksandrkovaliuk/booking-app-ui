@@ -1,6 +1,7 @@
-export interface PaymantComponentProps {
+export interface IPaymantComponentProps {
   total: number;
+  host_email: string;
   listing_id: number;
 }
 
-export interface CheckoutFormProps extends PaymantComponentProps {}
+export interface ICheckoutFormProps extends IPaymantComponentProps {}

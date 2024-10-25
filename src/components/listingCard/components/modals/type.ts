@@ -1,6 +1,6 @@
-import { ListingCardProps } from "../../type";
+import { IListingCardProps } from "../../type";
 
-export interface ModalProps extends Omit<ListingCardProps, "price"> {
+export interface ModalProps extends Omit<IListingCardProps, "price"> {
   onClose: () => void;
   isOpen: boolean;
   listingHasUnsavedChanges?: {

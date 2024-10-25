@@ -1,6 +1,6 @@
-export interface SvgProps extends React.SVGProps<SVGSVGElement> {}
+export interface ISvgProps extends React.SVGProps<SVGSVGElement> {}
 
-export interface FullUserTypes {
+export interface IFullIUserTypes {
   email: string;
   user_name?: string;
   user_lastname?: string;
@@ -9,17 +9,13 @@ export interface FullUserTypes {
   role?: string;
 }
 
-export interface ShowCaseUser
-  extends Omit<FullUserTypes, "user_lastname" & "provider" & "role"> {}
+export interface IShowCaseUser
+  extends Omit<IFullIUserTypes, "user_lastname" & "provider" & "role"> {}
 
-export interface UserTypes
+export interface IUserTypes
   extends Omit<
-    FullUserTypes,
+    IFullIUserTypes,
     "user_name" | "user_lastname" | "img_url" | "provider"
   > {
   password: string;
-}
-
-export interface UploadImgProps {
-  incomingData: FormData;
 }

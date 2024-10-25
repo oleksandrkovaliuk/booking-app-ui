@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 import { DateValue } from "@nextui-org/calendar";
 
-export interface DateInputsModalProps {
+export interface IDateInputsModalProps {
   isSeparateModal?: boolean;
   disabledDates: DateValue[];
 
@@ -12,13 +12,13 @@ export interface DateInputsModalProps {
   >;
 }
 
-export interface ModalComponentProps extends DateInputsModalProps {
+export interface IModalComponentProps extends IDateInputsModalProps {
   children?: React.ReactNode;
 
   setIsModalOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-export interface DateInputsPickerProps
-  extends Omit<ModalComponentProps, "disabledDates"> {
+export interface IDateInputsPickerProps
+  extends Omit<IModalComponentProps, "disabledDates"> {
   isModalOpen: boolean;
 }

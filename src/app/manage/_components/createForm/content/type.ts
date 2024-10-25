@@ -1,22 +1,20 @@
 import { Dispatch, SetStateAction } from "react";
 import { UseFormRegister, UseFormSetValue } from "react-hook-form";
 
-import { Category, TypeOfPlace } from "@/store/api/lib/type";
-
-import { EditFormValues } from "@/app/manage/listings/edit/[user]/[id]/type";
-import { GoogleMapProps } from "@/components/googleMap/type";
-
+import { IFormState } from "../../type";
 import { CreateListingSteps } from "../../enums";
-import { FormState } from "../../type";
+import { IGoogleMapProps } from "@/components/googleMap/type";
+import { ICategory, ITypeOfPlace } from "@/store/api/lib/interfaces";
+import { IEditFormValues } from "@/app/manage/listings/edit/[user]/[id]/type";
 
 export interface ContentProps {
   props?: any;
   editPage?: boolean;
   onConfirmation?: Dispatch<SetStateAction<boolean>>;
   [key: string]: any;
-  setValue: UseFormSetValue<FormState | any>;
+  setValue: UseFormSetValue<IFormState | any>;
   selectedPrice?: string;
-  categories?: Category[];
+  categories?: ICategory[];
   selectedAdress?: {
     formattedAddress: string;
     shorterAddress: string;
@@ -26,30 +24,32 @@ export interface ContentProps {
   key?: CreateListingSteps;
   type?: CreateListingSteps;
   images?: { url: string }[];
-  typeOfPlace?: TypeOfPlace[];
-  selectedCategory?: Category;
-  selectedTypeOfPlace?: TypeOfPlace;
-  register: UseFormRegister<FormState | EditFormValues>;
-  selectedCordinates?: GoogleMapProps["cordinates"];
-  handleCordinatesChange?: GoogleMapProps["setCordinates"];
-  selectedAccesable?: FormState["accesable"];
-  selectedPetsAllowed?: FormState["pets_allowed"];
-  selectedTitle?: FormState["title"];
-  selectedPlaceIs?: FormState["placeis"];
-  selectedAboutPlace?: FormState["aboutplace"];
-  selectedNotes?: FormState["notes"];
+  typeOfPlace?: ITypeOfPlace[];
+  selectedCategory?: ICategory;
+  selectedTypeOfPlace?: ITypeOfPlace;
+  register: UseFormRegister<IFormState | IEditFormValues>;
+  selectedCordinates?: IGoogleMapProps["cordinates"];
+  handleCordinatesChange?: IGoogleMapProps["setCordinates"];
+  selectedAccesable?: IFormState["accesable"];
+  selectedPetsAllowed?: IFormState["pets_allowed"];
+  selectedTitle?: IFormState["title"];
+  selectedPlaceIs?: IFormState["placeis"];
+  selectedAboutPlace?: IFormState["aboutplace"];
+  selectedNotes?: IFormState["notes"];
   handleUpdateFormAndLocalStorage: (
-    key: keyof FormState | keyof EditFormValues,
-    value: FormState[keyof FormState] | EditFormValues[keyof EditFormValues],
-    setValue: UseFormSetValue<FormState | EditFormValues>
+    key: keyof IFormState | keyof IEditFormValues,
+    value:
+      | IFormState[keyof IFormState]
+      | IEditFormValues[keyof IEditFormValues],
+    setValue: UseFormSetValue<IFormState | IEditFormValues>
   ) => void;
 }
-export interface ImagesType {
+export interface ImagesInterface {
   images: {
     url: string;
   }[];
 }
 
-export interface ImagesStoreType extends ImagesType {
+export interface IimagesStore extends ImagesInterface {
   isImagesReady: boolean;
 }

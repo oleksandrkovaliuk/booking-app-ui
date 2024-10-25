@@ -1,11 +1,11 @@
 import { api } from "../../api";
 import { ApiTags } from "../../lib/enums";
 import { ApiUrlsListings } from "../../lib/constants";
-import { ListingState } from "../../lib/type";
+import { IListingState } from "../../lib/interfaces";
 
 const getUserListingsApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    getUserListings: builder.query<ListingState[], void>({
+    getUserListings: builder.query<IListingState[], void>({
       query: () => ({
         url: ApiUrlsListings.getUserListings,
       }),

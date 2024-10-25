@@ -1,0 +1,206 @@
+.not_found_container {
+  max-width: 80dvw;
+  margin: auto;
+  height: calc(100dvh - 81px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+
+  .not_found_wrap {
+    cursor: pointer;
+    .not_found_icons {
+      width: 250px;
+      height: 250px;
+      flex-shrink: 0;
+    }
+  }
+}
+.inbox_container {
+  padding-left: 15px;
+  height: calc(100dvh - 81px);
+  margin: auto;
+
+  display: flex;
+  align-items: flex-start;
+}
+
+.chats_columns_container {
+  min-width: 20dvw;
+  height: 100%;
+  border-right: 1px solid var(--booking-app-lightgrey-color);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-inline: 5px;
+}
+
+.chat_block {
+  padding: 15px 10px;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: flex-start;
+
+  position: relative;
+  cursor: pointer;
+
+  transition: scale 0.2s ease-in-out;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid var(--booking-app-lightgrey-color);
+  }
+
+  &:active {
+    scale: 0.99;
+  }
+
+  &:before {
+    content: "";
+    position: absolute;
+    inset: -10px -5px;
+
+    margin: 15px 5px;
+
+    width: 95%;
+    border-radius: 10px;
+    background-color: var(--booking-app-background-hover-color);
+    z-index: 1;
+    opacity: 0;
+
+    transition: opacity 0.2s ease-in-out;
+  }
+
+  &:hover {
+    &:before {
+      opacity: 1;
+    }
+    .reservation_dates {
+      opacity: 1;
+      pointer-events: unset;
+    }
+  }
+
+  &[data-is-selected="true"] {
+    &:before {
+      opacity: 1;
+    }
+    .reservation_dates {
+      opacity: 1;
+      pointer-events: unset;
+    }
+  }
+
+  .reciever_img {
+    z-index: 2;
+    pointer-events: unset;
+
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 30%;
+    &.no_image {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 500;
+      font-family: var(--booking-app-Nunito-Sans-font);
+      color: var(--booking-app-white-color);
+      text-transform: capitalize;
+      background-color: var(--booking-app-black-color);
+    }
+  }
+
+  .reservation_dates {
+    position: absolute;
+    left: 0px;
+    bottom: 5px;
+    z-index: 2;
+
+    padding: 1px 5px;
+    background-color: var(--booking-app-background-hover-color);
+    border: 1px solid var(--booking-app-lightgrey-color);
+    border-radius: 5px;
+
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--booking-app-black-color);
+    font-family: var(--booking-app-Nunito-Sans-font);
+
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.2s ease-in-out;
+  }
+}
+
+.chat_block_info {
+  z-index: 2;
+  .chat_reciever_personal_info {
+    margin-bottom: 3px;
+    pointer-events: unset;
+    .reciever_name,
+    .reciever_email {
+      line-height: 100%;
+      font-family: var(--booking-app-Nunito-Sans-font);
+    }
+    .reciever_name {
+      font-size: 12px;
+      margin-bottom: 2px;
+      font-weight: 500;
+      color: var(--booking-app-grey-color);
+    }
+    .reciever_email {
+      font-size: 14px;
+      font-weight: 550;
+      color: var(--booking-app-black-color);
+    }
+  }
+  .address_identification {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+
+    width: max-content;
+    padding: 2px 5px;
+    border: 1px solid var(--booking-app-lightgrey-color);
+    border-radius: 5px;
+    background-color: var(--booking-app-background-hover-color);
+    max-width: 200px;
+    margin-bottom: 2px;
+    overflow: hidden;
+
+    .address_test {
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 100%;
+      color: var(--booking-app-black-color);
+      font-family: var(--booking-app-Nunito-Sans-font);
+    }
+
+    .redirect_icon {
+      width: 12px;
+      height: 12px;
+      flex-shrink: 0;
+
+      path {
+        fill: var(--booking-app-black-color);
+      }
+    }
+  }
+}
+
+.skeleton_name,
+.skeleton_email {
+  border-radius: 5px;
+  z-index: 2;
+}
+.skeleton_name {
+  height: 12px;
+  width: 50px;
+  margin-bottom: 5px;
+}
+
+.skeleton_email {
+  height: 16px;
+  width: 130px;
+}

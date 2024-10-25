@@ -1,0 +1,183 @@
+.current_chat_container {
+  width: 100%;
+  height: calc(100dvh - 81px);
+}
+.current_chat_nav {
+  position: sticky;
+  top: 0;
+  padding-block: 10px;
+  padding-inline: 15px;
+  border-bottom: 1px solid var(--booking-app-lightgrey-color);
+  background-color: var(--booking-app-white-color);
+  width: 100%;
+  .current_chat_reciever {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    .reciever_img {
+      z-index: 2;
+      pointer-events: unset;
+
+      width: 40px;
+      height: 40px;
+      object-fit: cover;
+      border-radius: 50%;
+      &.no_image {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        font-weight: 500;
+        font-family: var(--booking-app-Nunito-Sans-font);
+        color: var(--booking-app-white-color);
+        text-transform: capitalize;
+        background-color: var(--booking-app-black-color);
+      }
+    }
+    .chat_reciever_personal_info {
+      .reciever_name,
+      .reciever_email {
+        line-height: 100%;
+        font-family: var(--booking-app-Nunito-Sans-font);
+      }
+      .reciever_name {
+        font-size: 10px;
+        margin-bottom: 2px;
+        font-weight: 500;
+        color: var(--booking-app-grey-color);
+      }
+      .reciever_email {
+        font-size: 15px;
+        font-weight: 550;
+        color: var(--booking-app-black-color);
+      }
+    }
+  }
+}
+.current_chat_wrap_scroll {
+  height: calc(80dvh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.current_chat_wrap {
+  width: 100%;
+
+  padding: 40px 15px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  row-gap: 20px;
+
+  .current_chat_block {
+    position: relative;
+    max-width: 350px;
+    padding: 5px 10px;
+    border-radius: 10px;
+    border: 1px solid var(--booking-app-lightgrey-color);
+    background-color: var(--booking-app-background-hover-color);
+
+    &[data-sender="true"] {
+      margin-left: auto;
+      background-color: rgba(255, 57, 92, 0.2);
+      border-color: var(--booking-app-coral-color);
+    }
+
+    .current_chat_message {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--booking-app-black-color);
+      font-family: var(--booking-app-Nunito-Sans-font);
+    }
+  }
+}
+.bottom_chat_block {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  justify-content: flex-end;
+  .been_sent_at {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--booking-app-black-color);
+    font-family: var(--booking-app-Nunito-Sans-font);
+  }
+  .checked_icon {
+    width: 17px;
+    height: 17px;
+    path {
+      fill: var(--booking-app-black-color);
+    }
+  }
+}
+
+.skeleton_chat_block {
+  height: 75px;
+  width: 100%;
+  &:nth-child(even) {
+    margin-left: auto;
+  }
+}
+
+.send_message_container {
+  position: sticky;
+  bottom: 20px;
+
+  width: 100%;
+  margin: auto;
+  max-width: 30vw;
+
+  .send_message_wrap {
+    display: flex;
+    align-items: flex-end;
+    gap: 5px;
+  }
+  .textarea {
+    position: relative;
+
+    border: 1px solid var(--booking-app-focused-background-color);
+    border-radius: 15px;
+
+    box-shadow: 0 0 0 2px rgba(255, 57, 92, 0);
+    transition: border 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+
+    &:focus-within,
+    &:active {
+      border: 1px solid var(--booking-app-coral-color);
+      box-shadow: 0 0 0 2px rgba(255, 57, 92, 0.7);
+    }
+
+    &:hover {
+      border: 1px solid var(--booking-app-coral-color);
+    }
+
+    div {
+      border: unset !important;
+      box-shadow: unset !important;
+    }
+
+    textarea {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--booking-app-black-color);
+      font-family: var(--booking-app-Nunito-Sans-font);
+    }
+  }
+  .send_button {
+    border-radius: 20px;
+
+    &:active {
+      scale: 0.99;
+    }
+
+    .send_icon {
+      width: 25px;
+      height: 25px;
+
+      flex-shrink: 0;
+      path {
+        fill: var(--booking-app-white-color);
+      }
+    }
+  }
+}

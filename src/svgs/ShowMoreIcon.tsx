@@ -1,8 +1,8 @@
 import React from "react";
 
-import { SvgProps } from "@/_utilities/interfaces";
+import { ISvgProps } from "@/_utilities/interfaces";
 
-export const ShowMoreIcon: React.FC<SvgProps> = (props) => {
+export const ShowMoreIcon: React.FC<ISvgProps> = (props) => {
   return (
     <svg
       version="1.1"

@@ -29,13 +29,13 @@ import {
 } from "../_lib/context/context";
 
 import { searchParamsKeys } from "../_lib/enums";
-import { SearchFormBarProps } from "../_lib/types";
+import { ISearchFormBarProps } from "../_lib/types";
 import { TypesOfSelections } from "@/_utilities/enums";
-import { HandlePopUpMenuOpening } from "./_components/type";
+import { IHandlePopUpMenuOpening } from "./_components/type";
 
 import styles from "./search_form_bar.module.scss";
 
-export const SearchFormBar: React.FC<SearchFormBarProps> = ({
+export const SearchFormBar: React.FC<ISearchFormBarProps> = ({
   trackScrolled,
   onCloseCallBack,
 }) => {
@@ -48,7 +48,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
 
   const {
     search_place,
-    search_date,
+    parsedSearchDate,
     search_amountOfGuests,
     search_includePets,
 
@@ -86,7 +86,7 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
     setTriggeredSelection(TypesOfSelections.UNSELECTED);
   };
 
-  const handlePopUpMenuOpening: HandlePopUpMenuOpening = useMemo(() => {
+  const handlePopUpMenuOpening: IHandlePopUpMenuOpening = useMemo(() => {
     return (e: React.MouseEvent, type: TypesOfSelections) => {
       e.preventDefault();
       setIsCategoryChanged(false);
@@ -100,7 +100,9 @@ export const SearchFormBar: React.FC<SearchFormBarProps> = ({
       const updatedParams = CreateNewQueryParams({
         updatedParams: {
           [searchParamsKeys.SEARCH_PLACE]: search_place ? search_place : null,
-          [searchParamsKeys.SEARCH_DATE]: search_date ? search_date : null,
+          [searchParamsKeys.SEARCH_DATE]: parsedSearchDate
+            ? JSON.stringify(parsedSearchDate)
+            : null,
           [searchParamsKeys.SEARCH_AMOUNT_OF_GUESTS]: search_amountOfGuests
             ? search_amountOfGuests
             : null,

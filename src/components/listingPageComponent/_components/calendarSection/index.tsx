@@ -15,12 +15,12 @@ import {
   isDateValueEqual,
 } from "@/helpers/dateManagment";
 
-import { CalendarSelectionProps } from "../../_lib/type";
 import { searchParamsKeys } from "@/layout/header/_lib/enums";
+import { ICalendarSelectionProps } from "../../_lib/interfaces";
 
 import styles from "./calendarSection.module.scss";
 
-export const CalendarSection: React.FC<CalendarSelectionProps> = ({
+export const CalendarSection: React.FC<ICalendarSelectionProps> = ({
   title,
   disabledDates,
 }) => {

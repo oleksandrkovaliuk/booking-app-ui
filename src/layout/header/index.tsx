@@ -29,7 +29,7 @@ import {
   StaysButtonContextData,
 } from "./_lib/context/context";
 
-import { RightNavigationMenuProps } from "./_lib/types";
+import { IRightNavigationMenuProps } from "./_lib/types";
 
 import styles from "./header.module.scss";
 
@@ -90,7 +90,7 @@ const CenterNavigationMenu = ({ children }: { children: React.ReactNode }) => {
 const RightNavigationMenu = ({
   windowIsScrolledToTop,
   windowIsScrolled,
-}: RightNavigationMenuProps) => {
+}: IRightNavigationMenuProps) => {
   return (
     <motion.div
       className={styles.right_navigation_menu}

@@ -1,7 +1,8 @@
 import React from "react";
-import { ParamsProps } from "../type";
 import { ImagesContent } from "./_content";
 
-export default function ImagesPage({ params }: { params: ParamsProps }) {
+import { IParamsProps } from "../type";
+
+export default function ImagesPage({ params }: { params: IParamsProps }) {
   return <ImagesContent params={params} />;
 }

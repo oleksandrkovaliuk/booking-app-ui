@@ -10,14 +10,14 @@ import { searchSelectionSelector } from "@/store/selectors/searchSelection";
 import { DateValue, RangeCalendar, RangeValue } from "@nextui-org/calendar";
 import { setSearchSelection } from "@/store/slices/search/searchSelectionSlice";
 
-import { ModalComponentProps } from "../../_lib/interfaces";
+import { IModalComponentProps } from "../../_lib/interfaces";
 import { searchParamsKeys } from "@/layout/header/_lib/enums";
 import { DateFormatingMonthDay } from "@/helpers/dateManagment";
 import { CreateNewQueryParams } from "@/helpers/paramsManagment";
 
 import styles from "./modalComponent.module.scss";
 
-export const ModalComponent: React.FC<ModalComponentProps> = ({
+export const ModalComponent: React.FC<IModalComponentProps> = ({
   children,
 
   setIsModalOpen,

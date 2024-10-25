@@ -20,18 +20,18 @@ export const searchSelectionSelector = (params?: URLSearchParams) =>
       filter_accesable,
       filter_shared_room,
     }) => {
-      const parsedSearchDate = params?.get("search_date")
-        ? ParseLocalStorageDates(params.get("search_date")!)
-        : search_date
-        ? ParseLocalStorageDates(search_date)
-        : {
-            start: today(getLocalTimeZone()),
-            end: today(getLocalTimeZone()).add({ weeks: 1 }),
-          };
+      const parsedSearchDate =
+        params && params.get("search_date")
+          ? ParseLocalStorageDates(params.get("search_date")!)
+          : search_date
+          ? ParseLocalStorageDates(search_date)
+          : {
+              start: today(getLocalTimeZone()),
+              end: today(getLocalTimeZone()).add({ weeks: 1 }),
+            };
 
       return {
         search_place,
-        search_date,
         parsedSearchDate,
         search_amountOfGuests,
         search_includePets,

@@ -50,6 +50,11 @@ export const ApiUrlsChats = {
   getCurrentChat: "/chats/get/current",
 };
 
+export const ApiUrlsChats = {
+  getUsersChats: "/chats/get/users",
+  getCurrentChat: "/chats/get/current",
+};
+
 export const ApiTagsTypes = [
   ApiTags.USER,
   ApiTags.CURRENT_USER,

@@ -1,15 +1,20 @@
 "use client";
 import React, { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
+import Image from "next/image";
 import { useSession } from "next-auth/react";
+import { skipToken } from "@reduxjs/toolkit/query";
+import { Skeleton, Tooltip } from "@nextui-org/react";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { Skeleton, Tooltip } from "@nextui-org/react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { store } from "@/store";
 import { getUser } from "@/store/api/endpoints/auth/getUser";
+import { getUser } from "@/store/api/endpoints/auth/getUser";
 import { updateUserReservation } from "@/store/api/endpoints/user/updateUserReservations";
 import { requestSetRangeOfDisabledDates } from "@/store/api/endpoints/listings/requestSetRangeOfDisabledDates";
+import { useGetCurrentListingQuery } from "@/store/api/endpoints/listings/getCurrentListing";
 import { useGetCurrentListingQuery } from "@/store/api/endpoints/listings/getCurrentListing";
 
 import sittingB from "@/assets/sittingB.webp";
@@ -17,7 +22,13 @@ import super_host_black from "@/assets/medal-of-honor-black.png";
 
 import { socket } from "@/helpers/sockets";
 import { DateFormatingMonthDay } from "@/helpers/dateManagment";
+import { socket } from "@/helpers/sockets";
+import { DateFormatingMonthDay } from "@/helpers/dateManagment";
 import { CreateNewQueryParams } from "@/helpers/paramsManagment";
+
+import { IShowCaseUser } from "@/_utilities/interfaces";
+import { IReservationStatus } from "../_lib/interfaces";
+import { getStatusColors } from "../_lib/helpers/getStatusColor";
 
 import { IShowCaseUser } from "@/_utilities/interfaces";
 import { IReservationStatus } from "../_lib/interfaces";
@@ -31,6 +42,13 @@ export const PaymentContent: React.FC = () => {
   const params = useSearchParams();
 
   const { data: session } = useSession();
+  const { data: listing, isLoading } = useGetCurrentListingQuery(
+    Number.isNaN(params.get("listing_id")) || params.get("result")
+      ? skipToken
+      : {
+          id: Number(params.get("listing_id")),
+        }
+  );
   const { data: listing, isLoading } = useGetCurrentListingQuery(
     Number.isNaN(params.get("listing_id")) || params.get("result")
       ? skipToken
@@ -57,13 +75,29 @@ export const PaymentContent: React.FC = () => {
         : "Your reservation is being processing",
     });
 
+  const [reservationStatus, setReservationStatus] =
+    useState<IReservationStatus>({
+      loading: true,
+      success: JSON.parse(params.get("result") || "null"),
+      error: null,
+      status: "Proccesing",
+      beenProcessedAt: null,
+      message: params.get("res_message")
+        ? JSON.parse(params.get("res_message")!)
+        : "Your reservation is being processing",
+    });
+
   //   CONSTANTS
   const colorBasedOnStatus: { secondary: string; primary: string } =
+    getStatusColors(reservationStatus.status);
     getStatusColors(reservationStatus.status);
 
   const handleSetUserReservation = useCallback(async () => {
     const incomingParams = Object.fromEntries(params.entries());
+  const handleSetUserReservation = useCallback(async () => {
+    const incomingParams = Object.fromEntries(params.entries());
 
+    if (!incomingParams.disabled_dates) {
     if (!incomingParams.disabled_dates) {
       setReservationStatus((prev) => ({
         ...prev,
@@ -123,6 +157,11 @@ export const PaymentContent: React.FC = () => {
             "Your reservation created and sent successfully"
           ),
           chatId: JSON.stringify(reservationUpdateRes?.chatId),
+          result: JSON.stringify(true),
+          res_message: JSON.stringify(
+            "Your reservation created and sent successfully"
+          ),
+          chatId: JSON.stringify(reservationUpdateRes?.chatId),
         },
         params,
       });
@@ -137,6 +176,7 @@ export const PaymentContent: React.FC = () => {
         loading: false,
         status: "Complete",
         beenProcessedAt: new Date(),
+        message: "Your reservation created and sent successfully",
         message: "Your reservation created and sent successfully",
       }));
 

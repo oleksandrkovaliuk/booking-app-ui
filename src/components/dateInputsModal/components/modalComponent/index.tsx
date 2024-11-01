@@ -59,6 +59,7 @@ export const ModalComponent: React.FC<IModalComponentProps> = ({
       localStorage.removeItem("userDateSelection");
     }
   };
+  console.log(parsedSearchDate, "parsedSearchDate");
 
   return (
     <div

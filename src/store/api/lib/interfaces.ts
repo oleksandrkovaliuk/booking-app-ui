@@ -38,9 +38,10 @@ export interface IChatData {
   chat_data: {
     to: string;
     from: string;
-    seen: boolean;
     sent_at: Date;
     message: string;
+    seenByReceiver: boolean;
+    required_reservation?: boolean;
   }[];
   reciever: IShowCaseUser;
 }

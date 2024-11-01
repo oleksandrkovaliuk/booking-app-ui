@@ -7,7 +7,7 @@ import { useDisclosure } from "@nextui-org/react";
 import { useSelector } from "@/store";
 import { searchSelectionSelector } from "@/store/selectors/searchSelection";
 
-import { Arrow } from "@/svgs/RightArrow";
+import { Arrow } from "@/svgs/Arrow";
 
 import { StatusBadge } from "../statusBadge";
 import { ManageModal } from "./components/modals/manage";

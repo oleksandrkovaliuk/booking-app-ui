@@ -23,8 +23,8 @@ const notificationsSlice = createSlice({
   name: "notificationsSlice",
   initialState,
   reducers: {
-    updateNotifications: (state) => {
-      state.shouldUpdateNotifications = !state.shouldUpdateNotifications;
+    updateNotifications: (state, action) => {
+      state.shouldUpdateNotifications = action.payload;
     },
     setNotificationType: (
       state,

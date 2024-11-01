@@ -41,10 +41,12 @@ export const ApiUrlsUser = {
 
 export const ApiUrlsPayment = {
   getClientSecret: "/payment/get/clientSecret",
+  proccesPayment: "/payment/procces",
 };
 
 export const ApiUrlsChats = {
   getUsersChats: "/chats/get/users",
+  newChatMessage: "/chats/new/message",
   getCurrentChat: "/chats/get/current",
 };
 

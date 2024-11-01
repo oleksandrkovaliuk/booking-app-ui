@@ -1,0 +1,93 @@
+.send_message_container {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 20px;
+
+  width: 100%;
+  margin: auto;
+  max-width: 40dvw;
+
+  .send_message_wrap {
+    display: flex;
+    align-items: flex-end;
+    gap: 5px;
+  }
+  .textarea {
+    position: relative;
+
+    border: 1px solid var(--booking-app-focused-background-color);
+    border-radius: 15px;
+
+    box-shadow: 0 0 0 2px rgba(255, 57, 92, 0);
+    transition: border 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+
+    &:focus-within,
+    &:active {
+      border: 1px solid var(--booking-app-coral-color);
+      box-shadow: 0 0 0 2px rgba(255, 57, 92, 0.7);
+    }
+
+    &:hover {
+      border: 1px solid var(--booking-app-coral-color);
+    }
+
+    div {
+      border: unset !important;
+      box-shadow: unset !important;
+      border-radius: 15px;
+      background-color: var(--booking-app-white-color);
+    }
+
+    textarea {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--booking-app-black-color);
+      font-family: var(--booking-app-Nunito-Sans-font);
+    }
+  }
+
+  .send_button {
+    overflow: hidden;
+    border-radius: 20px;
+
+    &:active {
+      scale: 0.98;
+    }
+    &[data-animation-triggered="true"] {
+      .send_icon {
+        animation-name: flyingMessageAnimation;
+      }
+    }
+
+    .send_icon {
+      width: 25px;
+      height: 25px;
+      animation: 1s ease-in-out linear;
+      flex-shrink: 0;
+      path {
+        fill: var(--booking-app-white-color);
+      }
+    }
+  }
+}
+
+@keyframes flyingMessageAnimation {
+  0% {
+    opacity: 1;
+    transform: translate(0px, 0px);
+  }
+
+  25% {
+    transform: translate(50px, -50px);
+  }
+  50% {
+    opacity: 0;
+    transform: translate(-50px, 50px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate(0px, 0px);
+  }
+}

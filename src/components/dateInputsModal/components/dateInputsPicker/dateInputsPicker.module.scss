@@ -88,14 +88,16 @@
     }
 
     .date_input {
-      outline: none;
-      border: none;
-      font-size: 14px;
-      font-family: var(--booking-app-Nunito-Sans-font);
-      font-weight: 500;
-      color: var(--booking-app-grey-color);
-      line-height: 100%;
       width: 100%;
+      border: none;
+      outline: none;
+      cursor: pointer;
+
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 100%;
+      color: var(--booking-app-grey-color);
+      font-family: var(--booking-app-Nunito-Sans-font);
     }
   }
 }

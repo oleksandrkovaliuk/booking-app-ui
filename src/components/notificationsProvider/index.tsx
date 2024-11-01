@@ -11,19 +11,29 @@ import { NotificationSelector } from "@/store/selectors/notificationsState";
 import { useGetUserNotificationsQuery } from "@/store/api/endpoints/user/getUserNotifications";
 
 import { NotificationTypes } from "@/store/api/lib/enums";
+import { socket } from "@/helpers/sockets";
+import { useSession } from "next-auth/react";
+import { skipToken } from "@reduxjs/toolkit/query";
 
 export const NotificationsProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const dispatch = useDispatch();
-  const { data: notifications, refetch } = useGetUserNotificationsQuery();
-  const { shouldUpdateNotifications } = useSelector(NotificationSelector);
+  const { data: session } = useSession();
+  const { data: notifications, refetch } = useGetUserNotificationsQuery(
+    !session?.user.email ? skipToken : undefined
+  );
 
   useEffect(() => {
-    if (shouldUpdateNotifications) {
+    const refetchNotificationData = () => {
       refetch();
-      dispatch(updateNotifications());
-    }
+      dispatch(updateNotifications(false));
+    };
+
+    socket.on(
+      `${session?.user?.email} notificationUpdate`,
+      refetchNotificationData
+    );
 
     if (notifications) {
       const isInboxNotificationSeen = notifications.some(
@@ -43,7 +53,7 @@ export const NotificationsProvider: React.FC<{ children: React.ReactNode }> = ({
       );
       dispatch(setNotification(notifications));
     }
-  }, [dispatch, notifications, shouldUpdateNotifications, refetch]);
+  }, [dispatch, notifications, refetch, session?.user?.email]);
 
   return <>{children}</>;
 };

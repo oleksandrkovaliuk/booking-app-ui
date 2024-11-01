@@ -91,20 +91,6 @@ export const NotificationModal: React.FC = () => {
     return () => onClose();
   }, [isModalOpen, onClose, onOpen]);
 
-  useEffect(() => {
-    if (!session?.user.email) return;
-
-    const socketListener = () => {
-      dispatch(updateNotifications());
-    };
-
-    socket.on(`${session?.user.email} newReservation`, socketListener);
-
-    return () => {
-      socket.off(`${session?.user.email} newReservation`, socketListener);
-    };
-  }, [session?.user.email, dispatch]);
-
   if (!isModalOpen) return <></>;
 
   return (

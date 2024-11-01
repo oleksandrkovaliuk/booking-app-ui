@@ -110,10 +110,12 @@ export const MessagesContainer: React.FC = () => {
           viewer,
           chatId: data.chatId,
         });
+        refetch();
       }
     });
 
     socket.on("messagesReadedSuccesfully", (data) => {
+      console.log("Messages have been marked as readed", data.chatId);
       refetch();
     });
 

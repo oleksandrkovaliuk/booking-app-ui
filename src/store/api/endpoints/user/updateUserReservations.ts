@@ -9,10 +9,6 @@ const updateUserReservationsApi = api.injectEndpoints({
         chatId: number;
       },
       {
-        message: string;
-        chatId: number;
-      },
-      {
         listing_id: number;
         host_email: string;
         guest_message: string;

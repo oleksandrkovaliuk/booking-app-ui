@@ -1,7 +1,7 @@
 import React from "react";
 import { Tooltip } from "@nextui-org/react";
 
-import { Arrow } from "@/svgs/RightArrow";
+import { Arrow } from "@/svgs/Arrow";
 
 import { RoundButtonProps } from "./_lib/interfaces";
 

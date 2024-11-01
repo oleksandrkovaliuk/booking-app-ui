@@ -91,8 +91,6 @@ export const PaymentContent: React.FC = () => {
             host_email: incomingParams.host_email,
             listing_id: Number(incomingParams.listing_id),
             payment_intent: incomingParams.payment_intent,
-            payment_intent_client_secret:
-              incomingParams.payment_intent_client_secret,
             reservation_dates: bookedDates,
           })
         );
@@ -142,7 +140,7 @@ export const PaymentContent: React.FC = () => {
         message: "Your reservation created and sent successfully",
       }));
 
-      socket.emit("newReservationReq", {
+      socket.emit("reservationRequest", {
         type: "INBOX_MESSAGE",
         message: "New reservation request.",
         user_email: incomingParams.host_email,

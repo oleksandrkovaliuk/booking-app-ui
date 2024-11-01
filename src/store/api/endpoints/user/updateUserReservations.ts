@@ -13,7 +13,6 @@ const updateUserReservationsApi = api.injectEndpoints({
         host_email: string;
         guest_message: string;
         payment_intent: string;
-        payment_intent_client_secret: string;
         reservation_dates: string;
       }
     >({
@@ -22,7 +21,6 @@ const updateUserReservationsApi = api.injectEndpoints({
         host_email,
         guest_message,
         payment_intent,
-        payment_intent_client_secret,
         reservation_dates,
       }) => ({
         url: ApiUrlsUser.updateUserReservations,
@@ -32,7 +30,6 @@ const updateUserReservationsApi = api.injectEndpoints({
           host_email,
           guest_message,
           payment_intent,
-          payment_intent_client_secret,
           reservation_dates,
         },
       }),

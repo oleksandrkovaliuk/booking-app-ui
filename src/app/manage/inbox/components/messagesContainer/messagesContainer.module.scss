@@ -1,0 +1,91 @@
+$chat-container-height: calc(100dvh - 81px);
+.current_chat_wrap_scroll {
+  position: relative;
+  height: calc($chat-container-height - 61px);
+}
+
+.current_chat_wrap {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  padding: 40px 15px 82px;
+  margin-bottom: 10px;
+
+  .current_chat_block {
+    position: relative;
+
+    max-width: 350px;
+    width: max-content;
+
+    padding: 5px 10px;
+
+    border-radius: 20px;
+    border: 1px solid var(--booking-app-lightgrey-color);
+    background-color: var(--booking-app-background-hover-color);
+
+    &:not(:last-child) {
+      margin-bottom: 20px;
+    }
+
+    &[data-sender="true"] {
+      margin-left: auto;
+      background-color: rgba(255, 57, 92, 0.2);
+      border-color: var(--booking-app-coral-color);
+    }
+
+    .current_chat_message {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--booking-app-black-color);
+      font-family: var(--booking-app-Nunito-Sans-font);
+    }
+  }
+}
+
+.bottom_chat_block {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  justify-content: flex-end;
+  .been_sent_at {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--booking-app-black-color);
+    font-family: var(--booking-app-Nunito-Sans-font);
+  }
+  .checked_icon {
+    width: 17px;
+    height: 17px;
+    path {
+      fill: var(--booking-app-black-color);
+    }
+  }
+}
+
+.submit_reservation {
+  margin-block: 5px;
+  width: 100%;
+  padding: 5px 10px;
+  border-radius: 10px;
+
+  background-color: var(--booking-app-coral-color);
+
+  color: var(--booking-app-white-color);
+  font-size: 16px;
+  font-weight: 500;
+  font-family: var(--booking-app-Nunito-Sans-font);
+  cursor: pointer;
+
+  transition: scale 0.2s ease-in-out;
+  &:hover {
+    scale: 0.99;
+  }
+}
+.spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

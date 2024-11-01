@@ -48,23 +48,16 @@ export const InboxContent: React.FC = () => {
     router.replace(`${pathname}?${updatedParams}`, {
       scroll: false,
     });
-
-    socket.emit("enteredConversetion", {
-      chatId: chatId,
-      reciever: session?.user?.email,
-      type: NotificationTypes.INBOX_MESSAGE,
-    });
   };
 
   useEffect(() => {
-    socket.emit("markNotificationAsRead", {
-      reciever: session?.user?.email,
+    socket.emit("notificationReaded", {
+      viewer: session?.user?.email,
       type: NotificationTypes.INBOX_MESSAGE,
     });
-    dispatch(updateNotifications());
+    dispatch(updateNotifications(true));
     return () => {
-      socket.off("markNotificationAsRead");
-      socket.off("enteredConversetion");
+      socket.off("notificationReaded");
     };
   }, [dispatch, session?.user?.email]);
 

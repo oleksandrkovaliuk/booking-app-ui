@@ -10,7 +10,6 @@ import {
 } from "@nextui-org/react";
 import { useDispatch } from "react-redux";
 import { useSearchParams } from "next/navigation";
-import { today, getLocalTimeZone } from "@internationalized/date";
 
 import { useSelector } from "@/store";
 import { searchSelectionSelector } from "@/store/selectors/searchSelection";
@@ -19,18 +18,15 @@ import { setSearchSelection } from "@/store/slices/search/searchSelectionSlice";
 import { Counter } from "@/components/counter";
 import { DateInputsModal } from "@/components/dateInputsModal";
 
-import {
-  DateFormatingMonthDay,
-  ParseLocalStorageDates,
-} from "@/helpers/dateManagment";
+import { DateFormatingMonthDay } from "@/helpers/dateManagment";
 
-import { YourTripBlockProps } from "../../../_lib/interfaces";
 import { searchParamsKeys } from "@/layout/header/_lib/enums";
+import { IYourTripBlockProps } from "../../../_lib/interfaces";
 
 import styles from "./yourTrip.module.scss";
 import global from "../../reservePage.module.scss";
 
-export const YourTripBlock: React.FC<YourTripBlockProps> = ({
+export const YourTripBlock: React.FC<IYourTripBlockProps> = ({
   disabledDates,
 }) => {
   const dispatch = useDispatch();
@@ -40,11 +36,13 @@ export const YourTripBlock: React.FC<YourTripBlockProps> = ({
   };
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { search_amountOfGuests } = useSelector(searchSelectionSelector);
+  const { search_amountOfGuests, parsedSearchDate } = useSelector(
+    searchSelectionSelector(params)
+  );
 
   const [isCounterActive, setIsCounterActive] = useState<boolean>(false);
   const [guestsAmount, setGuestsAmount] = useState<number>(
-    JSON.parse(search_amountOfGuests || "0")
+    search_amountOfGuests ? JSON.parse(search_amountOfGuests) : 1
   );
 
   const [inputSelection, setInputSelection] = useState<
@@ -52,23 +50,17 @@ export const YourTripBlock: React.FC<YourTripBlockProps> = ({
   >("checkIn");
 
   // CONSTANTS
-  const searchDateSelection = convertedParams.search_date
-    ? convertedParams.search_date
-    : JSON.stringify({
-        start: today(getLocalTimeZone()),
-        end: today(getLocalTimeZone()).add({ weeks: 1 }),
-      });
+
   const formattedDatesField = `${DateFormatingMonthDay(
-    ParseLocalStorageDates(searchDateSelection).start
-  )} - ${DateFormatingMonthDay(
-    ParseLocalStorageDates(searchDateSelection).end
-  )}`;
+    parsedSearchDate.start
+  )} - ${DateFormatingMonthDay(parsedSearchDate.end)}`;
 
   useEffect(() => {
     if (guestsAmount !== JSON.parse(search_amountOfGuests!)) {
       setIsCounterActive(true);
     }
   }, [guestsAmount, search_amountOfGuests]);
+
   return (
     <>
       <Modal

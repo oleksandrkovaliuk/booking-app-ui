@@ -19,5 +19,11 @@ export async function middleware(req: any) {
 }
 
 export const config = {
-  matcher: ["/create", "/create/:path*", "/manage", "/manage/:path*"],
+  matcher: [
+    "/create",
+    "/create/:path*",
+    "/manage",
+    "/manage/:path*",
+    "/success/:path*",
+  ],
 };

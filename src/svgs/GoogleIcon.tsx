@@ -1,7 +1,7 @@
-import { SvgProps } from "@/_utilities/interfaces";
+import { ISvgProps } from "@/_utilities/interfaces";
 import React from "react";
 
-export const GoogleIcon: React.FC<SvgProps> = (props) => {
+export const GoogleIcon: React.FC<ISvgProps> = (props) => {
   return (
     <svg
       version="1.1"

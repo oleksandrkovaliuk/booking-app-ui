@@ -9,14 +9,14 @@ import { setSearchSelection } from "@/store/slices/search/searchSelectionSlice";
 import { Counter } from "@/components/counter";
 import { ModalPanel } from "@/components/modalPanel";
 
-import { SelectionComponentsProps } from "./type";
+import { ISelectionComponentsProps } from "./type";
 import { searchParamsKeys } from "../../_lib/enums";
 import { TypesOfSelections } from "@/_utilities/enums";
 import { useTriggeredSelectionData } from "../../_lib/context/context";
 
 import styles from "../search_form_bar.module.scss";
 
-const GuestsSelection: React.FC<SelectionComponentsProps> = ({
+const GuestsSelection: React.FC<ISelectionComponentsProps> = ({
   searchBarRef,
   handlePopUpMenuOpening,
 }) => {

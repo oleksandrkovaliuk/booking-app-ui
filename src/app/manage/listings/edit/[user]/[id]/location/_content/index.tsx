@@ -12,16 +12,16 @@ import { Location } from "@/app/manage/_components/createForm/content/_component
 import { handleUpdateFormAndLocalStorage } from "@/helpers/updateFormAndStorageStates";
 import { requirmentForAddressComponent } from "@/helpers/address/formattedAddressVariants";
 
-import { GoogleMapProps } from "@/components/googleMap/type";
+import { IGoogleMapProps } from "@/components/googleMap/type";
 import { ConfirmationButton } from "@/components/confirmationButton";
 
-import { ContentProps, EditFormValues } from "../../type";
+import { ContentProps, IEditFormValues } from "../../type";
 
 import styles from "./location.module.scss";
 import "../../shared/sharedStyles.scss";
 
 export const LocationContent: React.FC<ContentProps> = ({ params }) => {
-  const setValueRef = useRef<UseFormSetValue<EditFormValues> | null>(null);
+  const setValueRef = useRef<UseFormSetValue<IEditFormValues> | null>(null);
 
   const { data: listing } = useGetCurrentListingQuery({
     id: Number(params?.id),
@@ -34,13 +34,13 @@ export const LocationContent: React.FC<ContentProps> = ({ params }) => {
     defaultValues: {
       edit_cordinates: {},
       edit_address: {},
-    } as EditFormValues,
+    } as IEditFormValues,
   });
 
   const selectedCordinates = watch("edit_cordinates");
   const selectedAddress = watch("edit_address");
 
-  const handleCordinatesChange = (cordinates: GoogleMapProps["cordinates"]) => {
+  const handleCordinatesChange = (cordinates: IGoogleMapProps["cordinates"]) => {
     const detailedAddressComponent =
       cordinates.address?.address_components?.reduce<
         google.maps.places.PlaceResult["address_components"]

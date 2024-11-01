@@ -5,15 +5,16 @@ import { Elements } from "@stripe/react-stripe-js";
 
 import { CheckoutForm } from "./checkoutForm";
 
-import { PaymantComponentProps } from "./_lib/interfaces";
+import { IPaymantComponentProps } from "./_lib/interfaces";
 
 import styles from "./paymantComponent.module.scss";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISH_KEY!);
 
-export const PaymantComponent: React.FC<PaymantComponentProps> = ({
+export const PaymantComponent: React.FC<IPaymantComponentProps> = ({
   total,
   listing_id,
+  host_email,
 }) => {
   return (
     <div className={styles.paymant_section}>
@@ -38,7 +39,11 @@ export const PaymantComponent: React.FC<PaymantComponentProps> = ({
             },
           }}
         >
-          <CheckoutForm total={total} listing_id={listing_id} />
+          <CheckoutForm
+            total={total}
+            listing_id={listing_id}
+            host_email={host_email}
+          />
         </Elements>
       )}
     </div>

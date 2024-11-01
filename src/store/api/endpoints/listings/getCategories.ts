@@ -2,18 +2,18 @@ import { api } from "../../api";
 import { ApiTags } from "../../lib/enums";
 import { ApiUrlsListings } from "../../lib/constants";
 
-import { Category, ListingState } from "../../lib/type";
+import { ICategory, IListingState } from "../../lib/interfaces";
 
 const getListingsCategoriesApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    getFullCategoriesList: builder.query<Category[], void>({
+    getFullCategoriesList: builder.query<ICategory[], void>({
       query: () => ({
         url: ApiUrlsListings.getFullListOfListingCategories,
       }),
       providesTags: [ApiTags.FULL_CATEGORIES_LIST],
     }),
     getListingsCategories: builder.query<
-      Category[],
+      ICategory[],
       {
         options: {
           [key: string]: string | null | boolean;

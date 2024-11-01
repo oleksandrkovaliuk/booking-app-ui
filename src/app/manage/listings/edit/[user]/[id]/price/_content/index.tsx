@@ -12,12 +12,12 @@ import { ConfirmationButton } from "@/components/confirmationButton";
 
 import { handleUpdateFormAndLocalStorage } from "@/helpers/updateFormAndStorageStates";
 
-import { ContentProps, EditFormValues } from "../../type";
+import { ContentProps, IEditFormValues } from "../../type";
 
 import styles from "./price.module.scss";
 
 export const PriceContent: React.FC<ContentProps> = ({ params }) => {
-  const setValueRef = useRef<UseFormSetValue<EditFormValues> | null>(null);
+  const setValueRef = useRef<UseFormSetValue<IEditFormValues> | null>(null);
 
   const { data: listing } = useGetCurrentListingQuery({
     id: Number(params?.id),
@@ -29,7 +29,7 @@ export const PriceContent: React.FC<ContentProps> = ({ params }) => {
   const { register, watch, setValue } = useForm({
     defaultValues: {
       edit_price: "14",
-    } as EditFormValues,
+    } as IEditFormValues,
   });
 
   const selectedPrice = watch("edit_price");

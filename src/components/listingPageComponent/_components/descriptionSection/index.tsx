@@ -6,14 +6,14 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 
-import { ListingState } from "@/store/api/lib/type";
+import { IListingState } from "@/store/api/lib/interfaces";
 
 import styles from "./descriptionSection.module.scss";
 
 export const DescriptionSection: React.FC<{
-  aboutplace: ListingState["aboutplace"];
-  placeis: ListingState["placeis"];
-  notes: ListingState["notes"];
+  aboutplace: IListingState["aboutplace"];
+  placeis: IListingState["placeis"];
+  notes: IListingState["notes"];
 }> = ({ aboutplace, placeis, notes }) => {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const isAboutPlaceTextTooLong = aboutplace?.split(" ").length! > 300;

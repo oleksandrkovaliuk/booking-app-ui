@@ -1,23 +1,23 @@
 import React from "react";
+import { toast } from "sonner";
+import { useDispatch } from "react-redux";
+import { today, getLocalTimeZone } from "@internationalized/date";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { useSelector } from "@/store";
-import { DateValue, RangeCalendar, RangeValue } from "@nextui-org/calendar";
 import { isWidthHandlerSelector } from "@/store/selectors/isWidthHandler";
 import { searchSelectionSelector } from "@/store/selectors/searchSelection";
+import { DateValue, RangeCalendar, RangeValue } from "@nextui-org/calendar";
+import { setSearchSelection } from "@/store/slices/search/searchSelectionSlice";
 
-import { ModalComponentProps } from "../../_lib/interfaces";
+import { IModalComponentProps } from "../../_lib/interfaces";
 import { searchParamsKeys } from "@/layout/header/_lib/enums";
+import { DateFormatingMonthDay } from "@/helpers/dateManagment";
+import { CreateNewQueryParams } from "@/helpers/paramsManagment";
 
 import styles from "./modalComponent.module.scss";
-import { DateFormatingMonthDay } from "@/helpers/dateManagment";
-import { useDispatch } from "react-redux";
-import { CreateNewQueryParams } from "@/helpers/paramsManagment";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { setSearchSelection } from "@/store/slices/search/searchSelectionSlice";
-import { toast } from "sonner";
-import { today, getLocalTimeZone } from "@internationalized/date";
 
-export const ModalComponent: React.FC<ModalComponentProps> = ({
+export const ModalComponent: React.FC<IModalComponentProps> = ({
   children,
 
   setIsModalOpen,
@@ -31,7 +31,7 @@ export const ModalComponent: React.FC<ModalComponentProps> = ({
   const dispatch = useDispatch();
   const params = useSearchParams();
 
-  const { parsedSearchDate } = useSelector(searchSelectionSelector);
+  const { parsedSearchDate } = useSelector(searchSelectionSelector(params));
   const { desktop, mobile, tablet } = useSelector(isWidthHandlerSelector);
 
   const handleSetDateSelection = (value: RangeValue<DateValue>) => {
@@ -59,6 +59,7 @@ export const ModalComponent: React.FC<ModalComponentProps> = ({
       localStorage.removeItem("userDateSelection");
     }
   };
+  console.log(parsedSearchDate, "parsedSearchDate");
 
   return (
     <div

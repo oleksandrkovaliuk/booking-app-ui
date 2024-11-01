@@ -1,16 +1,13 @@
-import { DateValue, RangeValue } from "@nextui-org/calendar";
-
 import { api } from "../../api";
 
 import { ApiTags } from "../../lib/enums";
+import { IListingState } from "../../lib/interfaces";
 import { ApiUrlsListings } from "../../lib/constants";
-import { ListingState, TypeOfPlace } from "../../lib/type";
-import { searchParamsKeys } from "@/layout/header/_lib/enums";
 
 const getVerifiedListingsApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getVerifiedListingByParams: builder.query<
-      ListingState[],
+      IListingState[],
       {
         options: {
           [key: string]: string | null | boolean;

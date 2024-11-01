@@ -14,7 +14,7 @@ import {
 import { useSelector } from "@/store";
 import { isWidthHandlerSelector } from "@/store/selectors/isWidthHandler";
 import { clearSearchSelection } from "@/store/slices/search/searchSelectionSlice";
-import { setIsSearchTriggered } from "@/store/slices/listings/isSearchTriggeredSlice";
+import { setFetch, setIsSearchTriggered } from "@/store/slices/listings/isSearchTriggeredSlice";
 
 import { Search } from "@/svgs/Search";
 import { AddHouseIcon } from "@/svgs/AddHouseIcon";
@@ -29,7 +29,7 @@ import {
   StaysButtonContextData,
 } from "./_lib/context/context";
 
-import { RightNavigationMenuProps } from "./_lib/types";
+import { IRightNavigationMenuProps } from "./_lib/types";
 
 import styles from "./header.module.scss";
 
@@ -90,7 +90,7 @@ const CenterNavigationMenu = ({ children }: { children: React.ReactNode }) => {
 const RightNavigationMenu = ({
   windowIsScrolledToTop,
   windowIsScrolled,
-}: RightNavigationMenuProps) => {
+}: IRightNavigationMenuProps) => {
   return (
     <motion.div
       className={styles.right_navigation_menu}
@@ -169,8 +169,9 @@ export const Header = () => {
               href={params.size !== 0 ? "/" : "#"}
               handleOnClick={() => {
                 router.refresh();
-                dispatch(setIsSearchTriggered(false));
+                dispatch(setFetch(true));
                 dispatch(clearSearchSelection());
+                dispatch(setIsSearchTriggered(false));
               }}
             />
           )}

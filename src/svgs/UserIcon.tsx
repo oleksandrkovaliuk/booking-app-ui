@@ -1,7 +1,7 @@
-import { SvgProps } from "@/_utilities/interfaces";
+import { ISvgProps } from "@/_utilities/interfaces";
 import React from "react";
 
-export const UserIcon: React.FC<SvgProps> = (props) => {
+export const UserIcon: React.FC<ISvgProps> = (props) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

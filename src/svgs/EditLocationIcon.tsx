@@ -1,7 +1,7 @@
 import React from "react";
-import { SvgProps } from "@/_utilities/interfaces";
+import { ISvgProps } from "@/_utilities/interfaces";
 
-export const EditLocationIcon: React.FC<SvgProps> = (props) => {
+export const EditLocationIcon: React.FC<ISvgProps> = (props) => {
   return (
     <svg
       version="1.1"

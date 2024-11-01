@@ -39,24 +39,35 @@
   &:hover {
     color: var(--booking-app-black-color);
     background-color: var(--booking-app-background-hover-color);
-    svg {
-      path {
-        fill: var(--booking-app-black-color);
-      }
-    }
   }
 }
-.role_icon {
+.role_badge,
+.notifications_badge {
   position: absolute;
-  top: 0;
-  left: 0;
   z-index: 1;
-  width: 20px;
-  height: 20px;
-  padding: 1px;
 
   border-radius: 50%;
   path {
     fill: var(--booking-app-coral-color);
   }
+}
+.role_badge {
+  top: 0;
+  right: 0;
+
+  padding: 1px;
+  .role_icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+}
+
+.notifications_badge {
+  top: 7px;
+  right: 7px;
+
+  width: 6px;
+  height: 6px;
+  background-color: var(--booking-app-coral-color);
 }

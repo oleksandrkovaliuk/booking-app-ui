@@ -1,8 +1,8 @@
 import React from "react";
 import { TypeContent } from "./_content";
 
-import { ParamsProps } from "../type";
+import { IParamsProps } from "../type";
 
-export default function EditType({ params }: { params: ParamsProps }) {
+export default function EditType({ params }: { params: IParamsProps }) {
   return <TypeContent params={params} />;
 }

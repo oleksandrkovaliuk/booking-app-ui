@@ -1,29 +1,29 @@
 import { StaticImageData } from "next/image";
 
-export interface CenterNavigationMenuProps {
+export interface ICenterNavigationMenuProps {
   windowIsScrolled: boolean;
   mobile: boolean;
   onCloseCallBack?: () => void;
 }
 
-export interface RightNavigationMenuProps
-  extends Omit<CenterNavigationMenuProps, "onCloseCallBack" | "mobile"> {
+export interface IRightNavigationMenuProps
+  extends Omit<ICenterNavigationMenuProps, "onCloseCallBack" | "mobile"> {
   windowIsScrolledToTop: boolean;
 }
 
-export interface SearchFormBarProps {
+export interface ISearchFormBarProps {
   trackScrolled: boolean;
 
   onCloseCallBack?: () => void;
 }
 
-export interface regionResponceType {
+export interface IRegionResponceType {
   id: number;
   city: string;
   country: string;
   countryCode: string;
 }
-export interface regionsType {
+export interface IRegionsType {
   id: number;
   region: string;
   map: StaticImageData;

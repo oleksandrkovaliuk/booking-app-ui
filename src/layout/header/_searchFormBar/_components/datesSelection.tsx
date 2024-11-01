@@ -27,13 +27,13 @@ import {
 
 import { ClearInputSelectionButton } from "./clearInputSelection";
 
-import { SelectionComponentsProps } from "./type";
+import { ISelectionComponentsProps } from "./type";
 import { searchParamsKeys } from "../../_lib/enums";
 import { TypesOfSelections } from "@/_utilities/enums";
 
 import styles from "../search_form_bar.module.scss";
 
-const DatesSelection: React.FC<SelectionComponentsProps> = ({
+const DatesSelection: React.FC<ISelectionComponentsProps> = ({
   searchBarRef,
   handlePopUpMenuOpening,
 }) => {

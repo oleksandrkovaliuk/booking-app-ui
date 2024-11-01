@@ -1,6 +1,6 @@
-import { SvgProps } from "@/_utilities/interfaces";
+import { ISvgProps } from "@/_utilities/interfaces";
 
-export const LogOutIcon = (props: SvgProps) => {
+export const LogOutIcon = (props: ISvgProps) => {
   return (
     <svg
       version="1.1"

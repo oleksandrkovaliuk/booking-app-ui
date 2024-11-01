@@ -17,15 +17,16 @@ import { CalculatePriceIncludingTax } from "@/helpers/priceManagment";
 import { CountNights, ParseLocalStorageDates } from "@/helpers/dateManagment";
 import { formattedAddressComponent } from "@/helpers/address/formattedAddressVariants";
 
-import { ListingCardProps } from "./type";
+import { IListingCardProps } from "./type";
 import { searchParamsKeys } from "@/layout/header/_lib/enums";
 
 import "./additional.scss";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import styles from "./listingCard.module.scss";
+import Image from "next/image";
 
-export const ListingCard: React.FC<ListingCardProps> = ({
+export const ListingCard: React.FC<IListingCardProps> = ({
   id,
   type,
   title,
@@ -60,14 +61,11 @@ export const ListingCard: React.FC<ListingCardProps> = ({
     unsaved_changes: false,
   });
 
-  const { search_date } = useSelector(searchSelectionSelector);
+  const { parsedSearchDate } = useSelector(searchSelectionSelector(params));
 
   const calculateNights =
-    search_date &&
-    CountNights(
-      ParseLocalStorageDates(search_date).start,
-      ParseLocalStorageDates(search_date).end
-    );
+    parsedSearchDate &&
+    CountNights(parsedSearchDate.start, parsedSearchDate.end);
   // CONDITIONS
   const isPreviewCard = isPreview && !isManagable;
   const isRequiredAvailability =
@@ -220,11 +218,15 @@ export const ListingCard: React.FC<ListingCardProps> = ({
           )}
 
           <Slider {...options} ref={sliderRef}>
-            {images?.map((image) => (
+            {images?.map((image, i) => (
               <div key={image.url} className={styles.slider_content}>
-                <div
+                <Image
+                  src={image.url}
+                  width={300}
+                  height={300}
+                  loading="lazy"
+                  alt={`${title + i}`}
                   className={styles.slider_image}
-                  style={{ backgroundImage: `url(${image.url})` }}
                 />
               </div>
             ))}

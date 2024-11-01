@@ -160,9 +160,7 @@ const Categories: React.FC = () => {
                 color="default"
                 size="sm"
                 delay={200}
-                classNames={{
-                  content: ["text-#2f2f2f font-medium rounded-md py-0.5 px-1 "],
-                }}
+                className="custome_tooltip info"
               >
                 <button
                   className={styles.clear_search_selection}

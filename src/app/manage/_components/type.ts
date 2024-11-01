@@ -1,13 +1,13 @@
 import { CreateListingSteps } from "./enums";
 
-import { Category, TypeOfPlace } from "@/store/api/lib/type";
-import { GoogleMapProps } from "@/components/googleMap/type";
+import { ICategory, ITypeOfPlace } from "@/store/api/lib/interfaces";
+import { IGoogleMapProps } from "@/components/googleMap/type";
 
-export interface FormState {
+export interface IFormState {
   step?: CreateListingSteps;
-  category?: Category | null;
-  type?: TypeOfPlace | null;
-  cordinates?: GoogleMapProps["cordinates"];
+  category?: ICategory | null;
+  type?: ITypeOfPlace | null;
+  cordinates?: IGoogleMapProps["cordinates"];
   address: {
     formattedAddress: string;
     shorterAddress: string;

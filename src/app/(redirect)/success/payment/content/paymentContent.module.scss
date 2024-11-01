@@ -152,6 +152,9 @@
       margin-bottom: 5px;
       border-bottom: 1px solid var(--booking-app-lightgrey-color);
     }
+    &:last-child {
+      margin-bottom: 15px;
+    }
 
     .reservation_details_title,
     .reservation_details_description {
@@ -166,6 +169,38 @@
       font-size: 16px;
       font-weight: 700;
     }
+  }
+  .message_block {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    .reservation_details_description {
+      padding: 5px 10px;
+      border: 1px solid var(--booking-app-lightgrey-color);
+      border-radius: 10px;
+    }
+  }
+}
+
+.next_step_button {
+  width: 100%;
+
+  padding: 10px 15px;
+  border-radius: 10px;
+  font-size: 17px;
+  font-weight: 600;
+  font-family: var(--booking-app-Nunito-Sans-font);
+
+  color: var(--booking-app-white-color);
+  background-color: var(--booking-app-coral-color);
+
+  transition: all 0.2s ease-in-out;
+  &:hover {
+    scale: 0.98;
+  }
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
   }
 }
 

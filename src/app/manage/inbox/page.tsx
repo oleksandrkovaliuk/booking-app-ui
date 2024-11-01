@@ -1,9 +1,10 @@
 "use client";
 import React from "react";
 
+import { InboxContent } from "./content";
+
 import styles from "./inbox.module.scss";
-import ManageLayout from "../layout";
 
 export default function InboxPage() {
-  return <div>inbox</div>;
+  return <InboxContent />;
 }

@@ -1,9 +1,9 @@
 import { DateValue } from "@nextui-org/calendar";
 
-export interface ReservePageProps {
+export interface IReservePageProps {
   params: { location: string; id: string };
 }
 
-export interface YourTripBlockProps {
+export interface IYourTripBlockProps {
   disabledDates: DateValue[];
 }

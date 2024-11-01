@@ -1,6 +1,6 @@
-import { SvgProps } from "@/_utilities/interfaces";
+import { ISvgProps } from "@/_utilities/interfaces";
 
-export const EyesIcon = (props: SvgProps) => {
+export const EyesIcon = (props: ISvgProps) => {
   return (
     <svg
       role="graphics-symbol"

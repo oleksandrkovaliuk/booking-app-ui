@@ -1,11 +1,11 @@
 import { api } from "../../api";
 import { ApiTags } from "../../lib/enums";
 import { ApiUrlsListings } from "../../lib/constants";
-import { ListingState } from "../../lib/type";
+import { IListingState } from "../../lib/interfaces";
 
 const requestCreateListingApi = api.injectEndpoints({
   endpoints: (build) => ({
-    requestCreateListing: build.mutation<void, ListingState>({
+    requestCreateListing: build.mutation<void, IListingState>({
       query: ({
         host_name,
         host_email,

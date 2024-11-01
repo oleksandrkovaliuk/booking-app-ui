@@ -31,14 +31,21 @@ export const ApiUrlsAuth = {
 };
 
 export const ApiUrlsUser = {
-  getUserSearchRegionHistory: "/user/get/search/region/history",
+  updateUserReservations: "/user/update/reservations",
+  updateAllUserNotifications: "/user/update/all/notifications",
   updateUserSearchRegionHistory: "/user/update/search/region/history",
 
-  updateUserReservations: "/user/update/reservations",
+  getUserNotifications: "/user/extract/notifications",
+  getUserSearchRegionHistory: "/user/get/search/region/history",
 };
 
 export const ApiUrlsPayment = {
   getClientSecret: "/payment/get/clientSecret",
+};
+
+export const ApiUrlsChats = {
+  getUsersChats: "/chats/get/users",
+  getCurrentChat: "/chats/get/current",
 };
 
 export const ApiTagsTypes = [
@@ -55,4 +62,8 @@ export const ApiTagsTypes = [
   ApiTags.LISTING_CATEGORIES,
   ApiTags.LISTING_TYPE_OF_PLACE,
   ApiTags.VERIFIED_LISTINGS_BY_PARAMS,
+
+  ApiTags.USER_CHATS,
+  ApiTags.CURRENT_CHAT,
+  ApiTags.USER_NOTIFICATIONS,
 ];

@@ -12,13 +12,13 @@ import { AdditionalDetails } from "@/app/manage/_components/createForm/content/_
 
 import { handleUpdateFormAndLocalStorage } from "@/helpers/updateFormAndStorageStates";
 
-import { ContentProps, EditFormValues } from "../../type";
+import { ContentProps, IEditFormValues } from "../../type";
 
 import "../../shared/sharedStyles.scss";
 import styles from "./details.module.scss";
 
 export const DetailsContent: React.FC<ContentProps> = ({ params }) => {
-  const setValueRef = useRef<UseFormSetValue<EditFormValues> | null>(null);
+  const setValueRef = useRef<UseFormSetValue<IEditFormValues> | null>(null);
 
   const { data: listing } = useGetCurrentListingQuery({
     id: Number(params?.id),
@@ -33,7 +33,7 @@ export const DetailsContent: React.FC<ContentProps> = ({ params }) => {
       edit_placeis: "",
       edit_aboutplace: "",
       edit_notes: "",
-    } as EditFormValues,
+    } as IEditFormValues,
   });
 
   const selectedTitle = watch("edit_title");

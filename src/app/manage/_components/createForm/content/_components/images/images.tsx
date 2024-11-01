@@ -29,7 +29,7 @@ import {
 } from "@/app/manage/_components/consts";
 import {
   ContentProps,
-  ImagesStoreType,
+  IimagesStore,
 } from "@/app/manage/_components/createForm/content/type";
 
 import { ImagesCard } from "./card";
@@ -59,7 +59,7 @@ export const Images: React.FC<ContentProps> = ({
 
   const [isDragged, setIsDragged] = useState(false);
 
-  const [uploadedImages, setUploadedImages] = useState<ImagesStoreType>({
+  const [uploadedImages, setUploadedImages] = useState<IimagesStore>({
     images: images!,
     isImagesReady: images?.length! >= 1 ? true : false,
   });
@@ -325,9 +325,7 @@ export const Images: React.FC<ContentProps> = ({
             color="primary"
             size="sm"
             delay={1500}
-            classNames={{
-              content: ["text-white bg-[#2f2f2f]"],
-            }}
+            className="custome_tooltip black"
           >
             <label
               className="images_modal_add_images"

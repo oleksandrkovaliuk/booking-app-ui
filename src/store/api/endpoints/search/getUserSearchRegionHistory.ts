@@ -1,19 +1,21 @@
 import { api } from "../../api";
 import { ApiTags } from "../../lib/enums";
 import { ApiUrlsUser } from "../../lib/constants";
-import { UserSearchRegionHistory } from "../../lib/type";
+import { IUserSearchRegionHistory } from "../../lib/interfaces";
 
 const userSearchRegionHistoryApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    getUserSearchRegionHistory: builder.query<UserSearchRegionHistory[], void>({
-      query: () => ({
-        url: ApiUrlsUser.getUserSearchRegionHistory,
-      }),
-      providesTags: [ApiTags.USER_SEARCH_REGION_HISTORY],
-    }),
+    getUserSearchRegionHistory: builder.query<IUserSearchRegionHistory[], void>(
+      {
+        query: () => ({
+          url: ApiUrlsUser.getUserSearchRegionHistory,
+        }),
+        providesTags: [ApiTags.USER_SEARCH_REGION_HISTORY],
+      }
+    ),
     updateUserSearchRegionHistory: builder.mutation<
-      UserSearchRegionHistory[],
-      UserSearchRegionHistory
+      IUserSearchRegionHistory[],
+      IUserSearchRegionHistory
     >({
       query: ({ id, requestedAt, region, formattedValue }) => ({
         url: ApiUrlsUser.updateUserSearchRegionHistory,

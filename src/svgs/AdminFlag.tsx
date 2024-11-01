@@ -1,7 +1,7 @@
-import { SvgProps } from "@/_utilities/interfaces";
+import { ISvgProps } from "@/_utilities/interfaces";
 import React from "react";
 
-export const AdminFlag = (props: SvgProps) => {
+export const AdminFlag = (props: ISvgProps) => {
   return (
     <svg
       version="1.1"

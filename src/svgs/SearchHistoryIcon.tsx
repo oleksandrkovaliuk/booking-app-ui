@@ -1,7 +1,7 @@
 import React from "react";
-import { SvgProps } from "@/_utilities/interfaces";
+import { ISvgProps } from "@/_utilities/interfaces";
 
-export const SearchHistoryIcon = (props: SvgProps) => {
+export const SearchHistoryIcon = (props: ISvgProps) => {
   return (
     <svg
       version="1.1"

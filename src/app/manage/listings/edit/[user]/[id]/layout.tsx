@@ -1,7 +1,7 @@
 import React from "react";
 import { NavigationBar } from "../../_components/navigationBar";
 
-import { ParamsProps } from "./type";
+import { IParamsProps } from "./type";
 
 import styles from "./layout.module.scss";
 
@@ -10,7 +10,7 @@ export default function EditListingLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: ParamsProps;
+  params: IParamsProps;
 }) {
   return (
     <div className={styles.manage_layout}>

@@ -13,13 +13,13 @@ import { Category } from "@/app/manage/_components/createForm/content/_component
 
 import { handleUpdateFormAndLocalStorage } from "@/helpers/updateFormAndStorageStates";
 
-import { ContentProps, EditFormValues } from "../../type";
+import { ContentProps, IEditFormValues } from "../../type";
 
 import styles from "./category.module.scss";
 import "../../shared/sharedStyles.scss";
 
 export const CategoryPageContent: React.FC<ContentProps> = ({ params }) => {
-  const setValueRef = useRef<UseFormSetValue<EditFormValues> | null>(null);
+  const setValueRef = useRef<UseFormSetValue<IEditFormValues> | null>(null);
 
   const { data: categories } = useGetFullCategoriesListQuery();
 
@@ -33,7 +33,7 @@ export const CategoryPageContent: React.FC<ContentProps> = ({ params }) => {
   const { register, watch, setValue } = useForm({
     defaultValues: {
       edit_category: {},
-    } as EditFormValues,
+    } as IEditFormValues,
   });
 
   const selectedCategory = watch("edit_category");

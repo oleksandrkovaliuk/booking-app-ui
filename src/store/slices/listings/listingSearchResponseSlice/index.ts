@@ -1,8 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { ListingState } from "@/store/api/lib/type";
+import { IListingState } from "@/store/api/lib/interfaces";
 
 const initialState = {
-  listings: [] as ListingState[],
+  listings: [] as IListingState[],
 };
 
 const listingSearchResponse = createSlice({

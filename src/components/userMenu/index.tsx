@@ -6,36 +6,48 @@ import {
   DropdownMenu,
   DropdownSection,
   DropdownTrigger,
+  Tooltip,
   User,
 } from "@nextui-org/react";
 import Link from "next/link";
 import Image from "next/image";
 import { toast } from "sonner";
+import { useDispatch } from "react-redux";
 import { signOut, useSession } from "next-auth/react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-import { store } from "@/store";
+import { store, useSelector } from "@/store";
+import { setFetch } from "@/store/slices/listings/isSearchTriggeredSlice";
+import { NotificationSelector } from "@/store/selectors/notificationsState";
 import { updateTokensBlackList } from "@/store/api/endpoints/auth/updateTokensBlackList";
 
-import { AdminFlag } from "@/svgs/AdminFlag";
 import { UserIcon } from "@/svgs/UserIcon";
+import { AdminFlag } from "@/svgs/AdminFlag";
 import { LogOutIcon } from "@/svgs/LogOutIcon";
+
+import { CreateNewQueryParams } from "@/helpers/paramsManagment";
+
 import { Roles } from "@/_utilities/enums";
-import { FormState } from "@/app/manage/_components/type";
+import { IFormState } from "@/app/manage/_components/type";
 
 import styles from "./userMenu.module.scss";
 import "./dropdown.scss";
 
 export const UserMenu: React.FC<{ showArrow?: boolean }> = ({ showArrow }) => {
+  const router = useRouter();
   const pathname = usePathname();
+  const dispatch = useDispatch();
   const params = useSearchParams();
   const { data: session } = useSession();
-  const [mobile, setMobile] = useState(false);
-  const [listingInProgress] = useState<FormState | null>(() => {
+
+  const { notifications, notificationIn } = useSelector(NotificationSelector);
+
+  const [mobile, setMobile] = useState<boolean>(false);
+  const [listingInProgress] = useState<IFormState | null>(() => {
     if (typeof localStorage !== "undefined") {
-      const formState = localStorage.getItem("startingDate")!;
-      if (formState) {
-        const state = JSON.parse(formState);
+      const IFormState = localStorage.getItem("startingDate")!;
+      if (IFormState) {
+        const state = JSON.parse(IFormState);
         if (state) {
           return state;
         } else {
@@ -46,6 +58,11 @@ export const UserMenu: React.FC<{ showArrow?: boolean }> = ({ showArrow }) => {
       return null;
     }
   });
+
+  // CONSTANTS
+
+  const isManageHasUnredNotifications =
+    notificationIn.MANAGE || listingInProgress;
 
   const handleLogOut = async () => {
     try {
@@ -61,6 +78,21 @@ export const UserMenu: React.FC<{ showArrow?: boolean }> = ({ showArrow }) => {
       toast.error((error as Error).message);
     }
   };
+
+  const handleOpenNotificationsModal = () => {
+    const updatedParams = CreateNewQueryParams({
+      updatedParams: {
+        notificationsModal: JSON.stringify(true),
+      },
+      params,
+    });
+
+    router.replace(`${pathname}?${updatedParams}`, {
+      scroll: false,
+    });
+    dispatch(setFetch(false));
+  };
+
   useEffect(() => {
     if (window.innerWidth <= 1080) {
       setMobile(true);
@@ -68,6 +100,7 @@ export const UserMenu: React.FC<{ showArrow?: boolean }> = ({ showArrow }) => {
       setMobile(false);
     }
   }, []);
+
   return (
     <>
       {!session?.user ? (
@@ -86,7 +119,19 @@ export const UserMenu: React.FC<{ showArrow?: boolean }> = ({ showArrow }) => {
           <DropdownTrigger>
             <button className={styles.right_navigation_button}>
               {session?.user?.role === Roles.ADMIN && (
-                <AdminFlag className={styles.role_icon} />
+                <Tooltip
+                  showArrow
+                  placement="left"
+                  content={"Admin"}
+                  color="default"
+                  size="sm"
+                  delay={100}
+                  className="custome_tooltip info"
+                >
+                  <div className={styles.role_badge}>
+                    <AdminFlag className={styles.role_icon} />
+                  </div>
+                </Tooltip>
               )}
               {session?.user?.image ? (
                 <Image
@@ -104,22 +149,32 @@ export const UserMenu: React.FC<{ showArrow?: boolean }> = ({ showArrow }) => {
                     : session?.user.email?.split("")[0]!}
                 </div>
               )}
+              {notificationIn.GENERAL && (
+                <Tooltip
+                  showArrow
+                  placement="left"
+                  content={"new notifications"}
+                  color="default"
+                  size="sm"
+                  delay={100}
+                  className="custome_tooltip info"
+                >
+                  <div className={styles.notifications_badge}></div>
+                </Tooltip>
+              )}
             </button>
           </DropdownTrigger>
           <DropdownMenu aria-label="Navigation">
             <DropdownSection showDivider>
               <DropdownItem isReadOnly key="profile">
                 <User
-                  name={session?.user?.name}
+                  name={session?.user?.name || session?.user?.email}
                   description={session?.user?.email}
                   avatarProps={{
                     size: "sm",
-                    src: session?.user?.image ? session?.user?.image : "N",
+                    src: session?.user?.image ? session?.user?.image : "",
                   }}
                 />
-                {session?.user?.role === Roles.ADMIN && (
-                  <AdminFlag className={styles.role_icon} />
-                )}
               </DropdownItem>
             </DropdownSection>
             <DropdownSection showDivider>
@@ -134,11 +189,23 @@ export const UserMenu: React.FC<{ showArrow?: boolean }> = ({ showArrow }) => {
               >
                 <Link href="/account">Account</Link>
               </DropdownItem>
+              <DropdownItem
+                key="notifications"
+                className={"drop_down_item"}
+                onClick={handleOpenNotificationsModal}
+              >
+                <span>
+                  Notifications
+                  {notificationIn.GENERAL && <span className="notification" />}
+                </span>
+              </DropdownItem>
               <DropdownItem key="manage" className={"drop_down_item"}>
                 <Link href="/manage/listings" className="hidden_link" />
                 <span>
                   Manage listings{" "}
-                  {listingInProgress && <span className="notification" />}
+                  {isManageHasUnredNotifications && (
+                    <span className="notification" />
+                  )}
                 </span>
               </DropdownItem>
             </DropdownSection>

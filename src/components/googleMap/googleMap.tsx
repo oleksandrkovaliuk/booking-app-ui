@@ -15,12 +15,12 @@ import {
   sloverTransition,
 } from "@/app/manage/_components/consts";
 
-import { GoogleMapProps } from "./type";
+import { IGoogleMapProps } from "./type";
 
 import styles from "./googleMap.module.scss";
 import "@/app/manage/_components/createForm/additionalStyles.scss";
 
-export const GoogleMapComponent: React.FC<GoogleMapProps> = ({
+export const GoogleMapComponent: React.FC<IGoogleMapProps> = ({
   editPage,
   register,
   isOnlyMap,

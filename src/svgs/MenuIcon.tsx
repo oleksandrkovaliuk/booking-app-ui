@@ -1,7 +1,7 @@
-import { SvgProps } from "@/_utilities/interfaces";
+import { ISvgProps } from "@/_utilities/interfaces";
 import React from "react";
 
-export const MenuIcon: React.FC<SvgProps> = (props) => {
+export const MenuIcon: React.FC<ISvgProps> = (props) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

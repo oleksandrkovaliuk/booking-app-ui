@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { toast } from "sonner";
 import { useDispatch } from "react-redux";
+import { useSearchParams } from "next/navigation";
 import { getLocalTimeZone, today } from "@internationalized/date";
 import { DateValue, RangeCalendar, RangeValue } from "@nextui-org/calendar";
 
@@ -12,21 +13,21 @@ import {
   CountNights,
   DateFormatingMonthDay,
   isDateValueEqual,
-  ParseLocalStorageDates,
 } from "@/helpers/dateManagment";
 
 import { searchParamsKeys } from "@/layout/header/_lib/enums";
-import { CalendarSelectionProps } from "../../_lib/type";
+import { ICalendarSelectionProps } from "../../_lib/interfaces";
 
 import styles from "./calendarSection.module.scss";
 
-export const CalendarSection: React.FC<CalendarSelectionProps> = ({
+export const CalendarSection: React.FC<ICalendarSelectionProps> = ({
   title,
   disabledDates,
 }) => {
+  const params = useSearchParams();
   const dispatch = useDispatch();
 
-  const { parsedSearchDate } = useSelector(searchSelectionSelector);
+  const { parsedSearchDate } = useSelector(searchSelectionSelector(params));
 
   const [triggeredSelection, setTriggeredSelection] = useState<
     "checkIn" | "checkOut" | "both"

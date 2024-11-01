@@ -24,9 +24,7 @@ export const RoundButton: React.FC<RoundButtonProps> = ({
       color="default"
       size="sm"
       delay={toolTipDelay}
-      classNames={{
-        content: ["text-#2f2f2f font-medium rounded-lg py-0.5 px-2"],
-      }}
+      className="custome_tooltip info"
       isDisabled={!showToolTip}
     >
       <button

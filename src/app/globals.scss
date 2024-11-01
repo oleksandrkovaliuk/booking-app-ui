@@ -53,3 +53,31 @@ a {
 .z-0 {
   z-index: unset !important;
 }
+
+.custome_tooltip {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 100%;
+  border-radius: 7px;
+  border: unset !important;
+  font-family: var(--booking-app-Nunito-Sans-font);
+  div {
+    border: unset;
+  }
+  &.warning {
+    color: var(--booking-app-coral-color);
+  }
+  &.info {
+    color: var(--booking-app-black-color);
+  }
+  &.black {
+    color: var(--booking-app-white-color);
+    background-color: var(--booking-app-black-color);
+  }
+
+  &.small {
+    font-size: 10px;
+    border-radius: 5px;
+    background-color: var(--booking-app-background-hover-color);
+  }
+}

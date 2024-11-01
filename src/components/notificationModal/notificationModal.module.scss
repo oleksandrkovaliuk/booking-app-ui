@@ -1,0 +1,45 @@
+.notification_modal_header {
+  gap: 10px;
+  align-items: flex-end;
+  width: 100%;
+  padding-block: 10px;
+  border-bottom: 1px solid var(--booking-app-lightgrey-color);
+  .notification_modal_title {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 100%;
+    color: var(--booking-app-black-color);
+    font-family: var(--booking-app-Nunito-Sans-font);
+  }
+  .mark_as_readed {
+    padding: 2px;
+    border-radius: 5px;
+
+    cursor: pointer;
+
+    .check_icon {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      path {
+        fill: var(--booking-app-black-color);
+      }
+    }
+
+    &:hover {
+      background-color: var(--booking-app-background-hover-color);
+    }
+
+    &[data-is-checked="true"],
+    &:disabled {
+      cursor: not-allowed;
+      background-color: var(--booking-app-background-hover-color);
+
+      .check_icon {
+        path {
+          fill: var(--booking-app-grey-color);
+        }
+      }
+    }
+  }
+}

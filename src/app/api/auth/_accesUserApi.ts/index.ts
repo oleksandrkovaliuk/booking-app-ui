@@ -1,8 +1,8 @@
 import { POST } from "../apiConfig";
 import { ApiUrlsAuth } from "@/store/api/lib/constants";
-import { FullUserTypes, UserTypes } from "@/_utilities/interfaces";
+import { IFullIUserTypes, IUserTypes } from "@/_utilities/interfaces";
 
-export const AccessUser = ({ email, password }: UserTypes) =>
+export const AccessUser = ({ email, password }: IUserTypes) =>
   POST(ApiUrlsAuth.auth_acces_user, { email, password });
 
 export const AccesOAuthUser = ({
@@ -11,7 +11,7 @@ export const AccesOAuthUser = ({
   user_lastname,
   img_url,
   provider,
-}: FullUserTypes) =>
+}: IFullIUserTypes) =>
   POST(ApiUrlsAuth.auth_oauth_user, {
     email,
     user_name,

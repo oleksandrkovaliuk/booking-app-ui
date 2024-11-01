@@ -1,7 +1,7 @@
 import { api } from "../../api";
 import { ApiTags } from "../../lib/enums";
 import { ApiUrlsListings } from "../../lib/constants";
-import { FormState } from "@/app/manage/_components/type";
+import { IFormState } from "@/app/manage/_components/type";
 
 const requestUpdateListingApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -9,7 +9,7 @@ const requestUpdateListingApi = api.injectEndpoints({
       void,
       {
         column: string;
-        data: FormState[keyof FormState];
+        data: IFormState[keyof IFormState];
         id: number;
       }
     >({
@@ -19,7 +19,7 @@ const requestUpdateListingApi = api.injectEndpoints({
         id,
       }: {
         column: string;
-        data: FormState[keyof FormState];
+        data: IFormState[keyof IFormState];
         id: number;
       }) => ({
         url: ApiUrlsListings.requestUpdateListing,

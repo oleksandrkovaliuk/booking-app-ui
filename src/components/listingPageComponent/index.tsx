@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { useSession } from "next-auth/react";
 import { Spinner, Tooltip } from "@nextui-org/react";
 
 import { store } from "@/store";
@@ -20,23 +21,26 @@ import regular_host from "@/assets/renter.png";
 
 import { formattedAddressComponent } from "@/helpers/address/formattedAddressVariants";
 
-import { ShowCaseUser } from "@/_utilities/interfaces";
-import { ListingPageComponentProps } from "./_lib/type";
+import { IShowCaseUser } from "@/_utilities/interfaces";
+import { IListingPageComponentProps } from "./_lib/interfaces";
 
-import styles from "./listing.module.scss";
+import styles from "./listingPage.module.scss";
 
-export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
+export const ListingPageComponent: React.FC<IListingPageComponentProps> = ({
   id,
   isPublic,
 }) => {
+  const { data: session } = useSession();
   const { data: listing } = useGetCurrentListingQuery({ id: Number(id) });
 
-  const [host, setHost] = useState<ShowCaseUser>({
+  const [host, setHost] = useState<IShowCaseUser>({
     user_name: "",
     email: "",
     img_url: "",
     role: "",
   });
+
+  const disableReservation = session?.user.email === host.email;
 
   useEffect(() => {
     const setUpPage = async () => {
@@ -131,9 +135,7 @@ export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
                       color="default"
                       size="sm"
                       delay={1000}
-                      classNames={{
-                        content: ["text-#2f2f2f font-medium rounded-lg"],
-                      }}
+                      className="custome_tooltip info"
                     >
                       <div>
                         <Image
@@ -219,9 +221,7 @@ export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
                     color="default"
                     size="md"
                     delay={300}
-                    classNames={{
-                      content: ["text-#2f2f2f font-medium rounded-lg"],
-                    }}
+                    className="custome_tooltip info"
                   >
                     <div className={styles.more_details_img}>
                       <Image
@@ -244,9 +244,7 @@ export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
                     color="default"
                     size="md"
                     delay={300}
-                    classNames={{
-                      content: ["text-#2f2f2f font-medium rounded-lg"],
-                    }}
+                    className="custome_tooltip info"
                   >
                     <div className={styles.more_details_img}>
                       <Image
@@ -271,6 +269,7 @@ export const ListingPageComponent: React.FC<ListingPageComponentProps> = ({
             </div>
             <div className={styles.right_side_grid}>
               <ReserveListingBlock
+                disabled={disableReservation}
                 price={listing?.price}
                 isPublic={isPublic || false}
                 guests_limit={listing?.guests}

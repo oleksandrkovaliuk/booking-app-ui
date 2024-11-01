@@ -82,9 +82,7 @@ export const ImagesCard: React.FC<ImagesCardProps> = ({
             color="primary"
             size="sm"
             delay={1500}
-            classNames={{
-              content: ["text-white font-medium bg-[#2f2f2f]"],
-            }}
+            className="custome_tooltip black"
           >
             <button
               className={styles.manage_button}
@@ -108,9 +106,7 @@ export const ImagesCard: React.FC<ImagesCardProps> = ({
               color="primary"
               size="sm"
               delay={1500}
-              classNames={{
-                content: ["text-white font-medium  bg-[#2f2f2f]"],
-              }}
+              className="custome_tooltip black"
             >
               <DropdownTrigger>
                 <button

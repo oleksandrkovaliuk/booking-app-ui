@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { Suspense } from "react";
 import { Provider } from "react-redux";
 import { SessionProvider } from "next-auth/react";
 import { NextUIProvider } from "@nextui-org/system";
@@ -18,7 +18,9 @@ export function Providers({ children }: ProvidersProps) {
     <SessionProvider>
       <Provider store={store}>
         <NotificationsProvider>
-          <NextUIProvider>{children}</NextUIProvider>
+          <NextUIProvider>
+            <Suspense>{children}</Suspense>
+          </NextUIProvider>
         </NotificationsProvider>
       </Provider>
     </SessionProvider>

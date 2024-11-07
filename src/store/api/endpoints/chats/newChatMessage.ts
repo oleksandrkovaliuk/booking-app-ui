@@ -18,6 +18,7 @@ const newChatMessageApi = api.injectEndpoints({
         method: "POST",
         body: { to, from, chatId, message },
       }),
+      invalidatesTags: [ApiTags.CURRENT_CHAT],
     }),
   }),
 });

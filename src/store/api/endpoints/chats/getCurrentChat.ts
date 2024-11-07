@@ -6,9 +6,12 @@ import { ApiUrlsChats } from "../../lib/constants";
 
 const getCurrentChatApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    getCurrentChat: builder.query<IChatData, { chatId: string }>({
-      query: ({ chatId }) => ({
-        url: `${ApiUrlsChats.getCurrentChat}?chatId=${chatId}`,
+    getCurrentChat: builder.query<
+      IChatData,
+      { chatId: string; amouthOfMessages?: number }
+    >({
+      query: ({ chatId, amouthOfMessages }) => ({
+        url: `${ApiUrlsChats.getCurrentChat}?chatId=${chatId}&amouthOfMessages=${amouthOfMessages}`,
       }),
       providesTags: [ApiTags.CURRENT_CHAT],
     }),

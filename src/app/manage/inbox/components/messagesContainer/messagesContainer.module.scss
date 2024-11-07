@@ -1,4 +1,13 @@
 $chat-container-height: calc(100dvh - 81px);
+
+.observable_chat_block {
+  min-height: 40px;
+  padding-block: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .current_chat_wrap_scroll {
   position: relative;
   height: calc($chat-container-height - 61px);
@@ -10,7 +19,7 @@ $chat-container-height: calc(100dvh - 81px);
   overflow-y: auto;
   overscroll-behavior: contain;
 
-  padding: 40px 15px 82px;
+  padding: 0px 15px 82px;
   margin-bottom: 10px;
 
   .current_chat_block {

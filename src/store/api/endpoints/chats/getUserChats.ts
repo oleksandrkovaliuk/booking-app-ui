@@ -16,4 +16,4 @@ const getUsersChatsApi = api.injectEndpoints({
 });
 
 export const { useGetUsersChatsQuery } = getUsersChatsApi;
-export default getUsersChatsApi;
+export const { getUsersChats } = getUsersChatsApi.endpoints;

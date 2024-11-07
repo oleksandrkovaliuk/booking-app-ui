@@ -16,12 +16,8 @@ import { ContentProps, IEditFormValues } from "../../type";
 
 import styles from "./price.module.scss";
 
-export const PriceContent: React.FC<ContentProps> = ({ params }) => {
+export const PriceContent: React.FC<ContentProps> = ({ listing }) => {
   const setValueRef = useRef<UseFormSetValue<IEditFormValues> | null>(null);
-
-  const { data: listing } = useGetCurrentListingQuery({
-    id: Number(params?.id),
-  });
 
   const [enableConfirmationButton, setEnableConfirmationButton] =
     useState<boolean>(false);

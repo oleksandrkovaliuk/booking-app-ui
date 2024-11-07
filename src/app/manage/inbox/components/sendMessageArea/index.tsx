@@ -12,6 +12,7 @@ import { useGetCurrentChatQuery } from "@/store/api/endpoints/chats/getCurrentCh
 import { SendIcon } from "@/svgs/SendIcon";
 
 import { socket } from "@/helpers/sockets";
+
 import styles from "./sendMessageArea.module.scss";
 
 export const SendMessageArea = () => {
@@ -19,7 +20,12 @@ export const SendMessageArea = () => {
   const { data: session } = useSession();
 
   const chatId = params.get("chatId");
-  const { data: selectedChat, isFetching } = useGetCurrentChatQuery(
+
+  const {
+    data: selectedChat,
+    isFetching,
+    refetch,
+  } = useGetCurrentChatQuery(
     chatId
       ? {
           chatId: JSON.parse(params.get("chatId")!),
@@ -58,6 +64,7 @@ export const SendMessageArea = () => {
       });
 
       setMessageSent(true);
+      setMessageValue("");
     } catch (error) {
       setMessageSent(false);
       toast.error(
@@ -77,8 +84,7 @@ export const SendMessageArea = () => {
     if (messageSent) {
       timer = setTimeout(() => {
         setMessageSent(false);
-        setMessageValue("");
-      }, 1000);
+      }, 500);
     }
 
     return () => clearTimeout(timer);

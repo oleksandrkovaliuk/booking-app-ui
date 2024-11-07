@@ -17,12 +17,8 @@ import { ContentProps, IEditFormValues } from "../../type";
 import "../../shared/sharedStyles.scss";
 import styles from "./details.module.scss";
 
-export const DetailsContent: React.FC<ContentProps> = ({ params }) => {
+export const DetailsContent: React.FC<ContentProps> = ({ listing }) => {
   const setValueRef = useRef<UseFormSetValue<IEditFormValues> | null>(null);
-
-  const { data: listing } = useGetCurrentListingQuery({
-    id: Number(params?.id),
-  });
 
   const [enableConfirmationButton, setEnableConfirmationButton] =
     useState<boolean>(false);

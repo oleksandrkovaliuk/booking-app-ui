@@ -13,26 +13,37 @@ import { useGetCurrentChatQuery } from "@/store/api/endpoints/chats/getCurrentCh
 import { CheckedIcon } from "@/svgs/CheckedIcon";
 import { UnCheckedIcon } from "@/svgs/UnCheckedIcon";
 
+import { ObservationHandler } from "@/helpers/observable";
+
 import { socket } from "@/helpers/sockets";
+import { SendMessageArea } from "../sendMessageArea";
 
 import styles from "./messagesContainer.module.scss";
-import { SendMessageArea } from "../sendMessageArea";
+
+const UPLOAD_MESSAGES_STEP = 30;
 
 export const MessagesContainer: React.FC = () => {
   const params = useSearchParams();
   const { data: session } = useSession();
 
+  const lastMessageRef = useRef<HTMLLIElement | null>(null);
   const chatScrollContainerRef = useRef<HTMLUListElement | null>(null);
 
   const chatId = params.get("chatId");
 
+  const [amouthOfMessages, setAmouthOfMessages] =
+    useState<number>(UPLOAD_MESSAGES_STEP);
+  const [disableScroll, setDisableScroll] = useState<boolean>(false);
+
   const {
     data: selectedChat,
     isLoading,
+    isFetching,
     refetch,
   } = useGetCurrentChatQuery(
     chatId
       ? {
+          amouthOfMessages: amouthOfMessages,
           chatId: JSON.parse(params.get("chatId")!),
         }
       : skipToken
@@ -86,6 +97,16 @@ export const MessagesContainer: React.FC = () => {
     }
   };
 
+  const handleUploadMoreMessages = () => {
+    if (!chatScrollContainerRef.current) return;
+
+    setAmouthOfMessages((prev) => {
+      if (prev > selectedChat?.chat_data?.length!) return prev;
+      return prev + UPLOAD_MESSAGES_STEP;
+    });
+    setDisableScroll(true);
+  };
+
   useEffect(() => {
     if (!chatId || !session?.user?.email) return;
 
@@ -112,6 +133,7 @@ export const MessagesContainer: React.FC = () => {
         });
         refetch();
       }
+      setDisableScroll(false);
     });
 
     socket.on("messagesReadedSuccesfully", (data) => {
@@ -127,12 +149,33 @@ export const MessagesContainer: React.FC = () => {
   }, [chatId, refetch, session?.user?.email]);
 
   useEffect(() => {
-    if (!chatScrollContainerRef.current || !selectedChat?.chat_data?.length)
+    if (
+      !chatScrollContainerRef.current ||
+      !selectedChat?.chat_data?.length ||
+      disableScroll
+    ) {
       return;
+    } else {
+      chatScrollContainerRef.current.scrollTop =
+        chatScrollContainerRef.current.scrollHeight;
+    }
+  }, [disableScroll, selectedChat?.chat_data?.length]);
 
-    chatScrollContainerRef.current.scrollTop =
-      chatScrollContainerRef.current.scrollHeight;
-  }, [selectedChat?.chat_data?.length]);
+  useEffect(() => {
+    if (!chatScrollContainerRef.current) return;
+    if (
+      amouthOfMessages === selectedChat?.chat_data?.length &&
+      amouthOfMessages !== UPLOAD_MESSAGES_STEP &&
+      lastMessageRef.current
+    ) {
+      chatScrollContainerRef.current.scrollTop =
+        lastMessageRef.current?.getBoundingClientRect().y -
+        lastMessageRef.current?.getBoundingClientRect().height -
+        142;
+    }
+  }, [amouthOfMessages, selectedChat?.chat_data?.length]);
+
+  console.log(amouthOfMessages, selectedChat?.chat_data?.length);
 
   return (
     <div className={styles.current_chat_wrap_scroll}>
@@ -141,8 +184,20 @@ export const MessagesContainer: React.FC = () => {
           <Spinner size="md" color="default" className={styles.spinner} />
         ) : (
           <>
+            <li className={styles.observable_chat_block}>
+              {isFetching ? (
+                <Spinner size="sm" color="default" />
+              ) : (
+                <ObservationHandler
+                  onObserv={handleUploadMoreMessages}
+                  delay={300}
+                />
+              )}
+            </li>
+
             {selectedChat?.chat_data.map((el, i) => (
               <li
+                ref={i === UPLOAD_MESSAGES_STEP ? lastMessageRef : null}
                 key={`${i}-${el.sent_at}`}
                 className={styles.current_chat_block}
                 data-sender={el.from === session?.user?.email}

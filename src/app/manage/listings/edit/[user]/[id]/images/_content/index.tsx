@@ -18,15 +18,11 @@ import "../../shared/sharedStyles.scss";
 import styles from "./images.module.scss";
 import "@/app/manage/_components/createForm/additionalStyles.scss";
 
-export const ImagesContent: React.FC<ContentProps> = ({ params }) => {
+export const ImagesContent: React.FC<ContentProps> = ({ listing }) => {
   const setValueRef = useRef<UseFormSetValue<IEditFormValues> | null>(null);
 
   const [enableConfirmationButton, setEnableConfirmationButton] =
     useState<boolean>(false);
-
-  const { data: listing } = useGetCurrentListingQuery({
-    id: Number(params?.id),
-  });
 
   const { register, watch, setValue } = useForm({
     defaultValues: {

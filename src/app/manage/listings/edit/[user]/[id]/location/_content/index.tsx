@@ -20,12 +20,8 @@ import { ContentProps, IEditFormValues } from "../../type";
 import styles from "./location.module.scss";
 import "../../shared/sharedStyles.scss";
 
-export const LocationContent: React.FC<ContentProps> = ({ params }) => {
+export const LocationContent: React.FC<ContentProps> = ({ listing }) => {
   const setValueRef = useRef<UseFormSetValue<IEditFormValues> | null>(null);
-
-  const { data: listing } = useGetCurrentListingQuery({
-    id: Number(params?.id),
-  });
 
   const [enableConfirmationButton, setEnableConfirmationButton] =
     useState<boolean>(false);
@@ -40,7 +36,9 @@ export const LocationContent: React.FC<ContentProps> = ({ params }) => {
   const selectedCordinates = watch("edit_cordinates");
   const selectedAddress = watch("edit_address");
 
-  const handleCordinatesChange = (cordinates: IGoogleMapProps["cordinates"]) => {
+  const handleCordinatesChange = (
+    cordinates: IGoogleMapProps["cordinates"]
+  ) => {
     const detailedAddressComponent =
       cordinates.address?.address_components?.reduce<
         google.maps.places.PlaceResult["address_components"]

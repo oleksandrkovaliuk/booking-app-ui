@@ -18,14 +18,10 @@ import { ContentProps, IEditFormValues } from "../../type";
 import styles from "./category.module.scss";
 import "../../shared/sharedStyles.scss";
 
-export const CategoryPageContent: React.FC<ContentProps> = ({ params }) => {
+export const CategoryPageContent: React.FC<ContentProps> = ({ listing }) => {
   const setValueRef = useRef<UseFormSetValue<IEditFormValues> | null>(null);
 
   const { data: categories } = useGetFullCategoriesListQuery();
-
-  const { data: listing } = useGetCurrentListingQuery({
-    id: Number(params?.id),
-  });
 
   const [enableConfirmationButton, setEnableConfirmationButton] =
     useState<boolean>(false);

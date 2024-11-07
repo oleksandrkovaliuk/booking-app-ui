@@ -16,12 +16,8 @@ import { ContentProps, IEditFormValues } from "../../type";
 
 import styles from "./basic.module.scss";
 
-export const BasicContent: React.FC<ContentProps> = ({ params }) => {
+export const BasicContent: React.FC<ContentProps> = ({ listing }) => {
   const setValueRef = useRef<UseFormSetValue<IEditFormValues> | null>(null);
-
-  const { data: listing } = useGetCurrentListingQuery({
-    id: Number(params?.id),
-  });
 
   const [enableConfirmationButton, setEnableConfirmationButton] =
     useState(true);

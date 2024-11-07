@@ -1,7 +1,10 @@
 import { DateValue } from "@nextui-org/calendar";
+import { IShowCaseUser } from "@/_utilities/interfaces";
+import { IListingState } from "@/store/api/lib/interfaces";
 
 export interface IListingPageComponentProps {
-  id: string;
+  listing: IListingState;
+  listingHost: IShowCaseUser;
   isPublic?: boolean;
 }
 

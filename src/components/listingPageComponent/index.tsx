@@ -27,18 +27,13 @@ import { IListingPageComponentProps } from "./_lib/interfaces";
 import styles from "./listingPage.module.scss";
 
 export const ListingPageComponent: React.FC<IListingPageComponentProps> = ({
-  id,
+  listing,
   isPublic,
+  listingHost,
 }) => {
   const { data: session } = useSession();
-  const { data: listing } = useGetCurrentListingQuery({ id: Number(id) });
 
-  const [host, setHost] = useState<IShowCaseUser>({
-    user_name: "",
-    email: "",
-    img_url: "",
-    role: "",
-  });
+  const [host, setHost] = useState<IShowCaseUser>(listingHost);
 
   const disableReservation = session?.user.email === host.email;
 

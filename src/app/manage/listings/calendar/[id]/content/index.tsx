@@ -20,21 +20,21 @@ import { ConverIntoDateValueFormat } from "@/helpers/dateManagment";
 import { CustomDayComponent } from "../component/customDayComponent";
 import { ConfirmationButton } from "@/components/confirmationButton";
 
+import { IListingState } from "@/store/api/lib/interfaces";
+
 import styles from "./calendar.module.scss";
 import "./additionalStyles.scss";
 
 interface CalendarPageContentProps {
   params: { id: string };
+  listing: IListingState;
 }
 export const CalendarPageContent: React.FC<CalendarPageContentProps> = ({
   params,
+  listing,
 }) => {
   const router = useRouter();
   const localizer = momentLocalizer(moment);
-
-  const { data: listing } = useGetCurrentListingQuery({
-    id: Number(params.id),
-  });
 
   const [selectedDate, setSelectedDate] = useState<DateValue[]>([]);
 

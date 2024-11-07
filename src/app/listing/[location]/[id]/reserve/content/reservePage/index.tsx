@@ -37,23 +37,18 @@ import { CreateNewQueryParams } from "@/helpers/paramsManagment";
 
 import styles from "./reservePage.module.scss";
 
-export const ReserveContent: React.FC<IReservePageProps> = ({ params }) => {
+export const ReserveContent: React.FC<IReservePageProps> = ({
+  params,
+  listing,
+  listingHost,
+}) => {
   const router = useRouter();
   const pathname = usePathname();
   const paramsUrl = useSearchParams();
 
   const { parsedSearchDate } = useSelector(searchSelectionSelector(paramsUrl));
 
-  const { data: listing } = useGetCurrentListingQuery({
-    id: Number(params.id),
-  });
-
-  const [host, setHost] = useState<IShowCaseUser>({
-    user_name: "",
-    email: "",
-    img_url: "",
-    role: "",
-  });
+  const [host] = useState<IShowCaseUser>(listingHost);
   const [messageToHost, setMessageToHost] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [pendingUrl, setPendingUrl] = useState<string>("");
@@ -104,33 +99,33 @@ export const ReserveContent: React.FC<IReservePageProps> = ({ params }) => {
     setPendingUrl("");
   };
 
-  useEffect(() => {
-    const setUpPage = async () => {
-      const user = await store
-        .dispatch(
-          getUser.initiate({
-            user_email: listing?.host_email!,
-          })
-        )
-        .unwrap();
+  // useEffect(() => {
+  //   const setUpPage = async () => {
+  //     const user = await store
+  //       .dispatch(
+  //         getUser.initiate({
+  //           user_email: listing?.host_email!,
+  //         })
+  //       )
+  //       .unwrap();
 
-      setHost((prev) => {
-        if (!user.data) return prev;
+  //     setHost((prev) => {
+  //       if (!user.data) return prev;
 
-        return {
-          user_name: user.data.user_name
-            ? user.data.user_name.split(" ")[0]
-            : user.data.user_email,
-          email: user.data.user_email,
-          img_url: user.data.img_url,
-          role: user.data.role,
-        };
-      });
-    };
+  //       return {
+  //         user_name: user.data.user_name
+  //           ? user.data.user_name.split(" ")[0]
+  //           : user.data.user_email,
+  //         email: user.data.user_email,
+  //         img_url: user.data.img_url,
+  //         role: user.data.role,
+  //       };
+  //     });
+  //   };
 
-    if (!listing?.host_email && !listing?.host_name) return;
-    setUpPage();
-  }, [listing?.host_email, listing?.host_name]);
+  //   if (!listing?.host_email && !listing?.host_name) return;
+  //   setUpPage();
+  // }, [listing?.host_email, listing?.host_name]);
 
   useEffect(() => {
     const updatedParams = CreateNewQueryParams({

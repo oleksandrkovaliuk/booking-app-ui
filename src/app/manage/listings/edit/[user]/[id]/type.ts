@@ -1,4 +1,5 @@
 import { IFormState } from "@/app/manage/_components/type";
+import { IListingState } from "@/store/api/lib/interfaces";
 
 export interface IParamsProps {
   user: string;
@@ -6,7 +7,7 @@ export interface IParamsProps {
 }
 
 export interface ContentProps {
-  params: IParamsProps;
+  listing: IListingState;
 }
 
 export interface IEditFormValues extends IFormState {

@@ -20,11 +20,12 @@ export default async function Page({
       })
     )
     .unwrap();
+
   return (
     <ListingPageComponent
       isPublic
       listing={listing!}
-      listingHost={listingHost}
+      listingHost={listingHost.data}
     />
   );
 }

@@ -1,5 +1,5 @@
 "use client";
-import React, { useLayoutEffect, useMemo, useState } from "react";
+import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import moment from "moment";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -47,7 +47,7 @@ export const CalendarPageContent: React.FC<CalendarPageContentProps> = ({
   });
 
   const [enableConfirmationButton, setEnableConfirmationButton] =
-    useState(true);
+    useState(false);
 
   // CONDITIONS
 
@@ -78,24 +78,28 @@ export const CalendarPageContent: React.FC<CalendarPageContentProps> = ({
       return;
     }
 
-    if (isDateIncluded) {
-      setSelectedDate((prev) =>
-        prev.filter(
-          (date) =>
-            date.day !== convertedValue.day &&
-            date.month === convertedValue.month
-        )
-      );
-    } else {
-      setSelectedDate((prev) => [...prev, convertedValue] as DateValue[]);
-    }
+    setSelectedDate((prev) => {
+      const newSelectedDate = isDateIncluded
+        ? prev.filter(
+            (date) =>
+              date.day !== convertedValue.day &&
+              date.month === convertedValue.month
+          )
+        : ([...prev, convertedValue] as DateValue[]);
+
+      newSelectedDate?.length !== listing?.disabled_dates?.length;
+      localStorage.setItem(`${params.id}`, JSON.stringify(newSelectedDate));
+
+      return newSelectedDate;
+    });
 
     setEnableConfirmationButton(true);
   };
 
   const onConfirm = async () => {
     try {
-      const { data: res, error } = await store.dispatch(
+      console.log(selectedDate, "selectedDate");
+      const { error, data: res } = await store.dispatch(
         requestCalendarUpdating.initiate({
           disabledDates: selectedDate,
           id: Number(params.id),
@@ -133,30 +137,23 @@ export const CalendarPageContent: React.FC<CalendarPageContentProps> = ({
     }
   };
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const storedDates = localStorage.getItem(`${params.id}`);
+    const formattedStoredDates = JSON.parse(storedDates || "[]");
+
     const formattedIncomingDates = listing?.disabled_dates?.filter(
       (date) =>
         date.day >= today(getLocalTimeZone()).day ||
         date.month >= today(getLocalTimeZone()).month
     );
 
-    if (storedDates) {
-      const formattedStoredDates = JSON.parse(storedDates);
-      if (formattedStoredDates.length) {
-        setEnableConfirmationButton(true);
-        setSelectedDate(formattedStoredDates);
-      } else {
-        setSelectedDate(formattedIncomingDates || []);
-      }
-    }
+    setEnableConfirmationButton(!!formattedStoredDates?.length);
+    setSelectedDate(
+      formattedStoredDates?.length
+        ? formattedStoredDates
+        : formattedIncomingDates || []
+    );
   }, [listing?.disabled_dates, params.id]);
-
-  useLayoutEffect(() => {
-    if (listing?.disabled_dates?.length !== selectedDate?.length) {
-      localStorage.setItem(`${params.id}`, JSON.stringify(selectedDate));
-    }
-  }, [listing?.disabled_dates?.length, params.id, selectedDate]);
 
   return (
     <>

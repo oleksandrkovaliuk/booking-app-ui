@@ -9,6 +9,7 @@ import styles from "./roundButton.module.scss";
 
 export const RoundButton: React.FC<RoundButtonProps> = ({
   action,
+  className,
   arrow_direction,
 
   showToolTip,
@@ -28,8 +29,8 @@ export const RoundButton: React.FC<RoundButtonProps> = ({
       isDisabled={!showToolTip}
     >
       <button
-        className={styles.round_button}
         onClick={action}
+        className={`${styles.round_button} ${className}`}
         data-arrow-direction={arrow_direction}
       >
         <Arrow className={styles.round_icon} />

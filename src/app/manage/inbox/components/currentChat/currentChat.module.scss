@@ -69,3 +69,11 @@ $chat-container-height: calc(100dvh - 81px);
   width: 100px;
   border-radius: 5px;
 }
+
+@media (width <= 1080px) {
+  .current_chat_nav {
+    display: flex;
+    gap: 10px;
+    padding-inline: 5px;
+  }
+}

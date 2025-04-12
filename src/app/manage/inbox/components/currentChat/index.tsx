@@ -1,19 +1,28 @@
 import React from "react";
 import Image from "next/image";
+import { useSelector } from "react-redux";
 import { Skeleton } from "@nextui-org/react";
 import { useSearchParams } from "next/navigation";
 import { skipToken } from "@reduxjs/toolkit/query";
 
+import { isWidthHandlerSelector } from "@/store/selectors/isWidthHandler";
 import { useGetCurrentChatQuery } from "@/store/api/endpoints/chats/getCurrentChat";
 
 import { MessagesContainer } from "../messagesContainer";
 
 import styles from "./currentChat.module.scss";
+import { RoundButton } from "@/components/roundButton";
 
-export const CurrentChat: React.FC = () => {
+interface IChatReciever {
+  onBackToChatsAction: () => void;
+}
+export const CurrentChat: React.FC<IChatReciever> = ({
+  onBackToChatsAction,
+}) => {
   const params = useSearchParams();
   const chatId = params.get("chatId");
 
+  const { tablet } = useSelector(isWidthHandlerSelector);
   const {
     data: selectedChat,
     isFetching,
@@ -31,6 +40,17 @@ export const CurrentChat: React.FC = () => {
   return (
     <div className={styles.current_chat_container}>
       <nav className={styles.current_chat_nav}>
+        {tablet && (
+          <RoundButton
+            showToolTip
+            action={onBackToChatsAction}
+            arrow_direction="left"
+            toolTipPlacement={"right"}
+            toolTipContent="Close"
+            toolTipDelay={200}
+            className={styles.back_button}
+          />
+        )}
         {!selectedChat?.reciever ? (
           <div className={styles.current_chat_reciever}>
             <Skeleton className={styles.reciever_img} />

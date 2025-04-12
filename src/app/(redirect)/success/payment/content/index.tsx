@@ -24,6 +24,7 @@ import { IReservationStatus } from "../_lib/interfaces";
 import { getStatusColors } from "../_lib/helpers/getStatusColor";
 
 import styles from "./paymentContent.module.scss";
+import { useManageParams } from "@/hooks/useManageParams";
 
 export const PaymentContent: React.FC = () => {
   const router = useRouter();
@@ -31,7 +32,7 @@ export const PaymentContent: React.FC = () => {
   const params = useSearchParams();
 
   const { data: session } = useSession();
-
+  const { setParams } = useManageParams();
   const { data: listing, isLoading } = useGetCurrentListingQuery(
     Number.isNaN(params.get("listing_id")) || params.get("result")
       ? skipToken
@@ -42,7 +43,7 @@ export const PaymentContent: React.FC = () => {
 
   const [host, setHost] = useState<IShowCaseUser>({
     user_name: "",
-    email: "",
+    user_email: "",
     img_url: "",
     role: "",
   });
@@ -117,21 +118,29 @@ export const PaymentContent: React.FC = () => {
         );
       }
 
-      const clearedParams = CreateNewQueryParams({
-        updatedParams: {
-          disabled_dates: null,
-          result: JSON.stringify(true),
-          res_message: JSON.stringify(
-            "Your reservation created and sent successfully"
-          ),
-          chatId: JSON.stringify(reservationUpdateRes?.chatId),
-        },
-        params,
+      setParams({
+        disabled_dates: null,
+        result: JSON.stringify(true),
+        res_message: JSON.stringify(
+          "Your reservation created and sent successfully"
+        ),
+        chatId: JSON.stringify(reservationUpdateRes?.chatId),
       });
+      // const clearedParams = CreateNewQueryParams({
+      //   updatedParams: {
+      //     disabled_dates: null,
+      //     result: JSON.stringify(true),
+      //     res_message: JSON.stringify(
+      //       "Your reservation created and sent successfully"
+      //     ),
+      //     chatId: JSON.stringify(reservationUpdateRes?.chatId),
+      //   },
+      //   params,
+      // });
 
-      router.replace(`${pathname}?${clearedParams}`, {
-        scroll: false,
-      });
+      // router.replace(`${pathname}?${clearedParams}`, {
+      //   scroll: false,
+      // });
 
       setReservationStatus((prev) => ({
         ...prev,
@@ -158,20 +167,25 @@ export const PaymentContent: React.FC = () => {
         message: (error as Error).message,
       }));
 
-      const clearedParams = CreateNewQueryParams({
-        updatedParams: {
-          disabled_dates: null,
-          result: null,
-          res_message: null,
-        },
-        params,
+      setParams({
+        disabled_dates: null,
+        result: null,
+        res_message: null,
       });
+      // const clearedParams = CreateNewQueryParams({
+      //   updatedParams: {
+      //     disabled_dates: null,
+      //     result: null,
+      //     res_message: null,
+      //   },
+      //   params,
+      // });
 
-      router.replace(`${pathname}?${clearedParams}`, {
-        scroll: false,
-      });
+      // router.replace(`${pathname}?${clearedParams}`, {
+      //   scroll: false,
+      // });
     }
-  }, [params, pathname, router]);
+  }, [params, setParams]);
 
   const handleRedirectUser = () => {
     if (reservationStatus.success) {
@@ -198,7 +212,7 @@ export const PaymentContent: React.FC = () => {
           user_name: user.data.user_name
             ? user.data.user_name.split(" ")[0]
             : user.data.user_email,
-          email: user.data.user_email,
+          user_email: user.data.user_email,
           img_url: user.data.img_url,
           role: user.data.role,
         };

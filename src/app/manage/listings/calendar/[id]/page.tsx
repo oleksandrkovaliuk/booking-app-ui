@@ -15,5 +15,6 @@ export default async function CalendarPage({
       id: Number(params.id),
     })
   );
+
   return <CalendarPageContent params={params} listing={listing!} />;
 }

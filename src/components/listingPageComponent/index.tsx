@@ -33,40 +33,12 @@ export const ListingPageComponent: React.FC<IListingPageComponentProps> = ({
 }) => {
   const { data: session } = useSession();
 
-  const [host, setHost] = useState<IShowCaseUser>(listingHost);
+  const disableReservation = session?.user.email === listingHost.user_email;
 
-  const disableReservation = session?.user.email === host.email;
-
-  useEffect(() => {
-    const setUpPage = async () => {
-      const user = await store
-        .dispatch(
-          getUser.initiate({
-            user_email: listing?.host_email!,
-          })
-        )
-        .unwrap();
-
-      setHost((prev) => {
-        if (!user.data) return prev;
-        return {
-          user_name: user.data.user_name
-            ? user.data.user_name
-            : user.data.user_email,
-          email: user.data.user_email,
-          img_url: user.data.img_url,
-          role: user.data.role,
-        };
-      });
-    };
-
-    if (!listing?.host_email && !listing?.host_name) return;
-    setUpPage();
-  }, [listing?.host_email, listing?.host_name]);
-
+  console.log(listing, listingHost, "listing");
   return (
     <div className={styles.listing_container}>
-      {!listing || !host.email ? (
+      {!listing || !listingHost.user_email ? (
         <Spinner size="md" color="primary" className={styles.loader} />
       ) : (
         <div className={styles.listing_content}>
@@ -107,9 +79,9 @@ export const ListingPageComponent: React.FC<IListingPageComponentProps> = ({
             <div className={styles.left_side_grid}>
               <section className={styles.host_card}>
                 <div className={styles.host_img_container}>
-                  {host.img_url ? (
+                  {listingHost.img_url ? (
                     <Image
-                      src={host.img_url!}
+                      src={listingHost.img_url!}
                       alt="host_avatar"
                       width={100}
                       height={100}
@@ -118,12 +90,12 @@ export const ListingPageComponent: React.FC<IListingPageComponentProps> = ({
                   ) : (
                     <div className={`${styles.host_img} ${styles.no_host_img}`}>
                       {" "}
-                      {host.user_name
-                        ? host.user_name.split("")[0]
-                        : host.email?.split("")[0]}
+                      {listingHost.user_name
+                        ? listingHost.user_name.split("")[0]
+                        : listingHost.user_email?.split("")[0]}
                     </div>
                   )}
-                  {host.role === "super_host" && (
+                  {listingHost.role === "super_host" && (
                     <Tooltip
                       placement="right"
                       content={"Super host badge"}
@@ -146,16 +118,17 @@ export const ListingPageComponent: React.FC<IListingPageComponentProps> = ({
                 </div>
                 <div className={styles.host_info}>
                   <h3 className={styles.host_name}>
-                    Hosted by <span>{host.user_name?.split(" ")[0]}</span>
+                    Hosted by{" "}
+                    <span>{listingHost.user_name?.split(" ")[0]}</span>
                   </h3>
                   <p className={styles.host_type}>
-                    {host.role === "super_host" ? "Super Host" : "Host"}
+                    {listingHost.role === "super_host" ? "Super Host" : "Host"}
                   </p>
                 </div>
               </section>
               <section className={styles.host_trusted_for}>
                 <div className={styles.host_trusted_for_wrap}>
-                  {host.role === "super_host" ? (
+                  {listingHost.role === "super_host" ? (
                     <Image
                       src={super_host_black}
                       alt="super_host_badge"
@@ -174,11 +147,11 @@ export const ListingPageComponent: React.FC<IListingPageComponentProps> = ({
                   )}
 
                   <motion.div className={styles.host_trusted_text}>
-                    {host.role === "super_host" ? (
+                    {listingHost.role === "super_host" ? (
                       <>
                         <div className={styles.host_trusted_title}>
-                          <span>{host.user_name?.split(" ")[0]}</span> is a
-                          super host
+                          <span>{listingHost.user_name?.split(" ")[0]}</span> is
+                          a super host
                         </div>
                         <p className={styles.host_trusted_description}>
                           Super hosts are seasoned professionals dedicated to
@@ -190,7 +163,8 @@ export const ListingPageComponent: React.FC<IListingPageComponentProps> = ({
                     ) : (
                       <>
                         <span className={styles.host_trusted_title}>
-                          {host.user_name?.split(" ")[0]} is a trusted host
+                          {listingHost.user_name?.split(" ")[0]} is a trusted
+                          host
                         </span>
                         <p className={styles.host_trusted_description}>
                           Hosts are dedicated professionals focused on providing

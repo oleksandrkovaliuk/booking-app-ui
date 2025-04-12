@@ -20,11 +20,12 @@ export default async function ReserveListingPage({
       })
     )
     .unwrap();
+
   return (
     <ReserveContent
       params={params}
       listing={listing!}
-      listingHost={listingHost!}
+      listingHost={listingHost.data!}
     />
   );
 }

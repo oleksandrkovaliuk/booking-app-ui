@@ -26,6 +26,7 @@ $chat-container-height: calc(100dvh - 81px);
     position: relative;
 
     max-width: 350px;
+    overflow: hidden;
     width: max-content;
 
     padding: 5px 10px;
@@ -47,6 +48,7 @@ $chat-container-height: calc(100dvh - 81px);
     .current_chat_message {
       font-size: 16px;
       font-weight: 500;
+      line-height: 130%;
       color: var(--booking-app-black-color);
       font-family: var(--booking-app-Nunito-Sans-font);
     }

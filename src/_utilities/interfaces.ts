@@ -1,7 +1,7 @@
 export interface ISvgProps extends React.SVGProps<SVGSVGElement> {}
 
 export interface IFullIUserTypes {
-  email: string;
+  user_email: string;
   user_name?: string;
   user_lastname?: string;
   img_url?: string;

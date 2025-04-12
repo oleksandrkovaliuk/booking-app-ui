@@ -29,7 +29,10 @@ export default async function EditListing({
 
   return (
     <div className={styles.overview_container}>
-      <ListingPageComponent listing={listing!} listingHost={listingHost!} />
+      <ListingPageComponent
+        listing={listing!}
+        listingHost={listingHost.data!}
+      />
     </div>
   );
 }

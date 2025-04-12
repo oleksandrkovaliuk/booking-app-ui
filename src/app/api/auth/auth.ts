@@ -34,7 +34,7 @@ export const authConfig: AuthOptions = {
         if (!credentials?.email || !credentials?.password) return null;
 
         const res = await AccessUser({
-          email: credentials.email,
+          user_email: credentials.email,
           password: credentials.password,
         });
 
@@ -54,8 +54,9 @@ export const authConfig: AuthOptions = {
     async signIn({ user, account, profile }: any) {
       if (account?.provider === "google" || account?.provider === "facebook") {
         try {
+          console.log(profile, "profile");
           const res = await AccesOAuthUser({
-            email: profile?.email!,
+            user_email: profile?.email!,
             user_name: profile?.name,
             img_url:
               account?.provider === "google"

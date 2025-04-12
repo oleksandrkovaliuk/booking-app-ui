@@ -15,6 +15,7 @@ export interface RoundButtonProps {
     | "left-end"
     | "right-start"
     | "right-end";
+  className?: string;
   toolTipContent?: string;
   toolTipDelay?: number;
 }

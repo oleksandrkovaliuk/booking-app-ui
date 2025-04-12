@@ -1,13 +1,16 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useDispatch } from "react-redux";
 import { useSession } from "next-auth/react";
 import { Skeleton, Tooltip } from "@nextui-org/react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
+import { useSelector } from "@/store";
+import { NotificationTypes } from "@/store/api/lib/enums";
 import { updateNotifications } from "@/store/slices/notificationsSlice";
+import { isWidthHandlerSelector } from "@/store/selectors/isWidthHandler";
 import { useGetUsersChatsQuery } from "@/store/api/endpoints/chats/getUserChats";
 
 import { CurrentChat } from "../components/currentChat";
@@ -17,37 +20,49 @@ import { skeletonData } from "@/information/data";
 import { NotFoundIcon } from "@/svgs/NotFoundIcon";
 
 import { socket } from "@/helpers/sockets";
-import { CreateNewQueryParams } from "@/helpers/paramsManagment";
 import { formattedAddressComponent } from "@/helpers/address/formattedAddressVariants";
 
-import { NotificationTypes } from "@/store/api/lib/enums";
-
 import styles from "./inboxContent.module.scss";
+import { useManageParams } from "@/hooks/useManageParams";
 
 export const InboxContent: React.FC = () => {
-  const router = useRouter();
   const dispatch = useDispatch();
-  const pathname = usePathname();
   const params = useSearchParams();
 
   const { data: session } = useSession();
   const { chatId } = Object.fromEntries(params.entries());
 
+  const { setParams } = useManageParams();
+  const { tablet } = useSelector(isWidthHandlerSelector);
   const { data: chats, isLoading, isUninitialized } = useGetUsersChatsQuery();
+
+  const [chatsMenuIsActive, setChatsMenuIsActive] = useState(!chatId);
 
   const handleSelectChat = async (chatId: number) => {
     if (!chatId) return;
 
-    const updatedParams = CreateNewQueryParams({
-      updatedParams: {
-        chatId: JSON.stringify(chatId),
-      },
-      params,
+    setParams({
+      chatId: JSON.stringify(chatId),
     });
 
-    router.replace(`${pathname}?${updatedParams}`, {
-      scroll: false,
+    tablet && setChatsMenuIsActive(false);
+  };
+
+  const handleOnBackToChatsAction = () => {
+    setParams({
+      chatId: null,
     });
+    // const updatedParams = CreateNewQueryParams({
+    //   updatedParams: {
+    //     chatId: null,
+    //   },
+    //   params,
+    // });
+
+    // router.replace(`${pathname}?${updatedParams}`, {
+    //   scroll: false,
+    // });
+    setChatsMenuIsActive(true);
   };
 
   useEffect(() => {
@@ -81,7 +96,10 @@ export const InboxContent: React.FC = () => {
 
   return (
     <div className={styles.inbox_container}>
-      <ul className={styles.chats_columns_container}>
+      <ul
+        className={styles.chats_columns_container}
+        data-is-chats-column-active={chatsMenuIsActive}
+      >
         {isLoading || isUninitialized
           ? skeletonData.map((el, i) => (
               <div className={styles.chat_block} key={i}>
@@ -114,7 +132,7 @@ export const InboxContent: React.FC = () => {
                 >
                   {chat.chatPartner.img_url ? (
                     <Image
-                      alt={chat.chatPartner.email}
+                      alt={chat.chatPartner.user_email}
                       src={chat.chatPartner.img_url!}
                       width={50}
                       height={50}
@@ -128,7 +146,7 @@ export const InboxContent: React.FC = () => {
                       {" "}
                       {chat.chatPartner?.user_name
                         ? chat.chatPartner?.user_name?.split("")[0]!
-                        : chat.chatPartner.email?.split("")[0]!}
+                        : chat.chatPartner.user_email?.split("")[0]!}
                     </div>
                   )}
 
@@ -140,7 +158,7 @@ export const InboxContent: React.FC = () => {
                         </p>
                       )}
                       <p className={styles.reciever_email}>
-                        {chat.chatPartner.email}
+                        {chat.chatPartner.user_email}
                       </p>
                     </div>
                     <Tooltip
@@ -181,7 +199,7 @@ export const InboxContent: React.FC = () => {
               );
             })}
       </ul>
-      <CurrentChat />
+      <CurrentChat onBackToChatsAction={handleOnBackToChatsAction} />
     </div>
   );
 };

@@ -48,7 +48,6 @@ export const ReserveContent: React.FC<IReservePageProps> = ({
 
   const { parsedSearchDate } = useSelector(searchSelectionSelector(paramsUrl));
 
-  const [host] = useState<IShowCaseUser>(listingHost);
   const [messageToHost, setMessageToHost] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [pendingUrl, setPendingUrl] = useState<string>("");
@@ -98,34 +97,6 @@ export const ReserveContent: React.FC<IReservePageProps> = ({
     setIsModalOpen(false);
     setPendingUrl("");
   };
-
-  // useEffect(() => {
-  //   const setUpPage = async () => {
-  //     const user = await store
-  //       .dispatch(
-  //         getUser.initiate({
-  //           user_email: listing?.host_email!,
-  //         })
-  //       )
-  //       .unwrap();
-
-  //     setHost((prev) => {
-  //       if (!user.data) return prev;
-
-  //       return {
-  //         user_name: user.data.user_name
-  //           ? user.data.user_name.split(" ")[0]
-  //           : user.data.user_email,
-  //         email: user.data.user_email,
-  //         img_url: user.data.img_url,
-  //         role: user.data.role,
-  //       };
-  //     });
-  //   };
-
-  //   if (!listing?.host_email && !listing?.host_name) return;
-  //   setUpPage();
-  // }, [listing?.host_email, listing?.host_name]);
 
   useEffect(() => {
     const updatedParams = CreateNewQueryParams({
@@ -210,10 +181,12 @@ export const ReserveContent: React.FC<IReservePageProps> = ({
                   <div
                     className={`${styles.sub_description} ${styles.with_host_name}`}
                   >
-                    {!host.user_name ? (
+                    {!listingHost.user_name ? (
                       <Skeleton className={styles.host_name_skeleton} />
                     ) : (
-                      <span className={styles.host_name}>{host.user_name}</span>
+                      <span className={styles.host_name}>
+                        {listingHost.user_name}
+                      </span>
                     )}
                     &apos;s place is usually booked.
                   </div>
@@ -229,9 +202,9 @@ export const ReserveContent: React.FC<IReservePageProps> = ({
               <div className={styles.comment_to_host_header}>
                 <div className={styles.host_card}>
                   <div className={styles.host_img_container}>
-                    {host.img_url ? (
+                    {listingHost.img_url ? (
                       <Image
-                        src={host.img_url}
+                        src={listingHost.img_url}
                         alt="host_avatar"
                         width={100}
                         height={100}
@@ -242,10 +215,10 @@ export const ReserveContent: React.FC<IReservePageProps> = ({
                         className={`${styles.host_img} ${styles.no_host_img}`}
                       >
                         {" "}
-                        {host.email.split("")[0]}
+                        {listingHost.user_email.split("")[0]}
                       </div>
                     )}
-                    {host.role === "super_host" && (
+                    {listingHost.role === "super_host" && (
                       <Tooltip
                         placement="right"
                         content={"Super host badge"}
@@ -266,10 +239,12 @@ export const ReserveContent: React.FC<IReservePageProps> = ({
                   </div>
                   <div className={styles.host_info}>
                     <h3 className={styles.host_name}>
-                      <span>{host.user_name}</span>
+                      <span>{listingHost.user_name}</span>
                     </h3>
                     <p className={styles.host_type}>
-                      {host.role === "super_host" ? "Super Host" : "Host"}
+                      {listingHost.role === "super_host"
+                        ? "Super Host"
+                        : "Host"}
                     </p>
                   </div>
                 </div>
@@ -299,7 +274,7 @@ export const ReserveContent: React.FC<IReservePageProps> = ({
             </div>
             <PaymantComponent
               total={calculationOfPrice}
-              host_email={host.email}
+              host_email={listingHost?.user_email!}
               listing_id={JSON.parse(params.id)}
             />
           </section>
@@ -322,7 +297,7 @@ export const ReserveContent: React.FC<IReservePageProps> = ({
                       {listing?.type?.type_name}
                     </p>
                     <div className={styles.listing_accomplishments}>
-                      {host.role === "superhost" && (
+                      {listingHost.role === "superhost" && (
                         <div className={styles.super_host}>
                           <Tooltip
                             placement="right"

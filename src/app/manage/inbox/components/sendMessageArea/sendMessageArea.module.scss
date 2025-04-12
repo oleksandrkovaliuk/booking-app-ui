@@ -91,3 +91,9 @@
     transform: translate(0px, 0px);
   }
 }
+
+@media (width <= 1080px) {
+  .send_message_container {
+    max-width: 70dvw;
+  }
+}

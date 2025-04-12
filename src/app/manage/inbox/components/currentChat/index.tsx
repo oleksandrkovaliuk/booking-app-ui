@@ -35,6 +35,8 @@ export const CurrentChat: React.FC<IChatReciever> = ({
       : skipToken
   );
 
+  console.log(selectedChat, "selectedChat");
+
   if (!selectedChat && !isFetching && !isLoading) return null;
 
   return (
@@ -67,7 +69,7 @@ export const CurrentChat: React.FC<IChatReciever> = ({
           <div className={styles.current_chat_reciever}>
             {selectedChat?.reciever?.img_url ? (
               <Image
-                alt={selectedChat.reciever.email}
+                alt={selectedChat.reciever.user_email}
                 src={selectedChat.reciever.img_url!}
                 width={50}
                 height={50}
@@ -79,12 +81,12 @@ export const CurrentChat: React.FC<IChatReciever> = ({
                 {" "}
                 {selectedChat?.reciever?.user_name
                   ? selectedChat.reciever?.user_name?.split("")[0]!
-                  : selectedChat?.reciever.email?.split("")[0]!}
+                  : selectedChat?.reciever.user_email?.split("")[0]!}
               </div>
             )}
             <div className={styles.chat_reciever_personal_info}>
               <p className={styles.reciever_email}>
-                {selectedChat?.reciever.email}
+                {selectedChat?.reciever.user_email}
               </p>
               {selectedChat?.reciever.user_name && (
                 <p className={styles.reciever_name}>

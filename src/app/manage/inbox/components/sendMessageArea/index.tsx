@@ -40,14 +40,14 @@ export const SendMessageArea = () => {
     if (
       !messageValue?.length ||
       !chatId ||
-      !selectedChat?.reciever?.email ||
+      !selectedChat?.reciever?.user_email ||
       !session?.user?.email
     )
       return;
     try {
       const { data: res, error } = await store.dispatch(
         newChatMessage.initiate({
-          to: selectedChat?.reciever?.email,
+          to: selectedChat?.reciever?.user_email,
           from: session?.user?.email,
           chatId: chatId,
           message: messageValue,

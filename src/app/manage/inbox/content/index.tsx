@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useDispatch } from "react-redux";
 import { useSession } from "next-auth/react";
 import { Skeleton, Tooltip } from "@nextui-org/react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 import { useSelector } from "@/store";
 import { NotificationTypes } from "@/store/api/lib/enums";
@@ -20,7 +20,6 @@ import { skeletonData } from "@/information/data";
 import { NotFoundIcon } from "@/svgs/NotFoundIcon";
 
 import { socket } from "@/helpers/sockets";
-import { CreateNewQueryParams } from "@/helpers/paramsManagment";
 import { formattedAddressComponent } from "@/helpers/address/formattedAddressVariants";
 
 import styles from "./inboxContent.module.scss";
@@ -133,7 +132,7 @@ export const InboxContent: React.FC = () => {
                 >
                   {chat.chatPartner.img_url ? (
                     <Image
-                      alt={chat.chatPartner.email}
+                      alt={chat.chatPartner.user_email}
                       src={chat.chatPartner.img_url!}
                       width={50}
                       height={50}
@@ -147,7 +146,7 @@ export const InboxContent: React.FC = () => {
                       {" "}
                       {chat.chatPartner?.user_name
                         ? chat.chatPartner?.user_name?.split("")[0]!
-                        : chat.chatPartner.email?.split("")[0]!}
+                        : chat.chatPartner.user_email?.split("")[0]!}
                     </div>
                   )}
 
@@ -159,7 +158,7 @@ export const InboxContent: React.FC = () => {
                         </p>
                       )}
                       <p className={styles.reciever_email}>
-                        {chat.chatPartner.email}
+                        {chat.chatPartner.user_email}
                       </p>
                     </div>
                     <Tooltip

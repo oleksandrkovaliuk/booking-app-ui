@@ -53,7 +53,7 @@ export const ReserveListingBlock: React.FC<IReserveListingBlockProps> = ({
 
   // CONSTANTS
 
-  const isDateIncludingUnavailableDates = disabledDates.some((date) => {
+  const isDateIncludingUnavailableDates = disabledDates?.some((date) => {
     const disabled = new Date(date.year, date.month - 1, date.day);
     const start = new Date(
       parsedSearchDate.start.year,

@@ -35,7 +35,6 @@ export const ListingPageComponent: React.FC<IListingPageComponentProps> = ({
 
   const disableReservation = session?.user.email === listingHost.user_email;
 
-  console.log(listing, listingHost, "listing");
   return (
     <div className={styles.listing_container}>
       {!listing || !listingHost.user_email ? (

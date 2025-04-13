@@ -21,7 +21,7 @@ const requestCalendarUpdatingApi = api.injectEndpoints({
         method: "POST",
         body: { disabledDates, id },
       }),
-      invalidatesTags: [ApiTags.CURRENT_LISTING],
+      invalidatesTags: [ApiTags.CURRENT_LISTING, ApiTags.USER_LISTINGS],
     }),
   }),
   overrideExisting: true,

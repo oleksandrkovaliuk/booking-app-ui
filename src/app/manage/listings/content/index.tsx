@@ -13,8 +13,6 @@ export const ListingsPage = async () => {
   const session = await getServerSession(authConfig);
   const firstName = session?.user?.name?.split(" ")[0];
 
-  // const isListingInProgress = !!localStorage.getItem("category");
-  console.log("session", session);
   return (
     <div className={styles.listing_page_container}>
       <section className={styles.title_section}>

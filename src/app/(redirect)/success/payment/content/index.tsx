@@ -107,7 +107,7 @@ export const PaymentContent: React.FC = () => {
       const { data: updatedDisabledDates, error: disabledDatesUpdateError } =
         await store.dispatch(
           requestSetRangeOfDisabledDates.initiate({
-            disabledDates: JSON.parse(incomingParams.disabled_dates),
+            disabledDates: JSON.parse(incomingParams?.disabled_dates || "[]"),
             id: JSON.parse(incomingParams.listing_id),
           })
         );

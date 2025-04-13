@@ -35,13 +35,6 @@ export const GoogleMapComponent: React.FC<IGoogleMapProps> = ({
     libraries: ["places"],
   });
 
-  console.log(
-    isLoaded,
-    searchBar,
-    loadError,
-    process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY
-  );
-
   const handleCordinatesChange = () => {
     if (searchBar.current) {
       const places =

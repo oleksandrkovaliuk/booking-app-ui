@@ -98,7 +98,6 @@ export const CalendarPageContent: React.FC<CalendarPageContentProps> = ({
 
   const onConfirm = async () => {
     try {
-      console.log(selectedDate, "selectedDate");
       const { error, data: res } = await store.dispatch(
         requestCalendarUpdating.initiate({
           disabledDates: selectedDate,
@@ -141,17 +140,18 @@ export const CalendarPageContent: React.FC<CalendarPageContentProps> = ({
     const storedDates = localStorage.getItem(`${params.id}`);
     const formattedStoredDates = JSON.parse(storedDates || "[]");
 
-    const formattedIncomingDates = listing?.disabled_dates?.filter(
-      (date) =>
-        date.day >= today(getLocalTimeZone()).day ||
-        date.month >= today(getLocalTimeZone()).month
-    );
+    const formattedIncomingDates =
+      listing?.disabled_dates?.filter(
+        (date) =>
+          date.day >= today(getLocalTimeZone()).day ||
+          date.month >= today(getLocalTimeZone()).month
+      ) || [];
 
     setEnableConfirmationButton(!!formattedStoredDates?.length);
     setSelectedDate(
-      formattedStoredDates?.length
+      !!formattedStoredDates?.length
         ? formattedStoredDates
-        : formattedIncomingDates || []
+        : formattedIncomingDates
     );
   }, [listing?.disabled_dates, params.id]);
 

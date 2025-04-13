@@ -175,8 +175,6 @@ export const MessagesContainer: React.FC = () => {
     }
   }, [amouthOfMessages, selectedChat?.chat_data?.length]);
 
-  console.log(amouthOfMessages, selectedChat?.chat_data?.length);
-
   return (
     <div className={styles.current_chat_wrap_scroll}>
       <ul className={styles.current_chat_wrap} ref={chatScrollContainerRef}>

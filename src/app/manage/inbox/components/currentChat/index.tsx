@@ -35,8 +35,6 @@ export const CurrentChat: React.FC<IChatReciever> = ({
       : skipToken
   );
 
-  console.log(selectedChat, "selectedChat");
-
   if (!selectedChat && !isFetching && !isLoading) return null;
 
   return (

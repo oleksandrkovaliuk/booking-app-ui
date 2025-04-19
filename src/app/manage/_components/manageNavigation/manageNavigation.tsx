@@ -33,21 +33,21 @@ export const ManageNavigation: React.FC<ManageNavigationProps> = ({
               className={styles.navigation_links}
               data-selected={path === "/manage/listings"}
             >
-              Listings
+              Лістинги
             </Link>
-            <Link
+            {/* <Link
               href={"/manage/reviews"}
               className={styles.navigation_links}
               data-selected={path === "/manage/reviews"}
             >
               Review
-            </Link>
+            </Link> */}
             <Link
               href={"/manage/inbox"}
               className={styles.navigation_links}
               data-selected={path === "/manage/inbox"}
             >
-              Inbox
+              Повідомлення
               {notificationIn.INBOX_MESSAGE && (
                 <span className={styles.notification_badge}></span>
               )}

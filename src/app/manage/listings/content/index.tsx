@@ -21,7 +21,7 @@ export const ListingsPage = async () => {
         </h1>
         <Link href="/manage/listings/create">
           <Button className={styles.create_listing_button} size="sm">
-            Create Listing
+            Створити лістинг
           </Button>
         </Link>
       </section>

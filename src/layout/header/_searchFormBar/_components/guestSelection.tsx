@@ -90,10 +90,10 @@ const GuestsSelection: React.FC<ISelectionComponentsProps> = ({
             <div className={styles.modal_menu_guest_settings}>
               <div className={styles.modal_menu_guest_settings_text}>
                 <span className={styles.modal_menu_guest_settings_title}>
-                  Guest
+                  Гості
                 </span>
                 <p className={styles.modal_menu_guest_settings_note}>
-                  Including children
+                  Включаючи дітей
                 </p>
               </div>
               <Counter counter={amoutOfGuests} setCounter={setAmoutOfGuests} />
@@ -101,10 +101,10 @@ const GuestsSelection: React.FC<ISelectionComponentsProps> = ({
             <div className={styles.modal_menu_guest_settings}>
               <div className={styles.modal_menu_guest_settings_text}>
                 <span className={styles.modal_menu_guest_settings_title}>
-                  Pets
+                  Тварини
                 </span>
                 <p className={styles.modal_menu_guest_settings_note}>
-                  Include pets
+                  Подорожуєте з тваринами?
                 </p>
               </div>
               <div className={styles.modal_menu_pets_checkbox}>
@@ -123,7 +123,7 @@ const GuestsSelection: React.FC<ISelectionComponentsProps> = ({
           type="text"
           id="Guests"
           className={styles.search_bar_input}
-          placeholder="Add guests"
+          placeholder="Додай гостей"
           value={
             amoutOfGuests
               ? `${amoutOfGuests} guests ${includePets ? ", with pets" : ""}`
@@ -133,7 +133,7 @@ const GuestsSelection: React.FC<ISelectionComponentsProps> = ({
         />
       </div>
       <label htmlFor="Guests" className={styles.search_bar_label}>
-        Who
+        Хто
       </label>
     </div>
   );

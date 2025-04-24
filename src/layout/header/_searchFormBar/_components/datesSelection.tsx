@@ -259,7 +259,7 @@ const DatesSelection: React.FC<ISelectionComponentsProps> = ({
                 type="text"
                 id="dateInput"
                 className={styles.search_bar_input}
-                placeholder="Select date"
+                placeholder="Оберіть дату"
                 value={
                   isDefaultDate
                     ? ""
@@ -279,7 +279,7 @@ const DatesSelection: React.FC<ISelectionComponentsProps> = ({
             </div>
 
             <label htmlFor="dateInput" className={styles.search_bar_label}>
-              Check in
+              Чек-ін
             </label>
           </div>
           <div
@@ -299,7 +299,7 @@ const DatesSelection: React.FC<ISelectionComponentsProps> = ({
                 type="text"
                 id="dateInput"
                 className={styles.search_bar_input}
-                placeholder="Select date"
+                placeholder="Оберіть дату"
                 value={
                   isDefaultDate
                     ? ""
@@ -318,7 +318,7 @@ const DatesSelection: React.FC<ISelectionComponentsProps> = ({
               />
             </div>
             <label htmlFor="dateInput" className={styles.search_bar_label}>
-              Check out
+              Чек-аут
             </label>
           </div>
         </>
@@ -335,7 +335,7 @@ const DatesSelection: React.FC<ISelectionComponentsProps> = ({
               type="text"
               id="dateInput"
               className={styles.search_bar_input}
-              placeholder="Select date"
+              placeholder="Оберіть дати"
               value={
                 !isDefaultDate
                   ? userDateSelection.start || userDateSelection.end
@@ -357,7 +357,7 @@ const DatesSelection: React.FC<ISelectionComponentsProps> = ({
           </div>
 
           <label htmlFor="dateInput" className={styles.search_bar_label}>
-            Date
+            Дати
           </label>
         </div>
       )}

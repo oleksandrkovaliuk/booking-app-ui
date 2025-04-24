@@ -180,14 +180,14 @@ export const UserMenu: React.FC<{ showArrow?: boolean }> = ({ showArrow }) => {
             <DropdownSection showDivider>
               <DropdownItem key="home" className={"drop_down_item"}>
                 <Link href="/" className="hidden_link" />
-                <span>Home</span>
+                <span>Додому</span>
               </DropdownItem>
               <DropdownItem
                 key="accout"
                 className={"drop_down_item"}
                 endContent={<UserIcon />}
               >
-                <Link href="/account">Account</Link>
+                <Link href="/account">Аккаунт</Link>
               </DropdownItem>
               <DropdownItem
                 key="notifications"
@@ -195,14 +195,14 @@ export const UserMenu: React.FC<{ showArrow?: boolean }> = ({ showArrow }) => {
                 onClick={handleOpenNotificationsModal}
               >
                 <span>
-                  Notifications
+                  Повідомлення
                   {notificationIn.GENERAL && <span className="notification" />}
                 </span>
               </DropdownItem>
               <DropdownItem key="manage" className={"drop_down_item"}>
                 <Link href="/manage/listings" className="hidden_link" />
                 <span>
-                  Manage listings{" "}
+                  Менеджинг оголошень{" "}
                   {isManageHasUnredNotifications && (
                     <span className="notification" />
                   )}
@@ -212,7 +212,7 @@ export const UserMenu: React.FC<{ showArrow?: boolean }> = ({ showArrow }) => {
             <DropdownSection>
               <DropdownItem key="help" className={"drop_down_item"}>
                 <Link href="/help&feedback" className="hidden_link" />
-                <span>Help & Feedback</span>
+                <span>Допомога & Фідбек</span>
               </DropdownItem>
               <DropdownItem
                 key="log out"
@@ -220,7 +220,7 @@ export const UserMenu: React.FC<{ showArrow?: boolean }> = ({ showArrow }) => {
                 className={"drop_down_item"}
                 endContent={<LogOutIcon />}
               >
-                Log out
+                Вийти
               </DropdownItem>
             </DropdownSection>
           </DropdownMenu>

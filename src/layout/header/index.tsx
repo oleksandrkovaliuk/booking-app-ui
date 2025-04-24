@@ -14,7 +14,10 @@ import {
 import { useSelector } from "@/store";
 import { isWidthHandlerSelector } from "@/store/selectors/isWidthHandler";
 import { clearSearchSelection } from "@/store/slices/search/searchSelectionSlice";
-import { setFetch, setIsSearchTriggered } from "@/store/slices/listings/isSearchTriggeredSlice";
+import {
+  setFetch,
+  setIsSearchTriggered,
+} from "@/store/slices/listings/isSearchTriggeredSlice";
 
 import { Search } from "@/svgs/Search";
 import { AddHouseIcon } from "@/svgs/AddHouseIcon";
@@ -70,14 +73,14 @@ const CenterNavigationMenu = ({ children }: { children: React.ReactNode }) => {
               onClick={handleClickOnStaysButton}
               data-state={staysButtonState}
             >
-              Stays
+              Перебування
             </button>
             <button
               className={styles.center_nagivation_menu_button}
               onClick={handleClickOnExperienceButton}
               data-state={staysButtonState}
             >
-              Experiences
+              Експеримент
             </button>
           </div>
           {children}

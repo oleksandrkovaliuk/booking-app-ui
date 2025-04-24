@@ -206,7 +206,7 @@ export const SearchFormBar: React.FC<ISearchFormBarProps> = ({
               <Search className={styles.search_icon} />
             )}
 
-            <span className={styles.search_text}>search</span>
+            <span className={styles.search_text}>Пошук</span>
           </motion.button>
         </motion.form>
       </TriggeredSelectionApi.Provider>

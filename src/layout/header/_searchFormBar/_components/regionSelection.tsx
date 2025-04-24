@@ -269,7 +269,7 @@ const RegionSelection: React.FC<ISelectionComponentsProps> = ({
                 <ul className={styles.user_search_history}>
                   <li className={styles.user_search_history_title}>
                     <span className={styles.user_search_history_title_text}>
-                      Recent search
+                      Остані запити
                     </span>
                   </li>
                   {userSearchRegionHistory?.map(
@@ -310,7 +310,7 @@ const RegionSelection: React.FC<ISelectionComponentsProps> = ({
                   data-is-only-element={!userSearchRegionHistory?.length}
                 >
                   <span className={styles.region_preview_text}>
-                    Where are we traveling today?
+                    Куда поїдемо сьогодні ?
                   </span>
                   <Image
                     src={boat_with_people}
@@ -369,7 +369,7 @@ const RegionSelection: React.FC<ISelectionComponentsProps> = ({
           autoFocus={triggeredSelection === TypesOfSelections.WHERE}
           id="searchRegionInput"
           className={styles.search_bar_input}
-          placeholder="Search destinations"
+          placeholder="Кінцева точка..."
           onChange={getRegionSelectionValue}
           value={regionSelection?.value || ""}
         />
@@ -384,7 +384,7 @@ const RegionSelection: React.FC<ISelectionComponentsProps> = ({
       </div>
 
       <label htmlFor="searchRegionInput" className={styles.search_bar_label}>
-        Which city
+        Місто
       </label>
     </div>
   );

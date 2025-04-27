@@ -29,14 +29,16 @@ export const Ready: React.FC<ContentProps> = ({
         {...appearAnimation}
         transition={sloverTransition}
       >
-        Review your listing
+        {/* Review your listing */}
+        Перевірте своє оголошеня
       </motion.h1>
       <motion.p
         className={styles.description}
         {...appearAnimation}
         transition={sloverTransition}
       >
-        {`Here's what we'll show to guests. Make sure everything looks good.`}
+        {/* {`Here's what we'll show to guests. Make sure everything looks good.`} */}
+        Запевніться, що усе відображається правильно.
       </motion.p>
       <div className={styles.preview_of_listing_container}>
         <motion.div

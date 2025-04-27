@@ -336,9 +336,9 @@ export const Images: React.FC<ContentProps> = ({
                 type="file"
                 multiple
                 accept={imageTypes.join(",")}
-                className={`${styles.hidden_input} hidden_input`}
                 disabled={isLoading.uploadingImgs}
                 onChange={(e) => handleImagesUpload(e)}
+                className={`${styles.hidden_input} hidden_input`}
               />
               {isLoading.uploadingImgs ? (
                 <Spinner color="default" size="sm" />
@@ -435,9 +435,12 @@ export const Images: React.FC<ContentProps> = ({
             transition={sloverTransition}
             data-isimagesready={uploadedImages.isImagesReady}
           >
-            {!uploadedImages.isImagesReady
+            {/* {!uploadedImages.isImagesReady
               ? "Please provide at least 5 creative images of your place."
-              : "Hey, take a look at your images !"}
+              : "Hey, take a look at your images !"} */}
+            {!uploadedImages.isImagesReady
+              ? "Будь ласка, надайте хоча б 5 креативних зображень вашого місця."
+              : "Ваші зображення неймовірні!"}
           </motion.h1>
         )}
 

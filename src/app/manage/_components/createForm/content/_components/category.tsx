@@ -34,7 +34,8 @@ export const Category: React.FC<ContentProps> = ({
           animate={appearAnimation.animate}
           transition={sloverTransition}
         >
-          Which of these best describes your place?
+          Яка з цих категорій найкраще описує ваше місце?
+          {/* What category best describes your place? */}
         </motion.h1>
       )}
 

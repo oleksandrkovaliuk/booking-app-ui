@@ -27,7 +27,8 @@ export const Introducing_3: React.FC<ContentProps> = ({
           animate={deepAppearAnimation.animate}
           transition={sloverTransition}
         >
-          Finish and publish.
+          {/* Finish and publish. */}
+          Завершіть і опублікуєте.
         </motion.h1>
         <motion.p
           className={styles.description}
@@ -35,8 +36,10 @@ export const Introducing_3: React.FC<ContentProps> = ({
           animate={deepAppearAnimation.animate}
           transition={sloverTransition}
         >
-          In this step, you will finalize your pricing details, and then publish
-          your listing. This will make your place available for guests to book.
+          {/* In this step, you will finalize your pricing details, and then publish
+          your listing. This will make your place available for guests to book. */}
+          У цьому крокі, ви закінчите ваші ціни та опублікуєте своє місце. Це
+          дозволить гостям забронювати ваше місце.
         </motion.p>
       </motion.div>
       <motion.video

@@ -96,14 +96,16 @@ export const Price: React.FC<ContentProps> = ({
             {...appearAnimation}
             transition={sloverTransition}
           >
-            Now, set your price
+            {/* Now, set your price */}
+            Встановіть свою ціну
           </motion.h1>
           <motion.p
             className={styles.description}
             {...deepAppearAnimation}
             transition={sloverTransition}
           >
-            You can change it anytime.
+            {/* You can change it anytime. */}
+            Ви можете змінити ціну будь-коли.
           </motion.p>
         </>
       )}

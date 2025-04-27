@@ -27,7 +27,8 @@ export const Introducing: React.FC<ContentProps> = ({
           animate={deepAppearAnimation.animate}
           transition={sloverTransition}
         >
-          Tell us about your place
+          Розкажіть про своє місце
+          {/* Tell us about your place */}
         </motion.h1>
         <motion.p
           className={styles.description}
@@ -35,9 +36,12 @@ export const Introducing: React.FC<ContentProps> = ({
           animate={deepAppearAnimation.animate}
           transition={sloverTransition}
         >
-          In this step , we will ask you which type of place are you offering
+          {/* In this step , we will ask you which type of place are you offering
           and if guest will book entire place or just a room . Then let us now
-          your location.
+          your location. */}
+          У цьому крокі, ми запитаємо вас про тип місця, який ви пропонуєте та,
+          якщо гости будуть бронювати ціле місце, або лише кімнату. Потім
+          дозволіть нам знайти ваше місце.
         </motion.p>
       </motion.div>
       <motion.video

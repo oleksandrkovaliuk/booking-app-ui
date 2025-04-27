@@ -31,7 +31,8 @@ export const Location: React.FC<ContentProps> = ({
           animate={appearAnimation.animate}
           transition={sloverTransition}
         >
-          Where is your place located?
+          {/* Where is your place located? */}
+          Де знаходиться ваше місце?
         </motion.h1>
       )}
 

@@ -34,7 +34,9 @@ export const TypeOfPlace: React.FC<ContentProps> = ({
           animate={appearAnimation.animate}
           transition={sloverTransition}
         >
-          What type of place will guests have?
+          {/* What type of place will guests have? */}
+           Який тип місця ви пропонуєте
+          гостям?
         </motion.h1>
       )}
 

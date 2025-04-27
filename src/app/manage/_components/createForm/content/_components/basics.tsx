@@ -36,7 +36,8 @@ export const Basics: React.FC<ContentProps> = ({
           animate={appearAnimation.animate}
           transition={sloverTransition}
         >
-          Share with us some basics about your place.
+          {/* Share with us some basics about your place. */}
+          Поділіться з нами базовими деталями вашого місця.
         </motion.h1>
       )}
       <motion.div

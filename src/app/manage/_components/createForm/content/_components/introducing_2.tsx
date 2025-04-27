@@ -27,7 +27,8 @@ export const Introducing_2: React.FC<ContentProps> = ({
           animate={deepAppearAnimation.animate}
           transition={sloverTransition}
         >
-          Make your place stand out
+          {/* Make your place stand out */}
+          Розкажіть про своє місце
         </motion.h1>
         <motion.p
           className={styles.description}
@@ -35,8 +36,10 @@ export const Introducing_2: React.FC<ContentProps> = ({
           animate={deepAppearAnimation.animate}
           transition={sloverTransition}
         >
-          In this step, you’ll add some of the amenities your place offers, plus
-          5 or more images. Then, you’ll create a title and description.
+          {/* In this step, you’ll add some of the amenities your place offers, plus
+          5 or more images. Then, you’ll create a title and description. */}
+          У цьому крокі, ви додасте 5 або більше
+          зображень. Потім ви створите заголовок і опис.
         </motion.p>
       </motion.div>
       <motion.video

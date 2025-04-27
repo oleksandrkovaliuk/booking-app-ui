@@ -31,15 +31,17 @@ export const AdditionalDetails: React.FC<ContentProps> = ({
             {...appearAnimation}
             transition={sloverTransition}
           >
-            Now it is finnally time to describe your place in more details.
+            {/* Now it is finnally time to describe your place in more details. */}
+            Давайте детальніше опишемо ваше місце
           </motion.h1>
           <motion.p
             className={styles.description}
             {...deepAppearAnimation}
             transition={sloverTransition}
           >
-            Turn on you insparation and give your place a more detailed
-            description 💡
+            {/* Turn on you insparation and give your place a more detailed
+            description 💡 */}
+            Включіть своє уяву і додаєте більше деталей до вашого місця 💡
           </motion.p>
         </>
       )}
@@ -54,7 +56,8 @@ export const AdditionalDetails: React.FC<ContentProps> = ({
           {...appearAnimation}
           transition={sloverTransition}
         >
-          Catchy Title
+          {/* Catchy Title */}
+          Заголовок
         </motion.h2>
         <Input
           variant="bordered"
@@ -98,7 +101,8 @@ export const AdditionalDetails: React.FC<ContentProps> = ({
           {...appearAnimation}
           transition={sloverTransition}
         >
-          Highlight Features
+          {/* Highlight Features */}
+          Особливості місця
         </motion.h2>
         <Textarea
           variant="bordered"
@@ -139,7 +143,8 @@ export const AdditionalDetails: React.FC<ContentProps> = ({
           {...appearAnimation}
           transition={sloverTransition}
         >
-          Location Overview
+          {/* Location Overview */}
+          Опис місця
         </motion.h2>
         <Textarea
           variant="bordered"
@@ -180,7 +185,8 @@ export const AdditionalDetails: React.FC<ContentProps> = ({
           {...appearAnimation}
           transition={sloverTransition}
         >
-          Important Notes
+          {/* Important Notes */}
+          Важливі нотатки
         </motion.h2>
         <Textarea
           variant="bordered"
